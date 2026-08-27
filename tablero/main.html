@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>MAKO · 41 Años</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#0a0a0a; --ink2:#161513; --muted:#9a9689; --cream:#f4efe4;
+    --gold:#c9a86a; --gold2:#e8caa0;
+    --line:rgba(201,168,106,.16); --shadow:0 12px 32px rgba(0,0,0,.35);
+    --radius:22px; --nav-h:76px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:linear-gradient(180deg,#0d0c0a 0%,#0a0a0a 100%);color:var(--cream);font-family:'Manrope',sans-serif;padding-bottom:calc(var(--nav-h) + 18px + env(safe-area-inset-bottom))}
+  button,input,select,textarea{font:inherit}
+  a{color:inherit;text-decoration:none}
+  .wrap{width:min(720px,calc(100% - 32px));margin:auto}
+  .eyebrow{font-size:11px;letter-spacing:.18em;font-weight:800;text-transform:uppercase;color:var(--gold);margin:0 0 8px}
+  .section-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(24px,5vw,34px);line-height:1.05;margin:0;color:var(--gold2)}
+  .section-sub{margin:8px 0 0;color:var(--muted);line-height:1.6;font-size:13px}
+
+  /* ---- Topbar ---- */
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(10,10,10,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .topbar-inner{width:min(720px,calc(100% - 32px));margin:auto;display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 0 12px;flex-wrap:wrap}
+  .topbar-brand{font-weight:800;letter-spacing:.03em;font-size:15px;flex-shrink:0}
+  .topbar-brand span{color:var(--gold)}
+  .topbar-spacer{flex:1}
+  .topbar-profile{display:flex;align-items:center;gap:8px;flex-shrink:0;cursor:pointer;padding:6px 10px;border-radius:999px;border:1px solid var(--line)}
+  .topbar-avatar{width:22px;height:22px;border-radius:50%;background:var(--gold);color:var(--black);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .topbar-avatar-name{font-size:12px;color:var(--muted);max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .upload-pill{flex-shrink:0;font-size:12px;font-weight:800;padding:8px 14px;border-radius:999px;border:none;background:linear-gradient(90deg,var(--gold),var(--gold2));color:var(--black);cursor:pointer}
+  .nav-row{display:flex;gap:8px;overflow-x:auto;padding:0 0 12px;scrollbar-width:none}
+  .nav-row::-webkit-scrollbar{display:none}
+  .top-pill{flex-shrink:0;font-size:12px;font-weight:700;padding:8px 14px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+  .top-pill:hover{color:var(--gold2);border-color:var(--gold)}
+
+  /* ---- Bottom nav ---- */
+  .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(10,10,10,.94);backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-around;padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
+  .bn-item{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:9px;color:var(--muted);flex:1}
+  .bn-item span:first-child{font-size:17px}
+  .bn-fab{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--black);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;border:none;margin-top:-22px;box-shadow:var(--shadow);cursor:pointer}
+
+  /* ---- Profile modal ---- */
+  .modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:24px}
+  .modal.open{display:flex}
+  .modal-card{background:var(--ink2);border:1px solid var(--line);border-radius:var(--radius);padding:22px;width:min(380px,100%);text-align:center;max-height:85vh;overflow:auto}
+  .modal-card h3{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold2);margin:0 0 14px;font-size:22px}
+  .modal-card select{width:100%;padding:12px 14px;border-radius:12px;background:var(--black);border:1px solid var(--line);color:var(--cream);font-size:14px;margin-bottom:12px}
+  .modal-card textarea{width:100%;min-height:70px;background:var(--black);border:1px solid var(--line);border-radius:10px;color:var(--cream);padding:10px 12px;font-size:14px;resize:vertical;margin-bottom:10px;text-align:left}
+  .modal-card input[type=file]{width:100%;font-size:12px;color:var(--muted);margin-bottom:12px}
+  .modal-card .btn{width:100%}
+  .modal-close{position:absolute;top:14px;right:18px;color:var(--muted);font-size:20px;cursor:pointer;background:none;border:none}
+
+  .btn{padding:13px 24px;border-radius:999px;border:none;cursor:pointer;background:linear-gradient(90deg,var(--gold),var(--gold2));color:var(--black);font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;box-shadow:var(--shadow)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn-outline{background:none;border:1px solid var(--gold);color:var(--gold2)}
+
+  /* ---- Hero ---- */
+  .hero-card{position:relative;margin:18px auto 0;border-radius:var(--radius);overflow:hidden;padding:34px 24px;text-align:center;background:radial-gradient(circle at 50% 10%, rgba(201,168,106,.14), transparent 55%),var(--ink2);border:1px solid var(--line)}
+  .crown{font-size:20px;color:var(--gold)}
+  .hero-name{font-family:'Manrope',sans-serif;font-weight:800;font-size:clamp(44px,14vw,72px);margin:4px 0;line-height:.95}
+  .hero-age{color:var(--gold);font-weight:800;font-size:18px;letter-spacing:.1em;text-transform:uppercase}
+  .rule{width:48px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:14px auto}
+  .countdown{display:flex;gap:8px;justify-content:center;margin:14px 0 6px}
+  .cd-box{min-width:54px;padding:8px 6px;border:1px solid var(--line);border-radius:10px;background:rgba(201,168,106,.05)}
+  .cd-num{font-weight:800;font-size:19px;color:var(--gold2)}
+  .cd-lbl{font-size:8px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-top:2px}
+  .hero-details{font-size:13px;color:var(--muted);line-height:1.7;margin-top:10px}
+  .hero-details b{color:var(--cream)}
+
+  /* ---- Sections ---- */
+  .content{margin-top:34px}
+  .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:14px}
+  .card{background:var(--ink2);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+  .empty-state{color:var(--muted);font-size:13px;text-align:center;padding:16px 0}
+
+  /* Feed (fotos + dedicatorias) */
+  .feed-item{border-bottom:1px solid var(--line);padding:14px 0}
+  .feed-item:last-child{border-bottom:none}
+  .feed-head{display:flex;align-items:center;gap:8px}
+  .feed-avatar{width:26px;height:26px;border-radius:50%;background:var(--gold);color:var(--black);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .feed-name{font-weight:700;font-size:13px;color:var(--gold2)}
+  .feed-msg{font-size:14px;margin:6px 0 0;line-height:1.5}
+  .feed-item img{max-width:100%;border-radius:10px;margin-top:8px;display:block}
+  .feed-actions{display:flex;gap:14px;margin-top:8px}
+  .feed-actions button{background:none;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:5px 11px;font-size:12px;cursor:pointer}
+  .feed-actions button.active{color:var(--gold2);border-color:var(--gold)}
+  .comments-box{margin-top:10px;display:none}
+  .comments-box.open{display:block}
+  .comment-line{font-size:12px;color:var(--muted);padding:4px 0}
+  .comment-line b{color:var(--cream)}
+  .comment-form{display:flex;gap:6px;margin-top:6px}
+  .comment-form input{flex:1;background:var(--black);border:1px solid var(--line);border-radius:999px;color:var(--cream);padding:8px 12px;font-size:12px}
+  .comment-form button{background:var(--gold);border:none;color:var(--black);border-radius:999px;padding:8px 12px;font-size:11px;font-weight:800;cursor:pointer}
+
+  /* Ranking */
+  .lb-row{display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:var(--black);border:1px solid var(--line);margin-bottom:8px}
+  .lb-row.top{background:linear-gradient(90deg, rgba(201,168,106,.18), rgba(201,168,106,.03));border-color:var(--gold)}
+  .lb-rank{width:24px;font-weight:800;color:var(--gold);font-size:13px;text-align:center;flex-shrink:0}
+  .lb-avatar{width:30px;height:30px;border-radius:50%;background:var(--gold);color:var(--black);font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .lb-mid{flex:1;min-width:0}
+  .lb-name{font-size:14px;font-weight:700}
+  .lb-breakdown{font-size:10px;color:var(--muted);margin-top:2px}
+  .lb-bar{height:4px;border-radius:2px;background:rgba(201,168,106,.15);margin-top:6px;overflow:hidden}
+  .lb-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2))}
+  .lb-pts{font-weight:800;font-size:14px;color:var(--gold2);flex-shrink:0}
+
+  /* Dashboard */
+  .dash-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .dash-tile{background:var(--black);border:1px solid var(--line);border-radius:12px;padding:12px 6px;text-align:center}
+  .dash-num{font-weight:800;font-size:19px;color:var(--gold2)}
+  .dash-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+  .dash-winner{margin-top:12px;display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:rgba(201,168,106,.08);border:1px solid var(--gold)}
+  .dash-winner .medal{font-size:22px}
+
+  /* Categories */
+  .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .cat-chip{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:10px;background:var(--black);border:1px solid var(--line);font-size:12px}
+
+  /* Details */
+  .detail-row{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
+  .detail-row:last-child{border-bottom:none}
+  .detail-ic{font-size:20px}
+  .detail-row b{display:block;font-size:13px;color:var(--cream)}
+  .detail-row span{font-size:12px;color:var(--muted)}
+
+  .status{font-size:12px;color:var(--muted);min-height:16px;margin-top:6px}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-brand">MAKO<span>41</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-profile" id="topbar-profile">
+      <span class="topbar-avatar" id="topbar-avatar">?</span>
+      <span class="topbar-avatar-name" id="topbar-avatar-name">Elegir</span>
+    </div>
+    <button class="upload-pill" id="upload-pill-btn">＋ Subir foto</button>
+  </div>
+  <div class="topbar-inner">
+    <div class="nav-row">
+      <a class="top-pill" href="#top">🏠 Inicio</a>
+      <a class="top-pill" href="#feed">📸 Fotos y mensajes</a>
+      <a class="top-pill" href="#ranking">🏆 Ranking</a>
+      <a class="top-pill" href="#dashboard">📊 Dashboard</a>
+      <a class="top-pill" href="#details">📍 Coordenadas</a>
+    </div>
+  </div>
+</header>
+
+<!-- ---------- Profile modal ---------- -->
+<div class="modal" id="profile-modal">
+  <div class="modal-card">
+    <h3>¿Quién eres tú?</h3>
+    <select id="guest-select">
+      <option value="" disabled selected>Cargando invitados…</option>
+    </select>
+    <button class="btn" id="enter-btn" disabled>Confirmar</button>
+    <div class="status" id="login-status"></div>
+  </div>
+</div>
+
+<!-- ---------- Upload modal ---------- -->
+<div class="modal" id="upload-modal">
+  <div class="modal-card" style="position:relative">
+    <button class="modal-close" id="upload-close">✕</button>
+    <h3>Deja algo para MAKO</h3>
+    <textarea id="up-text" placeholder="Un mensaje, un recuerdo… (opcional si subes foto)"></textarea>
+    <input type="file" id="up-photo" accept="image/*">
+    <button class="btn" id="up-send">Enviar</button>
+    <div class="status" id="up-status"></div>
+  </div>
+</div>
+
+<main>
+  <div class="wrap" id="top">
+
+    <section class="hero-card">
+      <div class="crown">♛</div>
+      <div class="eyebrow">Cumpleaños de</div>
+      <div class="hero-name">MAKO</div>
+      <div class="hero-age">41 Años</div>
+      <div class="rule"></div>
+      <div class="countdown" id="countdown">
+        <div class="cd-box"><div class="cd-num" id="cd-d">--</div><div class="cd-lbl">Días</div></div>
+        <div class="cd-box"><div class="cd-num" id="cd-h">--</div><div class="cd-lbl">Horas</div></div>
+        <div class="cd-box"><div class="cd-num" id="cd-m">--</div><div class="cd-lbl">Min</div></div>
+        <div class="cd-box"><div class="cd-num" id="cd-s">--</div><div class="cd-lbl">Seg</div></div>
+      </div>
+      <div class="hero-details"><b>Sábado 29 de agosto</b> · 8:00 PM<br>En su casa, <b>Parrish, Florida</b></div>
+    </section>
+
+    <section class="content" id="feed">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">📸 Fotos y mensajes para MAKO</p>
+          <h2 class="section-title">Momentos que sí<br>merecen álbum ⭐</h2>
+        </div>
+      </div>
+      <div class="card" id="feed-list"><div class="empty-state">Cargando…</div></div>
+    </section>
+
+    <section class="content" id="ranking">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">🏆 Ranking del cumple</p>
+          <h2 class="section-title">¿Quién le puso<br>más ganas? 👑</h2>
+        </div>
+      </div>
+      <p class="section-sub">📷 Foto +1 · 💌 Mensaje +1 · ❤️ Reacción +2 · 💬 Comentario +3 · 🎉 Asistencia +5</p>
+      <div id="leaderboard"><div class="empty-state">Cargando…</div></div>
+      <div class="card">
+        <div class="cat-grid" id="cat-grid"></div>
+      </div>
+    </section>
+
+    <section class="content" id="dashboard">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Resumen</p>
+          <h2 class="section-title">Todo lo que se<br>movió por acá.</h2>
+        </div>
+      </div>
+      <div class="card">
+        <div class="dash-grid" id="dash-grid">
+          <div class="dash-tile"><div class="dash-num" id="dash-fotos">0</div><div class="dash-lbl">Fotos subidas</div></div>
+          <div class="dash-tile"><div class="dash-num" id="dash-msgs">0</div><div class="dash-lbl">Dedicatorias</div></div>
+          <div class="dash-tile"><div class="dash-num" id="dash-likes">0</div><div class="dash-lbl">Reacciones</div></div>
+          <div class="dash-tile"><div class="dash-num" id="dash-coms">0</div><div class="dash-lbl">Comentarios</div></div>
+          <div class="dash-tile"><div class="dash-num" id="dash-asis">0</div><div class="dash-lbl">Confirmados</div></div>
+          <div class="dash-tile"><div class="dash-num" id="dash-total">0</div><div class="dash-lbl">Puntos totales</div></div>
+        </div>
+        <div class="dash-winner" id="dash-winner" style="display:none">
+          <div class="medal">🏆</div>
+          <div><div style="font-size:12px;color:var(--muted)">Va ganando el ranking</div><div style="font-weight:800;color:var(--gold2)" id="dash-winner-name">—</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content" id="details">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Coordenadas</p>
+          <h2 class="section-title">Todo lo que<br>necesitas saber.</h2>
+        </div>
+      </div>
+      <div class="card">
+        <div class="detail-row"><div class="detail-ic">📅</div><div><b>Sábado 29 de agosto</b><span>8:00 PM en adelante</span></div></div>
+        <div class="detail-row"><div class="detail-ic">📍</div><div><b>En su casa</b><span>Parrish, Florida</span></div></div>
+        <div class="detail-row"><div class="detail-ic">🥂</div><div><b>Vamos a brindar</b><span>Por la vida y por las mejores historias</span></div></div>
+        <div class="detail-row"><div class="detail-ic">🎵</div><div><b>Música · Amigos · Risas · Recuerdos</b><span>Una noche especial que no querrás perderte</span></div></div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<nav class="bottom-nav">
+  <a class="bn-item" href="#top"><span>🏠</span><span>Inicio</span></a>
+  <a class="bn-item" href="#ranking"><span>🏆</span><span>Ranking</span></a>
+  <button class="bn-fab" id="fab-upload">＋</button>
+  <a class="bn-item" href="#feed"><span>📸</span><span>Fotos</span></a>
+  <a class="bn-item" href="#dashboard"><span>📊</span><span>Stats</span></a>
+</nav>
+
+<script src="site-core.js"></script>
+<script>
+  // ---------- Countdown ----------
+  const EVENT_DATE = new Date("2026-08-29T20:00:00");
+  function tickCountdown(){
+    let diff = EVENT_DATE - new Date();
+    if (diff < 0) diff = 0;
+    document.getElementById('cd-d').textContent = Math.floor(diff / 86400000);
+    document.getElementById('cd-h').textContent = String(Math.floor((diff / 3600000) % 24)).padStart(2,'0');
+    document.getElementById('cd-m').textContent = String(Math.floor((diff / 60000) % 60)).padStart(2,'0');
+    document.getElementById('cd-s').textContent = String(Math.floor((diff / 1000) % 60)).padStart(2,'0');
+  }
+  tickCountdown();
+  setInterval(tickCountdown, 1000);
+
+  function initials(name){ return (name || '?').trim().charAt(0).toUpperCase(); }
+
+  // ---------- Profile ----------
+  const selectEl = document.getElementById('guest-select');
+  const enterBtn = document.getElementById('enter-btn');
+  const loginStatus = document.getElementById('login-status');
+  const profileModal = document.getElementById('profile-modal');
+  const uploadModal = document.getElementById('upload-modal');
+  let appData = null;
+
+  async function initGuestList(){
+    try{
+      const data = await getAppData();
+      appData = data;
+      selectEl.innerHTML = '<option value="" disabled selected>Selecciona tu nombre…</option>';
+      (data.invitados || []).forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name; opt.textContent = name;
+        selectEl.appendChild(opt);
+      });
+      renderAll(data);
+    }catch(err){
+      loginStatus.textContent = 'No se pudo cargar. Revisa APPS_SCRIPT_URL en site-core.js.';
+    }
+  }
+
+  selectEl.addEventListener('change', () => { enterBtn.disabled = !selectEl.value; });
+  enterBtn.addEventListener('click', () => {
+    const name = selectEl.value;
+    if (!name) return;
+    setSession(name);
+    applyProfile(name);
+    profileModal.classList.remove('open');
+  });
+  document.getElementById('topbar-profile').addEventListener('click', () => profileModal.classList.add('open'));
+
+  function applyProfile(name){
+    document.getElementById('topbar-avatar-name').textContent = name;
+    document.getElementById('topbar-avatar').textContent = initials(name);
+  }
+  function initProfile(){
+    const s = getSession();
+    if (s) applyProfile(s.name);
+    else profileModal.classList.add('open');
+  }
+  function requireSession(){
+    const s = getSession();
+    if (!s){ profileModal.classList.add('open'); return null; }
+    return s;
+  }
+
+  // ---------- Upload modal ----------
+  function openUpload(){ if(!requireSession()) return; uploadModal.classList.add('open'); }
+  document.getElementById('upload-pill-btn').addEventListener('click', openUpload);
+  document.getElementById('fab-upload').addEventListener('click', openUpload);
+  document.getElementById('upload-close').addEventListener('click', () => uploadModal.classList.remove('open'));
+
+  document.getElementById('up-send').addEventListener('click', async () => {
+    const s = requireSession();
+    if (!s) return;
+    const statusEl = document.getElementById('up-status');
+    const text = document.getElementById('up-text').value.trim();
+    const fileInput = document.getElementById('up-photo');
+    const file = fileInput.files[0];
+    if (!text && !file){ statusEl.textContent = 'Escribe un mensaje o adjunta una foto.'; return; }
+    statusEl.textContent = 'Enviando…';
+    let foto = null;
+    if (file) foto = await fileToPayload(file);
+    const res = await addDedicatoria({ invitado: s.name, mensaje: text, foto });
+    if (res.success){
+      document.getElementById('up-text').value = '';
+      fileInput.value = '';
+      statusEl.textContent = '¡Enviado!';
+      await refreshData();
+      setTimeout(() => { uploadModal.classList.remove('open'); statusEl.textContent = ''; }, 700);
+    } else {
+      statusEl.textContent = res.error || 'No se pudo enviar, intenta de nuevo.';
+    }
+  });
+
+  // ---------- Feed (fotos + dedicatorias unificado) ----------
+  function renderFeed(list){
+    const el = document.getElementById('feed-list');
+    if (!list || !list.length){
+      el.innerHTML = '<div class="empty-state">Todavía no hay nada por acá. ¡Sube la primera foto o mensaje!</div>';
+      return;
+    }
+    el.innerHTML = list.map(d => `
+      <div class="feed-item" data-id="${d.id}">
+        <div class="feed-head">
+          <div class="feed-avatar">${initials(d.invitado)}</div>
+          <div class="feed-name">${d.invitado}</div>
+        </div>
+        ${d.mensaje ? `<div class="feed-msg">${d.mensaje.replace(/</g,'&lt;')}</div>` : ''}
+        ${d.previewUrl ? `<img src="${d.previewUrl}" alt="">` : ''}
+        <div class="feed-actions">
+          <button class="like-btn ${(d.likers||[]).includes(getSession()?.name) ? 'active' : ''}" data-id="${d.id}">❤️ ${d.likes || 0}</button>
+          <button class="comment-toggle" data-id="${d.id}">💬 ${(d.comentarios||[]).length}</button>
+        </div>
+        <div class="comments-box" id="comments-${d.id}">
+          ${(d.comentarios||[]).map(c => `<div class="comment-line"><b>${c.invitado}:</b> ${c.texto.replace(/</g,'&lt;')}</div>`).join('')}
+          <div class="comment-form">
+            <input type="text" placeholder="Escribe un comentario…" data-id="${d.id}">
+            <button data-id="${d.id}">Enviar</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    el.querySelectorAll('.like-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const s = requireSession(); if (!s) return;
+        btn.disabled = true;
+        await toggleLike(btn.dataset.id, s.name);
+        await refreshData();
+      });
+    });
+    el.querySelectorAll('.comment-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById('comments-' + btn.dataset.id).classList.toggle('open');
+      });
+    });
+    el.querySelectorAll('.comment-form button').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const s = requireSession(); if (!s) return;
+        const input = el.querySelector(`input[data-id="${btn.dataset.id}"]`);
+        const texto = input.value.trim();
+        if (!texto) return;
+        btn.disabled = true;
+        await addComment(btn.dataset.id, s.name, texto);
+        input.value = '';
+        await refreshData();
+      });
+    });
+  }
+
+  // ---------- Ranking ----------
+  function renderLeaderboard(scoreboard){
+    const el = document.getElementById('leaderboard');
+    if (!scoreboard || !scoreboard.length){
+      el.innerHTML = '<div class="empty-state">Aún no hay puntos — ¡empieza tú!</div>';
+      return;
+    }
+    const maxPts = Math.max.apply(null, scoreboard.map(s => s.puntos).concat([1]));
+    el.innerHTML = scoreboard.map((row, i) => `
+      <div class="lb-row ${i === 0 ? 'top' : ''}">
+        <div class="lb-rank">${i === 0 ? '👑' : '#' + (i+1)}</div>
+        <div class="lb-avatar">${initials(row.invitado)}</div>
+        <div class="lb-mid">
+          <div class="lb-name">${row.invitado}</div>
+          <div class="lb-breakdown">📸 ${row.dedicatorias||0} · ❤️ ${row.likes||0} · 💬 ${row.comentarios||0}</div>
+          <div class="lb-bar"><div class="lb-bar-fill" style="width:${Math.round((row.puntos/maxPts)*100)}%"></div></div>
+        </div>
+        <div class="lb-pts">${row.puntos} pts</div>
+      </div>
+    `).join('');
+  }
+
+  const CATEGORIES = [
+    { label: "El Más Chismoso", icon: "🗣️" },
+    { label: "El Paparazzi", icon: "📸" },
+    { label: "El Alma de la Fiesta", icon: "🎉" },
+    { label: "El Más Motero", icon: "🏍️" },
+    { label: "El Mejor Brindis", icon: "🥃" },
+    { label: "El Más Fit", icon: "💪" }
+  ];
+  function renderCategories(){
+    document.getElementById('cat-grid').innerHTML = CATEGORIES.map(c => `
+      <div class="cat-chip"><span>${c.icon}</span><span>${c.label}</span></div>
+    `).join('');
+  }
+
+  // ---------- Dashboard ----------
+  function renderDashboard(data){
+    const dedis = data.dedicatorias || [];
+    const fotos = dedis.filter(d => d.previewUrl).length;
+    const msgs = dedis.filter(d => d.mensaje).length;
+    const likes = dedis.reduce((sum, d) => sum + (d.likes || 0), 0);
+    const coms = dedis.reduce((sum, d) => sum + (d.comentarios ? d.comentarios.length : 0), 0);
+    const asis = (data.asistencias || []).length;
+    const totalPts = (data.scoreboard || []).reduce((s, r) => s + r.puntos, 0);
+
+    document.getElementById('dash-fotos').textContent = fotos;
+    document.getElementById('dash-msgs').textContent = msgs;
+    document.getElementById('dash-likes').textContent = likes;
+    document.getElementById('dash-coms').textContent = coms;
+    document.getElementById('dash-asis').textContent = asis;
+    document.getElementById('dash-total').textContent = totalPts;
+
+    const top = (data.scoreboard || [])[0];
+    const winnerEl = document.getElementById('dash-winner');
+    if (top && top.puntos > 0){
+      winnerEl.style.display = 'flex';
+      document.getElementById('dash-winner-name').textContent = `${top.invitado} · ${top.puntos} pts`;
+    } else {
+      winnerEl.style.display = 'none';
+    }
+  }
+
+  function renderAll(data){
+    renderFeed(data.dedicatorias);
+    renderLeaderboard(data.scoreboard);
+    renderCategories();
+    renderDashboard(data);
+  }
+
+  async function refreshData(){
+    const data = await getAppData();
+    appData = data;
+    renderAll(data);
+  }
+
+  (async function boot(){
+    await initGuestList();
+    initProfile();
+  })();
+</script>
+</body>
+</html>
