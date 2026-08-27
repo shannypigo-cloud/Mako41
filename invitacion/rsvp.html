@@ -94,12 +94,59 @@
   .lang-btn{border:0;background:transparent;color:var(--cream-soft);font:inherit;font-size:10px;font-weight:900;letter-spacing:.12em;padding:7px 10px;border-radius:999px;cursor:pointer;transition:.18s ease}
   .lang-btn.active{background:linear-gradient(90deg,var(--gold),var(--gold2));color:var(--black);box-shadow:0 5px 14px rgba(196,154,74,.16)}
 
+
+  /* ===== MAKO41 Learning Center ===== */
+  body.learning-open{overflow:hidden}
+  .nav-tools{display:flex;align-items:center;gap:8px}
+  .learning-trigger{display:inline-flex;align-items:center;gap:7px;padding:9px 12px;border:1px solid var(--line-strong);border-radius:999px;background:rgba(255,255,255,.035);color:var(--cream-soft);font:inherit;font-size:10px;font-weight:900;letter-spacing:.08em;cursor:pointer;backdrop-filter:blur(10px);transition:.18s ease}
+  .learning-trigger:hover{border-color:rgba(236,210,153,.42);color:var(--cream);transform:translateY(-1px)}
+  .learning-trigger .help-dot{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,var(--gold2),var(--gold));color:var(--black);font-size:12px;font-weight:900;box-shadow:0 5px 14px rgba(196,154,74,.16)}
+  .learning-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.78);backdrop-filter:blur(14px);display:none;align-items:center;justify-content:center;padding:20px}
+  .learning-overlay.open{display:flex}
+  .learning-panel{position:relative;width:min(760px,100%);max-height:min(88vh,860px);overflow:auto;border-radius:30px;border:1px solid var(--line-strong);background:linear-gradient(180deg,#151518 0%,#0b0b0d 100%);box-shadow:0 32px 90px rgba(0,0,0,.62);padding:24px;animation:learningIn .24s ease both}
+  @keyframes learningIn{from{transform:translateY(18px) scale(.985);opacity:0}to{transform:none;opacity:1}}
+  .learning-panel::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 10% 0%,rgba(236,210,153,.10),transparent 28%),radial-gradient(circle at 100% 18%,rgba(196,154,74,.10),transparent 22%)}
+  .learning-inner{position:relative;z-index:1}
+  .learning-close{position:absolute;z-index:3;top:16px;right:16px;width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.08);background:#0a0a0c;color:var(--cream-soft);font-size:18px;cursor:pointer}
+  .learning-kicker{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold2);font-weight:900;margin-bottom:8px}
+  .learning-title{margin:0;max-width:600px;font-size:clamp(28px,5vw,42px);line-height:.98;letter-spacing:-.05em}
+  .learning-intro{margin:12px 48px 0 0;color:var(--cream-soft);font-size:13px;line-height:1.7;max-width:650px}
+  .learning-alert{display:flex;gap:11px;align-items:flex-start;margin-top:18px;padding:14px 15px;border:1px solid rgba(236,210,153,.20);border-radius:18px;background:linear-gradient(180deg,rgba(196,154,74,.12),rgba(196,154,74,.05))}
+  .learning-alert .ico{width:30px;height:30px;border-radius:10px;background:linear-gradient(145deg,var(--gold2),var(--gold));color:var(--black);display:grid;place-items:center;flex:none;font-weight:900}
+  .learning-alert b{display:block;font-size:13px}.learning-alert span{display:block;color:var(--cream-soft);font-size:11.5px;line-height:1.55;margin-top:3px}
+  .learning-section-title{margin:22px 0 10px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold2);font-weight:900}
+  .learning-steps{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .learning-step{display:flex;gap:12px;padding:14px;border-radius:18px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06)}
+  .learning-step .step-num{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;flex:none;background:rgba(236,210,153,.10);border:1px solid rgba(236,210,153,.16);color:var(--gold2);font-weight:900;font-size:12px}
+  .learning-step b{display:block;font-size:12px;line-height:1.25}.learning-step p{margin:5px 0 0;color:var(--cream-soft);font-size:10.5px;line-height:1.55}
+  .learning-example{margin-top:10px;padding:16px;border-radius:20px;background:#08080a;border:1px solid rgba(255,255,255,.07)}
+  .example-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}.example-row:last-child{border-bottom:0}
+  .example-badge{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:rgba(236,210,153,.09);color:var(--gold2);font-size:11px;font-weight:900;flex:none}
+  .example-copy b{display:block;font-size:11px}.example-copy span{display:block;color:var(--cream-soft);font-size:10.5px;margin-top:2px;line-height:1.45}
+  .learning-faq{display:grid;gap:8px}
+  .faq-item{border:1px solid rgba(255,255,255,.065);background:rgba(255,255,255,.025);border-radius:16px;overflow:hidden}
+  .faq-q{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px;border:0;background:transparent;color:var(--cream);text-align:left;font:inherit;font-size:11.5px;font-weight:800;cursor:pointer}
+  .faq-q span:last-child{color:var(--gold2);font-size:17px;transition:transform .18s ease}.faq-item.open .faq-q span:last-child{transform:rotate(45deg)}
+  .faq-a{display:none;padding:0 14px 13px;color:var(--cream-soft);font-size:11px;line-height:1.6}.faq-item.open .faq-a{display:block}
+  .learning-cta{margin-top:20px;width:100%;padding:14px 18px;border-radius:999px;border:0;background:linear-gradient(90deg,var(--gold),var(--gold2));color:var(--black);font:inherit;font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;box-shadow:0 14px 28px rgba(196,154,74,.16)}
+  @media(max-width:640px){
+    .page-nav{align-items:center}.nav-tools{gap:6px}.learning-trigger{padding:4px;border-radius:999px}.learning-trigger .help-text{display:none}.learning-trigger .help-dot{width:30px;height:30px}
+    .learning-overlay{align-items:flex-end;padding:0}.learning-panel{width:100%;max-height:90dvh;border-radius:28px 28px 0 0;padding:20px 16px calc(18px + env(safe-area-inset-bottom))}.learning-close{top:14px;right:14px}
+    .learning-intro{margin-right:34px}.learning-steps{grid-template-columns:1fr}.learning-title{font-size:30px}.learning-panel{animation:learningUp .26s ease both}@keyframes learningUp{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+  }
+
 </style>
 </head>
 <body>
 <div class="page">
   <div class="shell">
-    <div class="page-nav"><a class="back-link" id="back-link" href="index.html">← Volver</a><div class="lang-switch" role="group" aria-label="Language"><button type="button" class="lang-btn" data-lang="es">ES</button><button type="button" class="lang-btn" data-lang="en">EN</button></div></div>
+    <div class="page-nav">
+      <a class="back-link" id="back-link" href="index.html">← Volver</a>
+      <div class="nav-tools">
+        <button type="button" class="learning-trigger" id="learning-open" aria-controls="learning-center" aria-haspopup="dialog"><span class="help-dot">?</span><span class="help-text" id="learning-open-text">¿Cómo funciona?</span></button>
+        <div class="lang-switch" role="group" aria-label="Language"><button type="button" class="lang-btn" data-lang="es">ES</button><button type="button" class="lang-btn" data-lang="en">EN</button></div>
+      </div>
+    </div>
 
     <div class="top-grid">
       <header class="hero-card">
@@ -208,6 +255,51 @@
   </div>
 </div>
 
+
+<div class="learning-overlay" id="learning-center" role="dialog" aria-modal="true" aria-labelledby="learning-title" aria-hidden="true">
+  <div class="learning-panel">
+    <button type="button" class="learning-close" id="learning-close" aria-label="Cerrar">✕</button>
+    <div class="learning-inner">
+      <div class="learning-kicker" id="learning-kicker">MAKO41 · Centro de ayuda</div>
+      <h2 class="learning-title" id="learning-title">Confirmar es muy fácil.</h2>
+      <p class="learning-intro" id="learning-intro">Tu nombre de arriba ya cuenta como invitado. Solo agrega personas adicionales si realmente vienen contigo.</p>
+
+      <div class="learning-alert">
+        <div class="ico">✓</div>
+        <div><b id="learning-alert-title">La regla más importante</b><span id="learning-alert-copy">No escribas tu nombre dos veces. Si dices que sí vas, tú eres automáticamente el Invitado #1.</span></div>
+      </div>
+
+      <div class="learning-section-title" id="learning-steps-label">PASO A PASO</div>
+      <div class="learning-steps">
+        <div class="learning-step"><div class="step-num">1</div><div><b id="lc-step1-title">Escribe tu nombre</b><p id="lc-step1-copy">Ese nombre queda incluido automáticamente si confirmas que vas.</p></div></div>
+        <div class="learning-step"><div class="step-num">2</div><div><b id="lc-step2-title">Elige Sí o No</b><p id="lc-step2-copy">Si no puedes ir, puedes dejarle un mensaje opcional a MAKO.</p></div></div>
+        <div class="learning-step"><div class="step-num">3</div><div><b id="lc-step3-title">¿Vienes solo?</b><p id="lc-step3-copy">Perfecto. No agregues ningún acompañante. Tu nombre ya es suficiente.</p></div></div>
+        <div class="learning-step"><div class="step-num">4</div><div><b id="lc-step4-title">¿Vienes acompañado?</b><p id="lc-step4-copy">Agrega solamente el nombre y apellido de cada persona adicional que viene contigo.</p></div></div>
+        <div class="learning-step"><div class="step-num">5</div><div><b id="lc-step5-title">Correo: recomendado</b><p id="lc-step5-copy">No es obligatorio. Si lo dejas, podemos enviarte el link del tablero.</p></div></div>
+        <div class="learning-step"><div class="step-num">6</div><div><b id="lc-step6-title">Confirma y listo</b><p id="lc-step6-copy">Verás en pantalla exactamente cuántas personas quedaron registradas.</p></div></div>
+      </div>
+
+      <div class="learning-section-title" id="learning-example-label">EJEMPLO RÁPIDO</div>
+      <div class="learning-example">
+        <div class="example-row"><div class="example-badge">1</div><div class="example-copy"><b id="lc-ex1-title">Tú escribes: “Camila Restrepo”</b><span id="lc-ex1-copy">Camila ya cuenta como Invitado #1.</span></div></div>
+        <div class="example-row"><div class="example-badge">2</div><div class="example-copy"><b id="lc-ex2-title">Vienes con Juan</b><span id="lc-ex2-copy">Solo agregas “Juan Pérez” como acompañante.</span></div></div>
+        <div class="example-row"><div class="example-badge">✓</div><div class="example-copy"><b id="lc-ex3-title">Resultado: 2 personas</b><span id="lc-ex3-copy">Camila + Juan. No tienes que escribir Camila otra vez.</span></div></div>
+      </div>
+
+      <div class="learning-section-title" id="learning-faq-label">PREGUNTAS RÁPIDAS</div>
+      <div class="learning-faq">
+        <div class="faq-item"><button type="button" class="faq-q"><span id="faq1-q">¿Debo escribir mi nombre otra vez abajo?</span><span>＋</span></button><div class="faq-a" id="faq1-a">No. Tu nombre de arriba ya es el Invitado #1 si confirmas que vas.</div></div>
+        <div class="faq-item"><button type="button" class="faq-q"><span id="faq2-q">¿Qué hago si voy solo?</span><span>＋</span></button><div class="faq-a" id="faq2-a">No agregues acompañantes. Solo confirma tu asistencia.</div></div>
+        <div class="faq-item"><button type="button" class="faq-q"><span id="faq3-q">¿Qué hago si somos 4 en total?</span><span>＋</span></button><div class="faq-a" id="faq3-a">Tú ya cuentas como #1. Agrega solamente a las otras 3 personas.</div></div>
+        <div class="faq-item"><button type="button" class="faq-q"><span id="faq4-q">¿El correo es obligatorio?</span><span>＋</span></button><div class="faq-a" id="faq4-a">No. Es opcional, pero es útil para enviarte el link del tablero.</div></div>
+        <div class="faq-item"><button type="button" class="faq-q"><span id="faq5-q">¿Cuándo abre el tablero?</span><span>＋</span></button><div class="faq-a" id="faq5-a">El tablero se habilita el día del evento, sábado 29 de agosto, a las 6:00 AM.</div></div>
+      </div>
+
+      <button type="button" class="learning-cta" id="learning-got-it">Entendido · Volver al RSVP</button>
+    </div>
+  </div>
+</div>
+
 <script src="site-core.js"></script>
 <script>
   let currentLang = localStorage.getItem('mako41_lang') || 'es';
@@ -226,6 +318,13 @@
       importantLabel:'Importante', importantTitle:'Tu nombre ya cuenta.', importantCopy:'No lo repitas en acompañantes. Solo agrega personas adicionales que realmente vayan contigo.',
       boardLabel:'Link del tablero', boardTitle:'Se envía al correo si lo dejas.', boardCopy:'Si no, igual podrás entrar manualmente más tarde desde el enlace principal.',
       vibeLabel:'La noche', vibeTitle:'All black. Buena música. Buena gente.', vibeCopy:'Llega listo para celebrar a MAKO y sumar otra historia a los 41.',
+      learningOpen:'¿Cómo funciona?', learningKicker:'MAKO41 · Centro de ayuda', learningTitle:'Confirmar es muy fácil.', learningIntro:'Tu nombre de arriba ya cuenta como invitado. Solo agrega personas adicionales si realmente vienen contigo.',
+      learningAlertTitle:'La regla más importante', learningAlertCopy:'No escribas tu nombre dos veces. Si dices que sí vas, tú eres automáticamente el Invitado #1.', learningStepsLabel:'PASO A PASO',
+      lcStep1Title:'Escribe tu nombre', lcStep1Copy:'Ese nombre queda incluido automáticamente si confirmas que vas.', lcStep2Title:'Elige Sí o No', lcStep2Copy:'Si no puedes ir, puedes dejarle un mensaje opcional a MAKO.',
+      lcStep3Title:'¿Vienes solo?', lcStep3Copy:'Perfecto. No agregues ningún acompañante. Tu nombre ya es suficiente.', lcStep4Title:'¿Vienes acompañado?', lcStep4Copy:'Agrega solamente el nombre y apellido de cada persona adicional que viene contigo.',
+      lcStep5Title:'Correo: recomendado', lcStep5Copy:'No es obligatorio. Si lo dejas, podemos enviarte el link del tablero.', lcStep6Title:'Confirma y listo', lcStep6Copy:'Verás en pantalla exactamente cuántas personas quedaron registradas.',
+      learningExampleLabel:'EJEMPLO RÁPIDO', lcEx1Title:'Tú escribes: “Camila Restrepo”', lcEx1Copy:'Camila ya cuenta como Invitado #1.', lcEx2Title:'Vienes con Juan', lcEx2Copy:'Solo agregas “Juan Pérez” como acompañante.', lcEx3Title:'Resultado: 2 personas', lcEx3Copy:'Camila + Juan. No tienes que escribir Camila otra vez.',
+      learningFaqLabel:'PREGUNTAS RÁPIDAS', faq1Q:'¿Debo escribir mi nombre otra vez abajo?', faq1A:'No. Tu nombre de arriba ya es el Invitado #1 si confirmas que vas.', faq2Q:'¿Qué hago si voy solo?', faq2A:'No agregues acompañantes. Solo confirma tu asistencia.', faq3Q:'¿Qué hago si somos 4 en total?', faq3A:'Tú ya cuentas como #1. Agrega solamente a las otras 3 personas.', faq4Q:'¿El correo es obligatorio?', faq4A:'No. Es opcional, pero es útil para enviarte el link del tablero.', faq5Q:'¿Cuándo abre el tablero?', faq5A:'El tablero se habilita el día del evento, sábado 29 de agosto, a las 6:00 AM.', learningGotIt:'Entendido · Volver al RSVP',
       successTitle:'¡Asistencia confirmada!', successDefault:'Ya quedaron registrados. Te enviamos el link del tablero a tu correo — también puedes entrar aquí:', boardLink:'Entrar al tablero →',
       writeName:'Escribe tu nombre.', sending:'Enviando…', thanks:'Gracias por avisar', declineDone:'Quedó registrado que no vas a poder asistir. ¡Ojalá nos veamos pronto!',
       genericError:'No se pudo enviar, intenta de nuevo.', connectError:'No se pudo conectar. Revisa APPS_SCRIPT_URL en site-core.js.', confirmError:'No se pudo confirmar, intenta de nuevo.',
@@ -245,6 +344,13 @@
       importantLabel:'Important', importantTitle:'Your name already counts.', importantCopy:'Do not repeat it under companions. Only add additional people who are actually coming with you.',
       boardLabel:'Board link', boardTitle:'We send it by email if you provide one.', boardCopy:'If not, you can still access it later from the main link.',
       vibeLabel:'The night', vibeTitle:'All black. Great music. Great people.', vibeCopy:'Come ready to celebrate MAKO and add one more story to 41.',
+      learningOpen:'How does it work?', learningKicker:'MAKO41 · Help Center', learningTitle:'RSVP is easy.', learningIntro:'The name you enter at the top already counts as a guest. Only add additional people who are actually coming with you.',
+      learningAlertTitle:'The most important rule', learningAlertCopy:'Do not enter your name twice. If you say you are attending, you automatically become Guest #1.', learningStepsLabel:'STEP BY STEP',
+      lcStep1Title:'Enter your name', lcStep1Copy:'That name is included automatically when you confirm you are attending.', lcStep2Title:'Choose Yes or No', lcStep2Copy:'If you cannot attend, you can leave an optional message for MAKO.',
+      lcStep3Title:'Coming alone?', lcStep3Copy:'Perfect. Do not add any companions. Your name is all we need.', lcStep4Title:'Bringing someone?', lcStep4Copy:'Add only the first and last name of each additional person coming with you.',
+      lcStep5Title:'Email: recommended', lcStep5Copy:'It is not required. If you provide it, we can send you the board link.', lcStep6Title:'Confirm and done', lcStep6Copy:'The screen will show exactly how many people were registered.',
+      learningExampleLabel:'QUICK EXAMPLE', lcEx1Title:'You enter: “Camila Restrepo”', lcEx1Copy:'Camila already counts as Guest #1.', lcEx2Title:'Juan is coming with you', lcEx2Copy:'You only add “Juan Pérez” as a companion.', lcEx3Title:'Result: 2 people', lcEx3Copy:'Camila + Juan. You do not enter Camila again.',
+      learningFaqLabel:'QUICK QUESTIONS', faq1Q:'Do I enter my name again below?', faq1A:'No. The name at the top is already Guest #1 when you confirm you are attending.', faq2Q:'What if I am coming alone?', faq2A:'Do not add any companions. Just confirm your attendance.', faq3Q:'What if there are 4 of us total?', faq3A:'You already count as #1. Add only the other 3 people.', faq4Q:'Is email required?', faq4A:'No. It is optional, but useful so we can send you the board link.', faq5Q:'When does the board open?', faq5A:'The board opens on the day of the event, Saturday, August 29, at 6:00 AM.', learningGotIt:'Got it · Back to RSVP',
       successTitle:'Attendance confirmed!', successDefault:'Everyone is registered. We sent the board link to your email — you can also enter here:', boardLink:'Enter the board →',
       writeName:'Enter your name.', sending:'Sending…', thanks:'Thanks for letting us know', declineDone:"We've noted that you won't be able to attend. Hope to see you soon!",
       genericError:'Could not send it. Please try again.', connectError:'Could not connect. Check APPS_SCRIPT_URL in site-core.js.', confirmError:'Could not confirm. Please try again.',
@@ -255,7 +361,7 @@
   function setRT(id,key){ const el=document.getElementById(id); if(el) el.textContent=rt(key); }
   function applyRsvpLanguage(lang){
     currentLang=RSVP_I18N[lang]?lang:'es'; localStorage.setItem('mako41_lang',currentLang); document.documentElement.lang=currentLang; document.title=rt('pageTitle');
-    [['back-link','back'],['rsvp-eyebrow','eyebrow'],['rsvp-title','title'],['rsvp-sub','sub'],['meta-date','metaDate'],['meta-time','metaTime'],['meta-place','metaPlace'],['meta-dress','metaDress'],['rsvp-quote-title','quoteTitle'],['rsvp-quote-copy','quoteCopy'],['how-label','howLabel'],['how-title','howTitle'],['how-copy','howCopy'],['guest-list-label','guestLabel'],['guest-list-title','guestTitle'],['guest-list-copy','guestCopy'],['contact-label','contactLabel'],['contact-helper','contactHelper'],['attend-label','attendLabel'],['attend-yes','yes'],['attend-no','no'],['email-label','emailLabel'],['guests-label','guestsLabel'],['self-guest-label','selfGuestLabel'],['guests-helper','guestsHelper'],['add-guest-btn','addGuest'],['reason-label','reasonLabel'],['important-label','importantLabel'],['important-title','importantTitle'],['important-copy','importantCopy'],['board-label','boardLabel'],['board-title','boardTitle'],['board-copy','boardCopy'],['vibe-label-rsvp','vibeLabel'],['vibe-title-rsvp','vibeTitle'],['vibe-copy-rsvp','vibeCopy'],['success-title','successTitle'],['board-link','boardLink']].forEach(([id,key])=>setRT(id,key));
+    [['back-link','back'],['rsvp-eyebrow','eyebrow'],['rsvp-title','title'],['rsvp-sub','sub'],['meta-date','metaDate'],['meta-time','metaTime'],['meta-place','metaPlace'],['meta-dress','metaDress'],['rsvp-quote-title','quoteTitle'],['rsvp-quote-copy','quoteCopy'],['how-label','howLabel'],['how-title','howTitle'],['how-copy','howCopy'],['guest-list-label','guestLabel'],['guest-list-title','guestTitle'],['guest-list-copy','guestCopy'],['contact-label','contactLabel'],['contact-helper','contactHelper'],['attend-label','attendLabel'],['attend-yes','yes'],['attend-no','no'],['email-label','emailLabel'],['guests-label','guestsLabel'],['self-guest-label','selfGuestLabel'],['guests-helper','guestsHelper'],['add-guest-btn','addGuest'],['reason-label','reasonLabel'],['important-label','importantLabel'],['important-title','importantTitle'],['important-copy','importantCopy'],['board-label','boardLabel'],['board-title','boardTitle'],['board-copy','boardCopy'],['vibe-label-rsvp','vibeLabel'],['vibe-title-rsvp','vibeTitle'],['vibe-copy-rsvp','vibeCopy'],['success-title','successTitle'],['board-link','boardLink'],['learning-open-text','learningOpen'],['learning-kicker','learningKicker'],['learning-title','learningTitle'],['learning-intro','learningIntro'],['learning-alert-title','learningAlertTitle'],['learning-alert-copy','learningAlertCopy'],['learning-steps-label','learningStepsLabel'],['lc-step1-title','lcStep1Title'],['lc-step1-copy','lcStep1Copy'],['lc-step2-title','lcStep2Title'],['lc-step2-copy','lcStep2Copy'],['lc-step3-title','lcStep3Title'],['lc-step3-copy','lcStep3Copy'],['lc-step4-title','lcStep4Title'],['lc-step4-copy','lcStep4Copy'],['lc-step5-title','lcStep5Title'],['lc-step5-copy','lcStep5Copy'],['lc-step6-title','lcStep6Title'],['lc-step6-copy','lcStep6Copy'],['learning-example-label','learningExampleLabel'],['lc-ex1-title','lcEx1Title'],['lc-ex1-copy','lcEx1Copy'],['lc-ex2-title','lcEx2Title'],['lc-ex2-copy','lcEx2Copy'],['lc-ex3-title','lcEx3Title'],['lc-ex3-copy','lcEx3Copy'],['learning-faq-label','learningFaqLabel'],['faq1-q','faq1Q'],['faq1-a','faq1A'],['faq2-q','faq2Q'],['faq2-a','faq2A'],['faq3-q','faq3Q'],['faq3-a','faq3A'],['faq4-q','faq4Q'],['faq4-a','faq4A'],['faq5-q','faq5Q'],['faq5-a','faq5A'],['learning-got-it','learningGotIt']].forEach(([id,key])=>setRT(id,key));
     document.getElementById('contacto').placeholder=rt('contactPh'); document.getElementById('correo').placeholder=rt('emailPh'); document.getElementById('motivo').placeholder=rt('reasonPh');
     document.querySelectorAll('.guest-row input').forEach(i=>i.placeholder=rt('guestPh'));
     syncSelfGuest();
@@ -266,6 +372,30 @@
 </script>
 
 <script>
+
+  const learningCenter = document.getElementById('learning-center');
+  const learningOpen = document.getElementById('learning-open');
+  const learningClose = document.getElementById('learning-close');
+  const learningGotIt = document.getElementById('learning-got-it');
+  function openLearningCenter(){
+    learningCenter.classList.add('open');
+    learningCenter.setAttribute('aria-hidden','false');
+    document.body.classList.add('learning-open');
+    learningClose.focus();
+  }
+  function closeLearningCenter(){
+    learningCenter.classList.remove('open');
+    learningCenter.setAttribute('aria-hidden','true');
+    document.body.classList.remove('learning-open');
+    learningOpen.focus();
+  }
+  learningOpen.addEventListener('click',openLearningCenter);
+  learningClose.addEventListener('click',closeLearningCenter);
+  learningGotIt.addEventListener('click',closeLearningCenter);
+  learningCenter.addEventListener('click',e=>{ if(e.target===learningCenter) closeLearningCenter(); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape' && learningCenter.classList.contains('open')) closeLearningCenter(); });
+  document.querySelectorAll('.faq-q').forEach(btn=>btn.addEventListener('click',()=>btn.closest('.faq-item').classList.toggle('open')));
+
   const rowsEl = document.getElementById('guest-rows');
   let rowCount = 0;
 
