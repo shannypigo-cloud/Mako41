@@ -62,13 +62,46 @@ function registrarGrupo(nombres, contacto, correo) {
   return apiPost("registrarGrupo", { nombres, contacto, correo });
 }
 
+function declinarAsistencia(contacto, motivo) {
+  return apiPost("declinarAsistencia", { contacto, motivo });
+}
+
 // ---------- Utilidad: convertir un <input type=file> a base64 ----------
+// Comprime/redimensiona la imagen antes de mandarla (máx 1000px de ancho,
+// calidad 0.7) para que la URL no se vuelva gigante y falle o se demore.
 function fileToPayload(file) {
   return new Promise((resolve, reject) => {
+    const img = new Image();
     const reader = new FileReader();
-    reader.onload = () => {
-      const base64 = reader.result.split(",")[1];
-      resolve({ base64, mimeType: file.type, originalName: file.name, size: file.size });
+
+    reader.onload = (e) => {
+      img.onload = () => {
+        const MAX_WIDTH = 1000;
+        let { width, height } = img;
+        if (width > MAX_WIDTH) {
+          height = Math.round(height * (MAX_WIDTH / width));
+          width = MAX_WIDTH;
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // JPEG calidad 0.7 — buen balance entre peso y calidad visual
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        const base64 = dataUrl.split(",")[1];
+
+        resolve({
+          base64,
+          mimeType: 'image/jpeg',
+          originalName: file.name,
+          size: Math.round((base64.length * 3) / 4) // tamaño aprox ya comprimido
+        });
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
     };
     reader.onerror = reject;
     reader.readAsDataURL(file);
