@@ -43,10 +43,20 @@
   .top-pill:hover{color:var(--gold2);border-color:var(--gold)}
 
   /* ---- Bottom nav ---- */
-  .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(10,10,10,.94);backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-around;padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
-  .bn-item{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:9px;color:var(--muted);flex:1}
-  .bn-item span:first-child{font-size:17px}
-  .bn-fab{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--black);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;border:none;margin-top:-22px;box-shadow:var(--shadow);cursor:pointer}
+  .bottom-nav{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:60;width:min(620px,calc(100% - 24px));background:rgba(8,8,9,.93);backdrop-filter:blur(18px);border:1px solid rgba(224,190,114,.22);border-radius:24px;display:grid;grid-template-columns:repeat(5,1fr);align-items:end;padding:9px 10px calc(8px + env(safe-area-inset-bottom));box-shadow:0 18px 44px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.03)}
+  .bn-item{min-width:0;min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:9px;font-weight:700;color:var(--muted);border-radius:16px;transition:.18s ease;text-align:center}
+  .bn-item span:first-child{font-size:18px;line-height:1}
+  .bn-item:hover,.bn-item:focus-visible{color:var(--gold2);background:rgba(255,255,255,.035);outline:none}
+  .bn-upload-slot{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;color:var(--gold2);font-size:9px;font-weight:800;text-align:center}
+  .bn-fab{width:58px;height:58px;border-radius:19px;background:linear-gradient(145deg,var(--gold2),var(--gold));color:var(--black);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;border:1px solid rgba(255,255,255,.18);margin-top:-30px;box-shadow:0 12px 26px rgba(196,154,74,.24),0 0 0 5px rgba(8,8,9,.96);cursor:pointer;transition:transform .18s ease,box-shadow .18s ease}
+  .bn-fab:hover{transform:translateY(-2px);box-shadow:0 16px 30px rgba(196,154,74,.28),0 0 0 5px rgba(8,8,9,.96)}
+  .bn-fab:active{transform:scale(.96)}
+  @media(max-width:520px){
+    .bottom-nav{bottom:8px;width:calc(100% - 16px);border-radius:22px;padding-left:6px;padding-right:6px}
+    .bn-item{font-size:8.5px;gap:3px}
+    .bn-item span:first-child{font-size:17px}
+    .bn-fab{width:54px;height:54px;border-radius:18px;font-size:26px;margin-top:-27px}
+  }
 
   /* ---- Profile modal ---- */
   .modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:24px}
@@ -277,9 +287,12 @@
 
 <nav class="bottom-nav">
   <a class="bn-item" href="#top"><span>🏠</span><span id="bn-home">Inicio</span></a>
-  <a class="bn-item" href="#ranking"><span>🏆</span><span id="bn-ranking">Ranking</span></a>
-  <button class="bn-fab" id="fab-upload">＋</button>
   <a class="bn-item" href="#feed"><span>📸</span><span id="bn-feed">Fotos</span></a>
+  <div class="bn-upload-slot">
+    <button class="bn-fab" id="fab-upload" aria-label="Subir">＋</button>
+    <span id="bn-upload">Subir</span>
+  </div>
+  <a class="bn-item" href="#ranking"><span>🏆</span><span id="bn-ranking">Ranking</span></a>
   <a class="bn-item" href="#dashboard"><span>📊</span><span id="bn-dashboard">Stats</span></a>
 </nav>
 
@@ -298,7 +311,7 @@
       rankingEyebrow:'🏆 Ranking del cumple', rankingTitle:'¿Quién le puso<br>más ganas? 👑', rankingRules:'📷 Foto +1 · 💌 Mensaje +1 · ❤️ Reacción +2 · 💬 Comentario +3 · 🎉 Asistencia +5',
       dashboardEyebrow:'Resumen', dashboardTitle:'Todo lo que se<br>movió por acá.', photosUploaded:'Fotos subidas', dedications:'Dedicatorias', reactions:'Reacciones', comments:'Comentarios', confirmed:'Confirmados', totalPoints:'Puntos totales', rankingLeader:'Va ganando el ranking',
       detailsEyebrow:'Coordenadas', detailsTitle:'Todo lo que<br>necesitas saber.', dateTitle:'Sábado 29 de agosto', dateSub:'8:00 PM en adelante', placeTitle:'En su casa', placeSub:'Parrish, Florida', toastTitle:'Vamos a brindar', toastSub:'Por la vida y por las mejores historias', vibeTitle:'Música · Amigos · Risas · Recuerdos', vibeSub:'Una noche especial que no querrás perderte',
-      bnHome:'Inicio', bnRanking:'Ranking', bnFeed:'Fotos', bnDashboard:'Stats',
+      bnHome:'Inicio', bnRanking:'Ranking', bnFeed:'Fotos', bnUpload:'Subir', bnDashboard:'Stats',
       loadError:'No se pudo cargar. Revisa APPS_SCRIPT_URL en site-core.js.', needMessage:'Escribe un mensaje o adjunta una foto.', sending:'Enviando…', sent:'¡Enviado!', sendError:'No se pudo enviar, intenta de nuevo.', feedEmpty:'Todavía no hay nada por acá. ¡Sube la primera foto o mensaje!', commentPlaceholder:'Escribe un comentario…', noPoints:'Aún no hay puntos — ¡empieza tú!', pts:'pts',
       categories:['El Más Chismoso','El Paparazzi','El Alma de la Fiesta','El Más Motero','El Mejor Brindis','El Más Fit']
     },
@@ -313,7 +326,7 @@
       rankingEyebrow:'🏆 Birthday ranking', rankingTitle:'Who brought<br>the most energy? 👑', rankingRules:'📷 Photo +1 · 💌 Message +1 · ❤️ Reaction +2 · 💬 Comment +3 · 🎉 Attendance +5',
       dashboardEyebrow:'Recap', dashboardTitle:'Everything that’s<br>happening here.', photosUploaded:'Photos uploaded', dedications:'Messages', reactions:'Reactions', comments:'Comments', confirmed:'Confirmed', totalPoints:'Total points', rankingLeader:'Leading the ranking',
       detailsEyebrow:'Details', detailsTitle:'Everything you<br>need to know.', dateTitle:'Saturday, August 29', dateSub:'8:00 PM and on', placeTitle:'At his house', placeSub:'Parrish, Florida', toastTitle:'Let’s raise a glass', toastSub:'To life and the best stories', vibeTitle:'Music · Friends · Laughs · Memories', vibeSub:'A special night you won’t want to miss',
-      bnHome:'Home', bnRanking:'Ranking', bnFeed:'Photos', bnDashboard:'Stats',
+      bnHome:'Home', bnRanking:'Ranking', bnFeed:'Photos', bnUpload:'Upload', bnDashboard:'Stats',
       loadError:'Could not load. Check APPS_SCRIPT_URL in site-core.js.', needMessage:'Write a message or attach a photo.', sending:'Sending…', sent:'Sent!', sendError:'Could not send. Please try again.', feedEmpty:'Nothing here yet. Upload the first photo or message!', commentPlaceholder:'Write a comment…', noPoints:'No points yet — be the first!', pts:'pts',
       categories:['The Biggest Gossip','The Paparazzi','Life of the Party','The Biker','Best Toast','The Fittest']
     }
@@ -339,7 +352,8 @@
     setText('ranking-eyebrow','rankingEyebrow'); setHTML('ranking-title','rankingTitle'); setText('ranking-rules','rankingRules'); setText('ranking-loading','loading');
     setText('dashboard-eyebrow','dashboardEyebrow'); setHTML('dashboard-title','dashboardTitle'); setText('dash-fotos-label','photosUploaded'); setText('dash-msgs-label','dedications'); setText('dash-likes-label','reactions'); setText('dash-coms-label','comments'); setText('dash-asis-label','confirmed'); setText('dash-total-label','totalPoints'); setText('dash-winner-label','rankingLeader');
     setText('details-eyebrow','detailsEyebrow'); setHTML('details-title','detailsTitle'); setText('detail-date-title','dateTitle'); setText('detail-date-sub','dateSub'); setText('detail-place-title','placeTitle'); setText('detail-place-sub','placeSub'); setText('detail-toast-title','toastTitle'); setText('detail-toast-sub','toastSub'); setText('detail-vibe-title','vibeTitle'); setText('detail-vibe-sub','vibeSub');
-    setText('bn-home','bnHome'); setText('bn-ranking','bnRanking'); setText('bn-feed','bnFeed'); setText('bn-dashboard','bnDashboard');
+    setText('bn-home','bnHome'); setText('bn-feed','bnFeed'); setText('bn-upload','bnUpload'); setText('bn-ranking','bnRanking'); setText('bn-dashboard','bnDashboard');
+    const fab=document.getElementById('fab-upload'); if(fab) fab.setAttribute('aria-label',t('bnUpload'));
     if(selectEl && selectEl.options.length){ selectEl.options[0].textContent = selectEl.options.length > 1 ? t('selectName') : t('loadingGuests'); }
     if(appData) renderAll(appData);
   }
