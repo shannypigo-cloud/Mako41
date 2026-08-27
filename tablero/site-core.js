@@ -30,12 +30,12 @@ function apiGet(action) {
 }
 
 function apiPost(action, body) {
-  const url = `${CONFIG.APPS_SCRIPT_URL}?action=${encodeURIComponent(action)}`;
-  return fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" }, // evita preflight CORS
-    body: JSON.stringify(body)
-  }).then(r => r.json());
+  // Nota: usamos GET (con los datos codificados en la URL) en vez de POST.
+  // Google Apps Script redirige internamente las peticiones, y esa
+  // redirección hace que los navegadores conviertan un POST en GET,
+  // rompiendo doPost. Mandando todo por GET evitamos ese problema.
+  const url = `${CONFIG.APPS_SCRIPT_URL}?action=${encodeURIComponent(action)}&payload=${encodeURIComponent(JSON.stringify(body || {}))}`;
+  return fetch(url).then(r => r.json());
 }
 
 function getAppData() {
@@ -46,8 +46,8 @@ function addDedicatoria({ invitado, mensaje, foto }) {
   return apiPost("addDedicatoria", { invitado, mensaje, foto });
 }
 
-function toggleLike(dedicatoriaId, invitado) {
-  return apiPost("toggleLike", { dedicatoriaId, invitado });
+function toggleLike(dedicatoriaId, invitado, emoji) {
+  return apiPost("toggleLike", { dedicatoriaId, invitado, emoji });
 }
 
 function addComment(dedicatoriaId, invitado, comentario) {
