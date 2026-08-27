@@ -22,7 +22,7 @@
       radial-gradient(circle at 100% 24%, rgba(224,190,114,.045), transparent 25%),
       linear-gradient(180deg,#060606 0%,#030303 100%);
     color:var(--cream);font-family:'Manrope',sans-serif;
-    display:flex;flex-direction:column;padding:3vh 4vw;
+    display:flex;flex-direction:column;padding:2.4vh 4vw 1.6vh;
   }
 
   .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:2vh}
@@ -42,8 +42,8 @@
   .stat-lbl{font-size:clamp(10px,1vw,14px);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:1vh;font-weight:800}
 
   /* Ranking */
-  .rank-list{flex:1;overflow:hidden;display:flex;flex-direction:column;gap:1.4vh}
-  .rank-row{display:flex;align-items:center;gap:1.2vw;padding:1.4vh 1.4vw;border-radius:16px;background:#0d0d0d;border:1px solid var(--line-soft)}
+  .rank-list{flex:1;overflow-y:hidden;display:flex;flex-direction:column;gap:1.4vh;scroll-behavior:smooth}
+  .rank-row{display:flex;align-items:center;gap:1.2vw;padding:1.4vh 1.4vw;border-radius:16px;background:#0d0d0d;border:1px solid var(--line-soft);flex-shrink:0}
   .rank-row.top{background:linear-gradient(100deg,#151109,#0c0c0c 70%);border-color:rgba(224,190,114,.42)}
   .rank-num{width:clamp(24px,2.4vw,34px);text-align:center;font-weight:800;color:var(--gold2);font-size:clamp(14px,1.6vw,22px)}
   .rank-avatar{width:clamp(30px,3.2vw,46px);height:clamp(30px,3.2vw,46px);border-radius:50%;background:#171717;border:1px solid var(--line);color:var(--cream);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:clamp(13px,1.4vw,18px);flex-shrink:0}
@@ -56,6 +56,14 @@
   .winner-strip small{display:block;color:var(--muted);font-size:clamp(10px,1vw,14px);text-transform:uppercase;letter-spacing:.1em}
 
   .empty{color:var(--muted);text-align:center;padding:4vh 0;font-size:clamp(13px,1.4vw,18px)}
+
+  /* Categorías */
+  .cat-panel{margin-top:2vh}
+  .cat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1vw}
+  .cat-chip{background:#101010;border:1px solid var(--line-soft);border-radius:16px;padding:1.4vh 1vw;display:flex;flex-direction:column;gap:.6vh}
+  .cat-chip-top{display:flex;align-items:center;gap:.5vw;font-size:clamp(11px,1.1vw,15px);font-weight:800;color:var(--cream)}
+  .cat-chip-leader{font-size:clamp(10px,1vw,13px);color:var(--gold2);font-weight:700}
+  .cat-chip-empty{font-size:clamp(10px,1vw,13px);color:var(--muted)}
 
   @media (max-width: 900px){
     body{overflow:auto;height:auto}
@@ -92,6 +100,11 @@
       <div class="rank-list" id="rank-list"><div class="empty">Cargando…</div></div>
     </section>
   </div>
+
+  <section class="panel cat-panel">
+    <p class="panel-title">🏅 Categorías del cumple</p>
+    <div class="cat-row" id="cat-row"></div>
+  </section>
 
 <script>
   // 👉 Misma URL de Apps Script que usa el tablero. Si la cambias allá,
@@ -140,8 +153,10 @@
       el.innerHTML = '<div class="empty">Aún no hay puntos — ¡empieza tú!</div>';
       return;
     }
-    const top10 = scoreboard.slice(0, 10);
-    el.innerHTML = top10.map((row, i) => `
+    // Mostramos a TODOS — con muchos invitados, el auto-scroll de abajo
+    // se encarga de que se vayan viendo todos con el tiempo, sin recortar
+    // a nadie ni desbordar la pantalla.
+    el.innerHTML = scoreboard.map((row, i) => `
       <div class="rank-row ${i === 0 ? 'top' : ''}">
         <div class="rank-num">${i === 0 ? '👑' : '#' + (i + 1)}</div>
         <div class="rank-avatar">${initials(row.invitado)}</div>
@@ -151,12 +166,54 @@
     `).join('');
   }
 
+  function renderCategorias(categorias){
+    const el = document.getElementById('cat-row');
+    if (!categorias || !categorias.length){ el.innerHTML = ''; return; }
+    el.innerHTML = categorias.map(cat => `
+      <div class="cat-chip">
+        <div class="cat-chip-top"><span>${cat.icono}</span><span>${cat.titulo}</span></div>
+        ${cat.lider
+          ? `<div class="cat-chip-leader">👑 ${cat.lider} · ${cat.votos}</div>`
+          : `<div class="cat-chip-empty">Nadie destaca todavía</div>`}
+      </div>
+    `).join('');
+  }
+
+  // ---------- Auto-scroll del ranking ----------
+  // En vez de cortar la lista a "Top 10", dejamos entrar a todos y la
+  // hacemos bajar solita, pausa arriba y abajo, y vuelve a empezar.
+  // Así, con 5 o con 50 invitados, todos se alcanzan a ver con el tiempo.
+  let scrollDir = 1;
+  let pauseUntil = 0;
+  function autoScrollTick(){
+    const el = document.getElementById('rank-list');
+    const now = Date.now();
+    if (now < pauseUntil) return;
+
+    const maxScroll = el.scrollHeight - el.clientHeight;
+    if (maxScroll <= 4){ return; } // todos caben, no hace falta scroll
+
+    el.scrollTop += scrollDir * 1.1;
+
+    if (el.scrollTop >= maxScroll - 1){
+      el.scrollTop = maxScroll;
+      scrollDir = -1;
+      pauseUntil = now + 3000; // pausa 3s abajo antes de subir
+    } else if (el.scrollTop <= 1){
+      el.scrollTop = 0;
+      scrollDir = 1;
+      pauseUntil = now + 3000; // pausa 3s arriba antes de bajar
+    }
+  }
+  setInterval(autoScrollTick, 40);
+
   async function refresh(){
     try {
       const res = await fetch(`${APPS_SCRIPT_URL}?action=getAppData`);
       const data = await res.json();
       renderStats(data);
       renderRanking(data.scoreboard);
+      renderCategorias(data.categorias);
     } catch (err) {
       // Silencioso — en la próxima vuelta reintenta solo.
       console.error('No se pudo actualizar la pantalla', err);
