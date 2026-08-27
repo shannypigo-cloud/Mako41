@@ -9,31 +9,26 @@
 <title>MAKO · 41 Años</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --black:#050505; --ink2:#0e0e0e; --muted:#77736d; --cream:#f4efe5;
-    --gold:#c49a4a; --gold2:#e0be72; --gold3:#9b7432;
-    --line:rgba(224,190,114,.16); --line-soft:rgba(255,255,255,.075);
-    --shadow:0 20px 60px rgba(0,0,0,.45);
-    --radius:26px; --nav-h:78px;
+    --black:#0a0a0a; --ink2:#161513; --muted:#9a9689; --cream:#f4efe4;
+    --gold:#c9a86a; --gold2:#e8caa0;
+    --line:rgba(201,168,106,.16); --shadow:0 12px 32px rgba(0,0,0,.35);
+    --radius:22px; --nav-h:76px;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html{scroll-behavior:smooth}
-  body{margin:0;background:
-      radial-gradient(circle at 50% -10%, rgba(224,190,114,.10), transparent 30%),
-      radial-gradient(circle at 100% 24%, rgba(224,190,114,.045), transparent 25%),
-      linear-gradient(180deg,#060606 0%,#030303 100%);
-    color:var(--cream);font-family:'Manrope',sans-serif;padding-bottom:calc(var(--nav-h) + 18px + env(safe-area-inset-bottom))}
+  body{margin:0;background:linear-gradient(180deg,#0d0c0a 0%,#0a0a0a 100%);color:var(--cream);font-family:'Manrope',sans-serif;padding-bottom:calc(var(--nav-h) + 18px + env(safe-area-inset-bottom))}
   button,input,select,textarea{font:inherit}
   a{color:inherit;text-decoration:none}
   .wrap{width:min(720px,calc(100% - 32px));margin:auto}
   .eyebrow{font-size:11px;letter-spacing:.18em;font-weight:800;text-transform:uppercase;color:var(--gold);margin:0 0 8px}
-  .section-title{font-family:'Manrope',sans-serif;font-weight:700;letter-spacing:-.03em;font-size:clamp(26px,6vw,38px);line-height:1;margin:0;color:var(--cream)}
+  .section-title{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(24px,5vw,34px);line-height:1.05;margin:0;color:var(--gold2)}
   .section-sub{margin:8px 0 0;color:var(--muted);line-height:1.6;font-size:13px}
 
   /* ---- Topbar ---- */
-  .topbar{position:sticky;top:0;z-index:50;background:rgba(5,5,5,.9);backdrop-filter:blur(18px) saturate(125%);border-bottom:1px solid var(--line-soft)}
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(10,10,10,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
   .topbar-inner{width:min(720px,calc(100% - 32px));margin:auto;display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 0 12px;flex-wrap:wrap}
   .topbar-brand{font-weight:800;letter-spacing:.03em;font-size:15px;flex-shrink:0}
   .topbar-brand span{color:var(--gold)}
@@ -41,121 +36,94 @@
   .topbar-profile{display:flex;align-items:center;gap:8px;flex-shrink:0;cursor:pointer;padding:6px 10px;border-radius:999px;border:1px solid var(--line)}
   .topbar-avatar{width:22px;height:22px;border-radius:50%;background:var(--gold);color:var(--black);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
   .topbar-avatar-name{font-size:12px;color:var(--muted);max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .upload-pill{flex-shrink:0;font-size:12px;font-weight:800;padding:8px 14px;border-radius:999px;border:1px solid var(--gold);background:linear-gradient(135deg,var(--gold2),#a97e32);color:#050505;cursor:pointer;box-shadow:0 8px 24px rgba(169,125,51,.18)}
+  .upload-pill{flex-shrink:0;font-size:12px;font-weight:800;padding:8px 14px;border-radius:999px;border:none;background:linear-gradient(90deg,var(--gold),var(--gold2));color:var(--black);cursor:pointer}
   .nav-row{display:flex;gap:8px;overflow-x:auto;padding:0 0 12px;scrollbar-width:none}
   .nav-row::-webkit-scrollbar{display:none}
-  .top-pill{flex-shrink:0;font-size:12px;font-weight:700;padding:8px 14px;border-radius:999px;border:1px solid var(--line-soft);color:var(--muted);white-space:nowrap}
-  .top-pill:hover{color:var(--cream);border-color:var(--line)}
+  .top-pill{flex-shrink:0;font-size:12px;font-weight:700;padding:8px 14px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+  .top-pill:hover{color:var(--gold2);border-color:var(--gold)}
 
   /* ---- Bottom nav ---- */
-  .bottom-nav{position:fixed;left:9px;right:9px;bottom:8px;z-index:60;background:rgba(7,7,7,.96);backdrop-filter:blur(18px);border:1px solid var(--line);border-radius:23px;display:flex;align-items:flex-end;justify-content:space-around;padding:8px 6px calc(8px + env(safe-area-inset-bottom));box-shadow:0 16px 48px rgba(0,0,0,.5)}
-  .bn-item{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:9px;color:var(--muted);flex:1;font-weight:700}
+  .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(10,10,10,.94);backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-around;padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
+  .bn-item{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:9px;color:var(--muted);flex:1}
   .bn-item span:first-child{font-size:17px}
-  .bn-fab{width:50px;height:50px;border-radius:50%;background:linear-gradient(145deg,var(--gold2),#a67a2d);color:#050505;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;border:none;margin-top:-22px;box-shadow:0 7px 18px rgba(0,0,0,.45),0 0 0 5px #070707;cursor:pointer}
+  .bn-fab{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));color:var(--black);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;border:none;margin-top:-22px;box-shadow:var(--shadow);cursor:pointer}
 
   /* ---- Profile modal ---- */
-  .modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.78);backdrop-filter:blur(13px);display:none;align-items:center;justify-content:center;padding:24px}
+  .modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:24px}
   .modal.open{display:flex}
-  .modal-card{background:linear-gradient(180deg,#111,#080808);border:1px solid var(--line);border-radius:26px;padding:22px;width:min(380px,100%);text-align:center;max-height:85vh;overflow:auto;box-shadow:0 30px 100px rgba(0,0,0,.68)}
-  .modal-card h3{font-family:'Manrope',sans-serif;font-weight:700;letter-spacing:-.02em;color:var(--cream);margin:0 0 14px;font-size:24px}
-  .modal-card select{width:100%;padding:12px 14px;border-radius:14px;background:#080808;border:1px solid var(--line-soft);color:var(--cream);font-size:14px;margin-bottom:12px}
-  .modal-card textarea{width:100%;min-height:70px;background:#080808;border:1px solid var(--line-soft);border-radius:14px;color:var(--cream);padding:12px 14px;font-size:14px;resize:vertical;margin-bottom:10px;text-align:left}
+  .modal-card{background:var(--ink2);border:1px solid var(--line);border-radius:var(--radius);padding:22px;width:min(380px,100%);text-align:center;max-height:85vh;overflow:auto}
+  .modal-card h3{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold2);margin:0 0 14px;font-size:22px}
+  .modal-card select{width:100%;padding:12px 14px;border-radius:12px;background:var(--black);border:1px solid var(--line);color:var(--cream);font-size:14px;margin-bottom:12px}
+  .modal-card textarea{width:100%;min-height:70px;background:var(--black);border:1px solid var(--line);border-radius:10px;color:var(--cream);padding:10px 12px;font-size:14px;resize:vertical;margin-bottom:10px;text-align:left}
   .modal-card input[type=file]{width:100%;font-size:12px;color:var(--muted);margin-bottom:12px}
   .modal-card .btn{width:100%}
-  .modal-close{position:absolute;top:14px;right:18px;width:32px;height:32px;border-radius:50%;color:var(--muted);font-size:18px;cursor:pointer;background:#121212;border:1px solid var(--line-soft);display:flex;align-items:center;justify-content:center}
+  .modal-close{position:absolute;top:14px;right:18px;color:var(--muted);font-size:20px;cursor:pointer;background:none;border:none}
 
-  .btn{padding:13px 24px;border-radius:999px;border:1px solid var(--gold3);cursor:pointer;background:linear-gradient(135deg,var(--gold2),#a97e32);color:#050505;font-weight:800;font-size:11px;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 10px 28px rgba(0,0,0,.3)}
-  .btn:disabled{opacity:.35;cursor:not-allowed}
+  .btn{padding:13px 24px;border-radius:999px;border:none;cursor:pointer;background:linear-gradient(90deg,var(--gold),var(--gold2));color:var(--black);font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;box-shadow:var(--shadow)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
   .btn-outline{background:none;border:1px solid var(--gold);color:var(--gold2)}
 
   /* ---- Hero ---- */
-  .hero-card{position:relative;margin:18px auto 0;border-radius:32px;overflow:hidden;padding:34px 24px;text-align:center;background:
-      radial-gradient(circle at 50% 0%, rgba(224,190,114,.12), transparent 29%),
-      linear-gradient(145deg,#0e0e0e,#030303 66%);
-    border:1px solid rgba(224,190,114,.18);box-shadow:var(--shadow);isolation:isolate}
-  .hero-card:before{content:"41";position:absolute;right:-18px;bottom:-82px;font-size:220px;line-height:1;font-weight:800;letter-spacing:-.08em;color:transparent;-webkit-text-stroke:1px rgba(224,190,114,.09);z-index:-1}
+  .hero-card{position:relative;margin:18px auto 0;border-radius:var(--radius);overflow:hidden;padding:34px 24px;text-align:center;background:radial-gradient(circle at 50% 10%, rgba(201,168,106,.14), transparent 55%),var(--ink2);border:1px solid var(--line)}
   .crown{font-size:20px;color:var(--gold)}
-  .hero-name{font-family:'Manrope',sans-serif;font-weight:800;font-size:clamp(44px,14vw,72px);margin:4px 0;line-height:.95;letter-spacing:-.03em}
-  .hero-age{color:var(--gold2);font-weight:800;font-size:18px;letter-spacing:.1em;text-transform:uppercase}
-  .rule{width:48px;height:1px;background:linear-gradient(90deg,transparent,var(--gold2),transparent);margin:14px auto}
+  .hero-name{font-family:'Manrope',sans-serif;font-weight:800;font-size:clamp(44px,14vw,72px);margin:4px 0;line-height:.95}
+  .hero-age{color:var(--gold);font-weight:800;font-size:18px;letter-spacing:.1em;text-transform:uppercase}
+  .rule{width:48px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:14px auto}
   .countdown{display:flex;gap:8px;justify-content:center;margin:14px 0 6px}
-  .cd-box{min-width:54px;padding:12px 6px 10px;border:1px solid var(--line);border-radius:15px;background:linear-gradient(180deg,#111,#0a0a0a);box-shadow:inset 0 1px rgba(255,255,255,.025)}
-  .cd-num{font-weight:700;font-size:21px;color:var(--cream);letter-spacing:-.04em}
-  .cd-lbl{font-size:8px;letter-spacing:.16em;color:var(--gold2);text-transform:uppercase;margin-top:6px;font-weight:800}
+  .cd-box{min-width:54px;padding:8px 6px;border:1px solid var(--line);border-radius:10px;background:rgba(201,168,106,.05)}
+  .cd-num{font-weight:800;font-size:19px;color:var(--gold2)}
+  .cd-lbl{font-size:8px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-top:2px}
   .hero-details{font-size:13px;color:var(--muted);line-height:1.7;margin-top:10px}
   .hero-details b{color:var(--cream)}
 
   /* ---- Sections ---- */
   .content{margin-top:34px}
   .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:14px}
-  .card{background:linear-gradient(180deg,#0e0e0e,#090909);border:1px solid var(--line-soft);border-radius:22px;padding:16px;margin-bottom:12px;box-shadow:0 14px 40px rgba(0,0,0,.23)}
-  .empty-state{color:var(--muted);font-size:13px;text-align:center;padding:20px 14px;background:#090909;border:1px dashed var(--line);border-radius:16px}
+  .card{background:var(--ink2);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+  .empty-state{color:var(--muted);font-size:13px;text-align:center;padding:16px 0}
 
   /* Feed (fotos + dedicatorias) */
-  .feed-item{border-bottom:1px solid var(--line-soft);padding:14px 0}
+  .feed-item{border-bottom:1px solid var(--line);padding:14px 0}
   .feed-item:last-child{border-bottom:none}
   .feed-head{display:flex;align-items:center;gap:8px}
-  .feed-avatar{width:26px;height:26px;border-radius:50%;background:linear-gradient(145deg,var(--gold2),var(--gold3));color:#050505;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-  .feed-name{font-weight:800;font-size:13px;color:var(--gold2);letter-spacing:.02em}
-  .feed-msg{font-size:14px;margin:6px 0 0;line-height:1.55;color:#d2cdc4}
-  .feed-item img{max-width:100%;border-radius:14px;margin-top:8px;display:block}
-
-  /* Reacciones estilo WhatsApp/Instagram */
-  .reaction-summary{display:flex;align-items:center;gap:6px;margin-top:10px;padding:5px 10px;border-radius:999px;background:var(--black);border:1px solid var(--line);width:fit-content;font-size:12px;color:var(--muted)}
-  .reaction-summary.mine{border-color:var(--gold);background:rgba(201,168,106,.1);color:var(--gold2)}
-  .reaction-summary .emojis{font-size:14px;letter-spacing:-2px}
-  .reaction-summary .mine-tag{font-size:10px;color:var(--gold2);font-weight:800;margin-left:2px}
-  .reaction-row{display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap}
-  .reaction-chip{
-    display:flex;align-items:center;gap:4px;padding:4px 9px;border-radius:999px;
-    border:1px solid var(--line);background:var(--black);font-size:12px;cursor:pointer;color:var(--muted);
-  }
-  .reaction-chip.mine{border-color:var(--gold);background:rgba(201,168,106,.12);color:var(--gold2);font-weight:700}
-  .reaction-add-btn{
-    width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:var(--black);
-    color:var(--muted);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  }
-  .reaction-picker{display:none;gap:4px;background:var(--black);border:1px solid var(--gold);border-radius:999px;padding:5px 8px;position:relative}
-  .reaction-picker.open{display:flex}
-  .reaction-picker button{background:none;border:none;font-size:17px;cursor:pointer;padding:2px;border-radius:50%}
-  .reaction-picker button.picked{background:rgba(201,168,106,.25)}
-  .comment-toggle-link{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;margin-top:8px;padding:0}
-
-  /* Comentarios estilo hilo de red social */
-  .comments-box{margin-top:10px;display:none;padding-left:6px;border-left:2px solid var(--line)}
+  .feed-avatar{width:26px;height:26px;border-radius:50%;background:var(--gold);color:var(--black);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .feed-name{font-weight:700;font-size:13px;color:var(--gold2)}
+  .feed-msg{font-size:14px;margin:6px 0 0;line-height:1.5}
+  .feed-item img{max-width:100%;border-radius:10px;margin-top:8px;display:block}
+  .feed-actions{display:flex;gap:14px;margin-top:8px}
+  .feed-actions button{background:none;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:5px 11px;font-size:12px;cursor:pointer}
+  .feed-actions button.active{color:var(--gold2);border-color:var(--gold)}
+  .comments-box{margin-top:10px;display:none}
   .comments-box.open{display:block}
-  .comment-bubble{display:flex;gap:8px;padding:8px 0}
-  .comment-avatar{width:22px;height:22px;border-radius:50%;background:var(--ink2);border:1px solid var(--gold);color:var(--gold2);font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
-  .comment-content{background:var(--black);border-radius:12px;padding:8px 12px;flex:1}
-  .comment-content .cn{font-size:12px;font-weight:700;color:var(--gold2);display:block;margin-bottom:2px}
-  .comment-content .ct{font-size:13px;color:var(--cream);line-height:1.4}
-  .comment-form{display:flex;gap:6px;margin-top:8px}
+  .comment-line{font-size:12px;color:var(--muted);padding:4px 0}
+  .comment-line b{color:var(--cream)}
+  .comment-form{display:flex;gap:6px;margin-top:6px}
   .comment-form input{flex:1;background:var(--black);border:1px solid var(--line);border-radius:999px;color:var(--cream);padding:8px 12px;font-size:12px}
   .comment-form button{background:var(--gold);border:none;color:var(--black);border-radius:999px;padding:8px 12px;font-size:11px;font-weight:800;cursor:pointer}
 
   /* Ranking */
-  .lb-row{display:flex;align-items:center;gap:10px;padding:12px;border-radius:16px;background:#0d0d0d;border:1px solid var(--line-soft);margin-bottom:8px}
-  .lb-row.top{background:linear-gradient(100deg,#151109,#0c0c0c 70%);border-color:rgba(224,190,114,.42);box-shadow:0 10px 28px rgba(0,0,0,.28)}
-  .lb-rank{width:24px;font-weight:800;color:var(--gold2);font-size:13px;text-align:center;flex-shrink:0}
-  .lb-avatar{width:30px;height:30px;border-radius:50%;background:#171717;border:1px solid var(--line);color:var(--cream);font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .lb-row{display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:var(--black);border:1px solid var(--line);margin-bottom:8px}
+  .lb-row.top{background:linear-gradient(90deg, rgba(201,168,106,.18), rgba(201,168,106,.03));border-color:var(--gold)}
+  .lb-rank{width:24px;font-weight:800;color:var(--gold);font-size:13px;text-align:center;flex-shrink:0}
+  .lb-avatar{width:30px;height:30px;border-radius:50%;background:var(--gold);color:var(--black);font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
   .lb-mid{flex:1;min-width:0}
-  .lb-name{font-size:14px;font-weight:800;color:var(--cream)}
+  .lb-name{font-size:14px;font-weight:700}
   .lb-breakdown{font-size:10px;color:var(--muted);margin-top:2px}
-  .lb-bar{height:3px;border-radius:999px;background:#1d1d1d;margin-top:6px;overflow:hidden}
-  .lb-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold3),var(--gold2));border-radius:999px}
+  .lb-bar{height:4px;border-radius:2px;background:rgba(201,168,106,.15);margin-top:6px;overflow:hidden}
+  .lb-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2))}
   .lb-pts{font-weight:800;font-size:14px;color:var(--gold2);flex-shrink:0}
 
   /* Dashboard */
   .dash-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-  .dash-tile{background:#101010;border:1px solid var(--line-soft);border-radius:16px;padding:14px 6px;text-align:center}
-  .dash-num{font-weight:700;font-size:20px;color:var(--cream);letter-spacing:-.03em}
-  .dash-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:4px;font-weight:800}
-  .dash-winner{margin-top:12px;display:flex;align-items:center;gap:10px;padding:13px;border-radius:16px;background:#141006;border:1px solid rgba(224,190,114,.30)}
+  .dash-tile{background:var(--black);border:1px solid var(--line);border-radius:12px;padding:12px 6px;text-align:center}
+  .dash-num{font-weight:800;font-size:19px;color:var(--gold2)}
+  .dash-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+  .dash-winner{margin-top:12px;display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:rgba(201,168,106,.08);border:1px solid var(--gold)}
   .dash-winner .medal{font-size:22px}
 
   /* Categories */
   .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .cat-chip{display:flex;align-items:center;gap:6px;padding:9px 10px;border-radius:14px;background:#0c0c0c;border:1px solid var(--line-soft);font-size:12px;color:var(--muted)}
+  .cat-chip{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:10px;background:var(--black);border:1px solid var(--line);font-size:12px}
 
   /* Details */
   .detail-row{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
@@ -165,22 +133,15 @@
   .detail-row span{font-size:12px;color:var(--muted)}
 
   .status{font-size:12px;color:var(--muted);min-height:16px;margin-top:6px}
+
+  /* ---- Language switch ---- */
+  .lang-switch{display:inline-flex;align-items:center;padding:3px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.03);flex-shrink:0}
+  .lang-btn{border:0;background:transparent;color:var(--muted);font:inherit;font-size:9px;font-weight:900;letter-spacing:.10em;padding:6px 8px;border-radius:999px;cursor:pointer}
+  .lang-btn.active{background:linear-gradient(90deg,var(--gold),var(--gold2));color:var(--black)}
+  @media(max-width:520px){.topbar-inner:first-child{gap:7px}.lang-btn{padding:6px 7px}.upload-pill{padding:8px 10px}.topbar-avatar-name{max-width:64px}}
 </style>
 </head>
 <body>
-
-<!-- ---------- Pantalla de espera (antes del sábado 6:00 AM) ---------- -->
-<div id="lock-screen" style="display:none;position:fixed;inset:0;z-index:200;background:linear-gradient(180deg,#0d0c0a 0%,#0a0a0a 100%);color:#f4efe4;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;font-family:'Manrope',sans-serif">
-  <div style="font-size:26px;color:#c9a86a">♛</div>
-  <p style="font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:#9a9689;margin:10px 0 0">Todavía no es hora</p>
-  <h1 style="font-family:'Manrope',sans-serif;font-weight:700;letter-spacing:-.02em;color:#f4efe5;font-size:clamp(22px,6vw,30px);margin:8px 0">El tablero se abre el<br>sábado 29 a las 6:00 AM</h1>
-  <p style="font-size:13px;color:#9a9689;max-width:320px;line-height:1.6">Guarda este link — apenas se abra, vas a poder subir fotos, dejar dedicatorias y ver el ranking en vivo.</p>
-  <div id="lock-countdown" style="display:flex;gap:8px;margin-top:18px">
-    <div style="min-width:54px;padding:8px 6px;border:1px solid rgba(201,168,106,.22);border-radius:10px;background:rgba(201,168,106,.05)"><div id="lc-d" style="font-weight:800;font-size:19px;color:#e8caa0">--</div><div style="font-size:8px;letter-spacing:.12em;color:#9a9689;text-transform:uppercase;margin-top:2px">Días</div></div>
-    <div style="min-width:54px;padding:8px 6px;border:1px solid rgba(201,168,106,.22);border-radius:10px;background:rgba(201,168,106,.05)"><div id="lc-h" style="font-weight:800;font-size:19px;color:#e8caa0">--</div><div style="font-size:8px;letter-spacing:.12em;color:#9a9689;text-transform:uppercase;margin-top:2px">Horas</div></div>
-    <div style="min-width:54px;padding:8px 6px;border:1px solid rgba(201,168,106,.22);border-radius:10px;background:rgba(201,168,106,.05)"><div id="lc-m" style="font-weight:800;font-size:19px;color:#e8caa0">--</div><div style="font-size:8px;letter-spacing:.12em;color:#9a9689;text-transform:uppercase;margin-top:2px">Min</div></div>
-  </div>
-</div>
 
 <header class="topbar">
   <div class="topbar-inner">
@@ -190,16 +151,19 @@
       <span class="topbar-avatar" id="topbar-avatar">?</span>
       <span class="topbar-avatar-name" id="topbar-avatar-name">Elegir</span>
     </div>
-    <button class="upload-pill" id="photo-pill-btn">📸 Foto</button>
-    <button class="upload-pill" id="dedi-pill-btn" style="background:none;border:1px solid var(--gold);color:var(--gold2)">💌 Dedicatoria</button>
+    <div class="lang-switch" role="group" aria-label="Language">
+      <button type="button" class="lang-btn" data-lang="es">ES</button>
+      <button type="button" class="lang-btn" data-lang="en">EN</button>
+    </div>
+    <button class="upload-pill" id="upload-pill-btn">＋ Subir foto</button>
   </div>
   <div class="topbar-inner">
     <div class="nav-row">
-      <a class="top-pill" href="#top">🏠 Inicio</a>
-      <a class="top-pill" href="#feed">📸 Fotos y mensajes</a>
-      <a class="top-pill" href="#ranking">🏆 Ranking</a>
-      <a class="top-pill" href="#dashboard">📊 Dashboard</a>
-      <a class="top-pill" href="#details">📍 Coordenadas</a>
+      <a class="top-pill" id="nav-home" href="#top">🏠 Inicio</a>
+      <a class="top-pill" id="nav-feed" href="#feed">📸 Fotos y mensajes</a>
+      <a class="top-pill" id="nav-ranking" href="#ranking">🏆 Ranking</a>
+      <a class="top-pill" id="nav-dashboard" href="#dashboard">📊 Dashboard</a>
+      <a class="top-pill" id="nav-details" href="#details">📍 Coordenadas</a>
     </div>
   </div>
 </header>
@@ -207,7 +171,7 @@
 <!-- ---------- Profile modal ---------- -->
 <div class="modal" id="profile-modal">
   <div class="modal-card">
-    <h3>¿Quién eres tú?</h3>
+    <h3 id="profile-title">¿Quién eres tú?</h3>
     <select id="guest-select">
       <option value="" disabled selected>Cargando invitados…</option>
     </select>
@@ -216,25 +180,15 @@
   </div>
 </div>
 
-<!-- ---------- Upload modal: solo foto ---------- -->
-<div class="modal" id="photo-modal">
+<!-- ---------- Upload modal ---------- -->
+<div class="modal" id="upload-modal">
   <div class="modal-card" style="position:relative">
-    <button class="modal-close" id="photo-close">✕</button>
-    <h3>📸 Subir una foto</h3>
-    <input type="file" id="photo-input" accept="image/*">
-    <button class="btn" id="photo-send">Subir</button>
-    <div class="status" id="photo-status"></div>
-  </div>
-</div>
-
-<!-- ---------- Upload modal: solo dedicatoria ---------- -->
-<div class="modal" id="dedi-modal">
-  <div class="modal-card" style="position:relative">
-    <button class="modal-close" id="dedi-close">✕</button>
-    <h3>💌 Escribir una dedicatoria</h3>
-    <textarea id="dedi-text" placeholder="Un mensaje, un recuerdo, un deseo para MAKO…"></textarea>
-    <button class="btn" id="dedi-send">Enviar</button>
-    <div class="status" id="dedi-status"></div>
+    <button class="modal-close" id="upload-close">✕</button>
+    <h3 id="upload-title">Deja algo para MAKO</h3>
+    <textarea id="up-text" placeholder="Un mensaje, un recuerdo… (opcional si subes foto)"></textarea>
+    <input type="file" id="up-photo" accept="image/*">
+    <button class="btn" id="up-send">Enviar</button>
+    <div class="status" id="up-status"></div>
   </div>
 </div>
 
@@ -243,38 +197,38 @@
 
     <section class="hero-card">
       <div class="crown">♛</div>
-      <div class="eyebrow">Cumpleaños de</div>
+      <div class="eyebrow" id="hero-eyebrow">Cumpleaños de</div>
       <div class="hero-name">MAKO</div>
-      <div class="hero-age">41 Años</div>
+      <div class="hero-age" id="hero-age">41 Años</div>
       <div class="rule"></div>
       <div class="countdown" id="countdown">
-        <div class="cd-box"><div class="cd-num" id="cd-d">--</div><div class="cd-lbl">Días</div></div>
-        <div class="cd-box"><div class="cd-num" id="cd-h">--</div><div class="cd-lbl">Horas</div></div>
-        <div class="cd-box"><div class="cd-num" id="cd-m">--</div><div class="cd-lbl">Min</div></div>
-        <div class="cd-box"><div class="cd-num" id="cd-s">--</div><div class="cd-lbl">Seg</div></div>
+        <div class="cd-box"><div class="cd-num" id="cd-d">--</div><div class="cd-lbl" id="cd-d-lbl">Días</div></div>
+        <div class="cd-box"><div class="cd-num" id="cd-h">--</div><div class="cd-lbl" id="cd-h-lbl">Horas</div></div>
+        <div class="cd-box"><div class="cd-num" id="cd-m">--</div><div class="cd-lbl" id="cd-m-lbl">Min</div></div>
+        <div class="cd-box"><div class="cd-num" id="cd-s">--</div><div class="cd-lbl" id="cd-s-lbl">Seg</div></div>
       </div>
-      <div class="hero-details"><b>Sábado 29 de agosto</b> · 8:00 PM<br>En su casa, <b>Parrish, Florida</b></div>
+      <div class="hero-details" id="hero-details"><b>Sábado 29 de agosto</b> · 8:00 PM<br>En su casa, <b>Parrish, Florida</b></div>
     </section>
 
     <section class="content" id="feed">
       <div class="section-head">
         <div>
-          <p class="eyebrow">📸 Fotos y mensajes para MAKO</p>
-          <h2 class="section-title">Momentos que sí<br>merecen álbum ⭐</h2>
+          <p class="eyebrow" id="feed-eyebrow">📸 Fotos y mensajes para MAKO</p>
+          <h2 class="section-title" id="feed-title">Momentos que sí<br>merecen álbum ⭐</h2>
         </div>
       </div>
-      <div class="card" id="feed-list"><div class="empty-state">Cargando…</div></div>
+      <div class="card" id="feed-list"><div class="empty-state" id="feed-loading">Cargando…</div></div>
     </section>
 
     <section class="content" id="ranking">
       <div class="section-head">
         <div>
-          <p class="eyebrow">🏆 Ranking del cumple</p>
-          <h2 class="section-title">¿Quién le puso<br>más ganas? 👑</h2>
+          <p class="eyebrow" id="ranking-eyebrow">🏆 Ranking del cumple</p>
+          <h2 class="section-title" id="ranking-title">¿Quién le puso<br>más ganas? 👑</h2>
         </div>
       </div>
-      <p class="section-sub">📷 Foto +1 · 💌 Mensaje +1 · ❤️ Reacción +2 · 💬 Comentario +3 · 🎉 Asistencia +5</p>
-      <div id="leaderboard"><div class="empty-state">Cargando…</div></div>
+      <p class="section-sub" id="ranking-rules">📷 Foto +1 · 💌 Mensaje +1 · ❤️ Reacción +2 · 💬 Comentario +3 · 🎉 Asistencia +5</p>
+      <div id="leaderboard"><div class="empty-state" id="ranking-loading">Cargando…</div></div>
       <div class="card">
         <div class="cat-grid" id="cat-grid"></div>
       </div>
@@ -283,22 +237,22 @@
     <section class="content" id="dashboard">
       <div class="section-head">
         <div>
-          <p class="eyebrow">Resumen</p>
-          <h2 class="section-title">Todo lo que se<br>movió por acá.</h2>
+          <p class="eyebrow" id="dashboard-eyebrow">Resumen</p>
+          <h2 class="section-title" id="dashboard-title">Todo lo que se<br>movió por acá.</h2>
         </div>
       </div>
       <div class="card">
         <div class="dash-grid" id="dash-grid">
-          <div class="dash-tile"><div class="dash-num" id="dash-fotos">0</div><div class="dash-lbl">Fotos subidas</div></div>
-          <div class="dash-tile"><div class="dash-num" id="dash-msgs">0</div><div class="dash-lbl">Dedicatorias</div></div>
-          <div class="dash-tile"><div class="dash-num" id="dash-likes">0</div><div class="dash-lbl">Reacciones</div></div>
-          <div class="dash-tile"><div class="dash-num" id="dash-coms">0</div><div class="dash-lbl">Comentarios</div></div>
-          <div class="dash-tile"><div class="dash-num" id="dash-asis">0</div><div class="dash-lbl">Confirmados</div></div>
-          <div class="dash-tile"><div class="dash-num" id="dash-total">0</div><div class="dash-lbl">Puntos totales</div></div>
+          <div class="dash-tile"><div class="dash-num" id="dash-fotos">0</div><div class="dash-lbl" id="dash-fotos-label">Fotos subidas</div></div>
+          <div class="dash-tile"><div class="dash-num" id="dash-msgs">0</div><div class="dash-lbl" id="dash-msgs-label">Dedicatorias</div></div>
+          <div class="dash-tile"><div class="dash-num" id="dash-likes">0</div><div class="dash-lbl" id="dash-likes-label">Reacciones</div></div>
+          <div class="dash-tile"><div class="dash-num" id="dash-coms">0</div><div class="dash-lbl" id="dash-coms-label">Comentarios</div></div>
+          <div class="dash-tile"><div class="dash-num" id="dash-asis">0</div><div class="dash-lbl" id="dash-asis-label">Confirmados</div></div>
+          <div class="dash-tile"><div class="dash-num" id="dash-total">0</div><div class="dash-lbl" id="dash-total-label">Puntos totales</div></div>
         </div>
         <div class="dash-winner" id="dash-winner" style="display:none">
           <div class="medal">🏆</div>
-          <div><div style="font-size:12px;color:var(--muted)">Va ganando el ranking</div><div style="font-weight:800;color:var(--gold2)" id="dash-winner-name">—</div></div>
+          <div><div id="dash-winner-label" style="font-size:12px;color:var(--muted)">Va ganando el ranking</div><div style="font-weight:800;color:var(--gold2)" id="dash-winner-name">—</div></div>
         </div>
       </div>
     </section>
@@ -306,15 +260,15 @@
     <section class="content" id="details">
       <div class="section-head">
         <div>
-          <p class="eyebrow">Coordenadas</p>
-          <h2 class="section-title">Todo lo que<br>necesitas saber.</h2>
+          <p class="eyebrow" id="details-eyebrow">Coordenadas</p>
+          <h2 class="section-title" id="details-title">Todo lo que<br>necesitas saber.</h2>
         </div>
       </div>
       <div class="card">
-        <div class="detail-row"><div class="detail-ic">📅</div><div><b>Sábado 29 de agosto</b><span>8:00 PM en adelante</span></div></div>
-        <div class="detail-row"><div class="detail-ic">📍</div><div><b>En su casa</b><span>Parrish, Florida</span></div></div>
-        <div class="detail-row"><div class="detail-ic">🥂</div><div><b>Vamos a brindar</b><span>Por la vida y por las mejores historias</span></div></div>
-        <div class="detail-row"><div class="detail-ic">🎵</div><div><b>Música · Amigos · Risas · Recuerdos</b><span>Una noche especial que no querrás perderte</span></div></div>
+        <div class="detail-row"><div class="detail-ic">📅</div><div><b id="detail-date-title">Sábado 29 de agosto</b><span id="detail-date-sub">8:00 PM en adelante</span></div></div>
+        <div class="detail-row"><div class="detail-ic">📍</div><div><b id="detail-place-title">En su casa</b><span id="detail-place-sub">Parrish, Florida</span></div></div>
+        <div class="detail-row"><div class="detail-ic">🥂</div><div><b id="detail-toast-title">Vamos a brindar</b><span id="detail-toast-sub">Por la vida y por las mejores historias</span></div></div>
+        <div class="detail-row"><div class="detail-ic">🎵</div><div><b id="detail-vibe-title">Música · Amigos · Risas · Recuerdos</b><span id="detail-vibe-sub">Una noche especial que no querrás perderte</span></div></div>
       </div>
     </section>
 
@@ -322,38 +276,74 @@
 </main>
 
 <nav class="bottom-nav">
-  <a class="bn-item" href="#top"><span>🏠</span><span>Inicio</span></a>
-  <a class="bn-item" href="#ranking"><span>🏆</span><span>Ranking</span></a>
-  <button class="bn-fab" id="fab-photo" title="Subir foto">📸</button>
-  <button class="bn-fab" id="fab-dedi" title="Escribir dedicatoria" style="background:linear-gradient(135deg,var(--ink2),var(--black));color:var(--gold2);border:1px solid var(--gold)">💌</button>
-  <a class="bn-item" href="#dashboard"><span>📊</span><span>Stats</span></a>
+  <a class="bn-item" href="#top"><span>🏠</span><span id="bn-home">Inicio</span></a>
+  <a class="bn-item" href="#ranking"><span>🏆</span><span id="bn-ranking">Ranking</span></a>
+  <button class="bn-fab" id="fab-upload">＋</button>
+  <a class="bn-item" href="#feed"><span>📸</span><span id="bn-feed">Fotos</span></a>
+  <a class="bn-item" href="#dashboard"><span>📊</span><span id="bn-dashboard">Stats</span></a>
 </nav>
 
 <script src="site-core.js"></script>
 <script>
-  // ---------- Bloqueo hasta el sábado 29 a las 6:00 AM ----------
-  const OPEN_DATE = new Date("2026-08-29T06:00:00");
-  const ADMIN_CODE = "mako2026";
-
-  function isUnlocked(){
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('admin') === ADMIN_CODE) return true;
-    return new Date() >= OPEN_DATE;
+  // ---------- Language ----------
+  const I18N = {
+    es: {
+      pageTitle:'MAKO · 41 Años', choose:'Elegir', uploadPhoto:'＋ Subir foto',
+      navHome:'🏠 Inicio', navFeed:'📸 Fotos y mensajes', navRanking:'🏆 Ranking', navDashboard:'📊 Dashboard', navDetails:'📍 Coordenadas',
+      profileTitle:'¿Quién eres tú?', loadingGuests:'Cargando invitados…', selectName:'Selecciona tu nombre…', confirm:'Confirmar',
+      uploadTitle:'Deja algo para MAKO', uploadPlaceholder:'Un mensaje, un recuerdo… (opcional si subes foto)', send:'Enviar',
+      heroEyebrow:'Cumpleaños de', heroAge:'41 Años', days:'Días', hours:'Horas', min:'Min', sec:'Seg',
+      heroDetails:'<b>Sábado 29 de agosto</b> · 8:00 PM<br>En su casa, <b>Parrish, Florida</b>',
+      feedEyebrow:'📸 Fotos y mensajes para MAKO', feedTitle:'Momentos que sí<br>merecen álbum ⭐', loading:'Cargando…',
+      rankingEyebrow:'🏆 Ranking del cumple', rankingTitle:'¿Quién le puso<br>más ganas? 👑', rankingRules:'📷 Foto +1 · 💌 Mensaje +1 · ❤️ Reacción +2 · 💬 Comentario +3 · 🎉 Asistencia +5',
+      dashboardEyebrow:'Resumen', dashboardTitle:'Todo lo que se<br>movió por acá.', photosUploaded:'Fotos subidas', dedications:'Dedicatorias', reactions:'Reacciones', comments:'Comentarios', confirmed:'Confirmados', totalPoints:'Puntos totales', rankingLeader:'Va ganando el ranking',
+      detailsEyebrow:'Coordenadas', detailsTitle:'Todo lo que<br>necesitas saber.', dateTitle:'Sábado 29 de agosto', dateSub:'8:00 PM en adelante', placeTitle:'En su casa', placeSub:'Parrish, Florida', toastTitle:'Vamos a brindar', toastSub:'Por la vida y por las mejores historias', vibeTitle:'Música · Amigos · Risas · Recuerdos', vibeSub:'Una noche especial que no querrás perderte',
+      bnHome:'Inicio', bnRanking:'Ranking', bnFeed:'Fotos', bnDashboard:'Stats',
+      loadError:'No se pudo cargar. Revisa APPS_SCRIPT_URL en site-core.js.', needMessage:'Escribe un mensaje o adjunta una foto.', sending:'Enviando…', sent:'¡Enviado!', sendError:'No se pudo enviar, intenta de nuevo.', feedEmpty:'Todavía no hay nada por acá. ¡Sube la primera foto o mensaje!', commentPlaceholder:'Escribe un comentario…', noPoints:'Aún no hay puntos — ¡empieza tú!', pts:'pts',
+      categories:['El Más Chismoso','El Paparazzi','El Alma de la Fiesta','El Más Motero','El Mejor Brindis','El Más Fit']
+    },
+    en: {
+      pageTitle:'MAKO · 41 Years', choose:'Choose', uploadPhoto:'＋ Upload photo',
+      navHome:'🏠 Home', navFeed:'📸 Photos & messages', navRanking:'🏆 Ranking', navDashboard:'📊 Dashboard', navDetails:'📍 Details',
+      profileTitle:'Who are you?', loadingGuests:'Loading guests…', selectName:'Select your name…', confirm:'Confirm',
+      uploadTitle:'Leave something for MAKO', uploadPlaceholder:'A message, a memory… (optional if you upload a photo)', send:'Send',
+      heroEyebrow:'Celebrating', heroAge:'41 Years', days:'Days', hours:'Hours', min:'Min', sec:'Sec',
+      heroDetails:'<b>Saturday, August 29</b> · 8:00 PM<br>At his house, <b>Parrish, Florida</b>',
+      feedEyebrow:'📸 Photos & messages for MAKO', feedTitle:'Moments worth<br>keeping ⭐', loading:'Loading…',
+      rankingEyebrow:'🏆 Birthday ranking', rankingTitle:'Who brought<br>the most energy? 👑', rankingRules:'📷 Photo +1 · 💌 Message +1 · ❤️ Reaction +2 · 💬 Comment +3 · 🎉 Attendance +5',
+      dashboardEyebrow:'Recap', dashboardTitle:'Everything that’s<br>happening here.', photosUploaded:'Photos uploaded', dedications:'Messages', reactions:'Reactions', comments:'Comments', confirmed:'Confirmed', totalPoints:'Total points', rankingLeader:'Leading the ranking',
+      detailsEyebrow:'Details', detailsTitle:'Everything you<br>need to know.', dateTitle:'Saturday, August 29', dateSub:'8:00 PM and on', placeTitle:'At his house', placeSub:'Parrish, Florida', toastTitle:'Let’s raise a glass', toastSub:'To life and the best stories', vibeTitle:'Music · Friends · Laughs · Memories', vibeSub:'A special night you won’t want to miss',
+      bnHome:'Home', bnRanking:'Ranking', bnFeed:'Photos', bnDashboard:'Stats',
+      loadError:'Could not load. Check APPS_SCRIPT_URL in site-core.js.', needMessage:'Write a message or attach a photo.', sending:'Sending…', sent:'Sent!', sendError:'Could not send. Please try again.', feedEmpty:'Nothing here yet. Upload the first photo or message!', commentPlaceholder:'Write a comment…', noPoints:'No points yet — be the first!', pts:'pts',
+      categories:['The Biggest Gossip','The Paparazzi','Life of the Party','The Biker','Best Toast','The Fittest']
+    }
+  };
+  let currentLang = localStorage.getItem('mako41_lang') || 'es';
+  function t(key){ return (I18N[currentLang] && I18N[currentLang][key]) ?? I18N.es[key] ?? key; }
+  function setText(id,key){ const el=document.getElementById(id); if(el) el.textContent=t(key); }
+  function setHTML(id,key){ const el=document.getElementById(id); if(el) el.innerHTML=t(key); }
+  function applyLanguage(lang){
+    currentLang = I18N[lang] ? lang : 'es';
+    localStorage.setItem('mako41_lang', currentLang);
+    document.documentElement.lang = currentLang;
+    document.title = t('pageTitle');
+    document.querySelectorAll('.lang-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.lang===currentLang));
+    const sess = (typeof getSession === 'function') ? getSession() : null;
+    if(!sess) setText('topbar-avatar-name','choose');
+    setText('upload-pill-btn','uploadPhoto');
+    setText('nav-home','navHome'); setText('nav-feed','navFeed'); setText('nav-ranking','navRanking'); setText('nav-dashboard','navDashboard'); setText('nav-details','navDetails');
+    setText('profile-title','profileTitle'); setText('enter-btn','confirm');
+    setText('upload-title','uploadTitle'); document.getElementById('up-text').placeholder=t('uploadPlaceholder'); setText('up-send','send');
+    setText('hero-eyebrow','heroEyebrow'); setText('hero-age','heroAge'); setText('cd-d-lbl','days'); setText('cd-h-lbl','hours'); setText('cd-m-lbl','min'); setText('cd-s-lbl','sec'); setHTML('hero-details','heroDetails');
+    setText('feed-eyebrow','feedEyebrow'); setHTML('feed-title','feedTitle'); setText('feed-loading','loading');
+    setText('ranking-eyebrow','rankingEyebrow'); setHTML('ranking-title','rankingTitle'); setText('ranking-rules','rankingRules'); setText('ranking-loading','loading');
+    setText('dashboard-eyebrow','dashboardEyebrow'); setHTML('dashboard-title','dashboardTitle'); setText('dash-fotos-label','photosUploaded'); setText('dash-msgs-label','dedications'); setText('dash-likes-label','reactions'); setText('dash-coms-label','comments'); setText('dash-asis-label','confirmed'); setText('dash-total-label','totalPoints'); setText('dash-winner-label','rankingLeader');
+    setText('details-eyebrow','detailsEyebrow'); setHTML('details-title','detailsTitle'); setText('detail-date-title','dateTitle'); setText('detail-date-sub','dateSub'); setText('detail-place-title','placeTitle'); setText('detail-place-sub','placeSub'); setText('detail-toast-title','toastTitle'); setText('detail-toast-sub','toastSub'); setText('detail-vibe-title','vibeTitle'); setText('detail-vibe-sub','vibeSub');
+    setText('bn-home','bnHome'); setText('bn-ranking','bnRanking'); setText('bn-feed','bnFeed'); setText('bn-dashboard','bnDashboard');
+    if(selectEl && selectEl.options.length){ selectEl.options[0].textContent = selectEl.options.length > 1 ? t('selectName') : t('loadingGuests'); }
+    if(appData) renderAll(appData);
   }
-
-  function tickLockCountdown(){
-    let diff = OPEN_DATE - new Date();
-    if (diff < 0) diff = 0;
-    document.getElementById('lc-d').textContent = Math.floor(diff / 86400000);
-    document.getElementById('lc-h').textContent = String(Math.floor((diff / 3600000) % 24)).padStart(2,'0');
-    document.getElementById('lc-m').textContent = String(Math.floor((diff / 60000) % 60)).padStart(2,'0');
-  }
-
-  if (!isUnlocked()){
-    document.getElementById('lock-screen').style.display = 'flex';
-    tickLockCountdown();
-    setInterval(tickLockCountdown, 30000);
-  }
+  document.querySelectorAll('.lang-btn').forEach(btn=>btn.addEventListener('click',()=>applyLanguage(btn.dataset.lang)));
 
   // ---------- Countdown ----------
   const EVENT_DATE = new Date("2026-08-29T20:00:00");
@@ -375,13 +365,14 @@
   const enterBtn = document.getElementById('enter-btn');
   const loginStatus = document.getElementById('login-status');
   const profileModal = document.getElementById('profile-modal');
+  const uploadModal = document.getElementById('upload-modal');
   let appData = null;
 
   async function initGuestList(){
     try{
       const data = await getAppData();
       appData = data;
-      selectEl.innerHTML = '<option value="" disabled selected>Selecciona tu nombre…</option>';
+      selectEl.innerHTML = `<option value="" disabled selected>${t('selectName')}</option>`;
       (data.invitados || []).forEach(name => {
         const opt = document.createElement('option');
         opt.value = name; opt.textContent = name;
@@ -389,7 +380,7 @@
       });
       renderAll(data);
     }catch(err){
-      loginStatus.textContent = 'No se pudo cargar. Revisa APPS_SCRIPT_URL en site-core.js.';
+      loginStatus.textContent = t('loadError');
     }
   }
 
@@ -418,90 +409,43 @@
     return s;
   }
 
-  // ---------- Modales separados: foto y dedicatoria ----------
-  const photoModal = document.getElementById('photo-modal');
-  const dediModal = document.getElementById('dedi-modal');
+  // ---------- Upload modal ----------
+  function openUpload(){ if(!requireSession()) return; uploadModal.classList.add('open'); }
+  document.getElementById('upload-pill-btn').addEventListener('click', openUpload);
+  document.getElementById('fab-upload').addEventListener('click', openUpload);
+  document.getElementById('upload-close').addEventListener('click', () => uploadModal.classList.remove('open'));
 
-  function openPhotoModal(){ if(!requireSession()) return; photoModal.classList.add('open'); }
-  function openDediModal(){ if(!requireSession()) return; dediModal.classList.add('open'); }
-
-  document.getElementById('photo-pill-btn').addEventListener('click', openPhotoModal);
-  document.getElementById('fab-photo').addEventListener('click', openPhotoModal);
-  document.getElementById('dedi-pill-btn').addEventListener('click', openDediModal);
-  document.getElementById('fab-dedi').addEventListener('click', openDediModal);
-  document.getElementById('photo-close').addEventListener('click', () => photoModal.classList.remove('open'));
-  document.getElementById('dedi-close').addEventListener('click', () => dediModal.classList.remove('open'));
-
-  document.getElementById('photo-send').addEventListener('click', async () => {
-    const s = requireSession(); if (!s) return;
-    const statusEl = document.getElementById('photo-status');
-    const fileInput = document.getElementById('photo-input');
+  document.getElementById('up-send').addEventListener('click', async () => {
+    const s = requireSession();
+    if (!s) return;
+    const statusEl = document.getElementById('up-status');
+    const text = document.getElementById('up-text').value.trim();
+    const fileInput = document.getElementById('up-photo');
     const file = fileInput.files[0];
-    if (!file){ statusEl.textContent = 'Selecciona una foto primero.'; return; }
-    statusEl.textContent = 'Subiendo…';
-    const foto = await fileToPayload(file);
-    const res = await addDedicatoria({ invitado: s.name, mensaje: '', foto });
+    if (!text && !file){ statusEl.textContent = t('needMessage'); return; }
+    statusEl.textContent = t('sending');
+    let foto = null;
+    if (file) foto = await fileToPayload(file);
+    const res = await addDedicatoria({ invitado: s.name, mensaje: text, foto });
     if (res.success){
+      document.getElementById('up-text').value = '';
       fileInput.value = '';
-      statusEl.textContent = '¡Foto subida!';
+      statusEl.textContent = t('sent');
       await refreshData();
-      setTimeout(() => { photoModal.classList.remove('open'); statusEl.textContent = ''; }, 700);
+      setTimeout(() => { uploadModal.classList.remove('open'); statusEl.textContent = ''; }, 700);
     } else {
-      statusEl.textContent = res.error || 'No se pudo subir, intenta de nuevo.';
+      statusEl.textContent = res.error || t('sendError');
     }
   });
-
-  document.getElementById('dedi-send').addEventListener('click', async () => {
-    const s = requireSession(); if (!s) return;
-    const statusEl = document.getElementById('dedi-status');
-    const textEl = document.getElementById('dedi-text');
-    const text = textEl.value.trim();
-    if (!text){ statusEl.textContent = 'Escribe algo primero.'; return; }
-    statusEl.textContent = 'Enviando…';
-    const res = await addDedicatoria({ invitado: s.name, mensaje: text, foto: null });
-    if (res.success){
-      textEl.value = '';
-      statusEl.textContent = '¡Enviado!';
-      await refreshData();
-      setTimeout(() => { dediModal.classList.remove('open'); statusEl.textContent = ''; }, 700);
-    } else {
-      statusEl.textContent = res.error || 'No se pudo enviar, intenta de nuevo.';
-    }
-  });
-
-  // ---------- Reacciones estilo WhatsApp ----------
-  const REACTION_EMOJIS = ["❤️","😂","😮","👏","🎉"];
 
   // ---------- Feed (fotos + dedicatorias unificado) ----------
   function renderFeed(list){
     const el = document.getElementById('feed-list');
     if (!list || !list.length){
-      el.innerHTML = '<div class="empty-state">Todavía no hay nada por acá. ¡Sube la primera foto o escribe una dedicatoria!</div>';
+      el.innerHTML = `<div class="empty-state">${t('feedEmpty')}</div>`;
       return;
     }
-    const myName = getSession()?.name;
-
-    el.innerHTML = list.map(d => {
-      const reacciones = d.reacciones || {};
-      const emojiKeys = Object.keys(reacciones).sort((a,b) => reacciones[b].length - reacciones[a].length);
-      const totalReacciones = d.totalReacciones || 0;
-      const miEmoji = emojiKeys.find(e => myName && reacciones[e].includes(myName));
-
-      const summaryHtml = totalReacciones > 0 ? `
-        <div class="reaction-summary ${miEmoji ? 'mine' : ''}">
-          <span class="emojis">${emojiKeys.slice(0,3).join('')}</span>
-          <span>${totalReacciones} reacción${totalReacciones===1?'':'es'}</span>
-          ${miEmoji ? `<span class="mine-tag">· Tú reaccionaste ${miEmoji}</span>` : ''}
-        </div>
-      ` : '';
-
-      const chips = emojiKeys.map(emoji => {
-        const gente = reacciones[emoji];
-        const mine = myName && gente.includes(myName);
-        return `<button class="reaction-chip ${mine ? 'mine' : ''}" data-id="${d.id}" data-emoji="${emoji}">${emoji} ${gente.length}</button>`;
-      }).join('');
-
-      return `
+    el.innerHTML = list.map(d => `
       <div class="feed-item" data-id="${d.id}">
         <div class="feed-head">
           <div class="feed-avatar">${initials(d.invitado)}</div>
@@ -509,58 +453,29 @@
         </div>
         ${d.mensaje ? `<div class="feed-msg">${d.mensaje.replace(/</g,'&lt;')}</div>` : ''}
         ${d.previewUrl ? `<img src="${d.previewUrl}" alt="">` : ''}
-        ${summaryHtml}
-        <div class="reaction-row">
-          ${chips}
-          <div style="position:relative">
-            <button class="reaction-add-btn" data-id="${d.id}">🙂+</button>
-            <div class="reaction-picker" id="picker-${d.id}">
-              ${REACTION_EMOJIS.map(e => `<button data-id="${d.id}" data-emoji="${e}" class="${e === miEmoji ? 'picked' : ''}">${e}</button>`).join('')}
-            </div>
-          </div>
+        <div class="feed-actions">
+          <button class="like-btn ${(d.likers||[]).includes(getSession()?.name) ? 'active' : ''}" data-id="${d.id}">❤️ ${d.likes || 0}</button>
+          <button class="comment-toggle" data-id="${d.id}">💬 ${(d.comentarios||[]).length}</button>
         </div>
-        <button class="comment-toggle-link" data-id="${d.id}">💬 ${(d.comentarios||[]).length} comentario${(d.comentarios||[]).length===1?'':'s'}</button>
         <div class="comments-box" id="comments-${d.id}">
-          ${(d.comentarios||[]).map(c => `
-            <div class="comment-bubble">
-              <div class="comment-avatar">${initials(c.invitado)}</div>
-              <div class="comment-content"><span class="cn">${c.invitado}</span><span class="ct">${c.texto.replace(/</g,'&lt;')}</span></div>
-            </div>
-          `).join('')}
+          ${(d.comentarios||[]).map(c => `<div class="comment-line"><b>${c.invitado}:</b> ${c.texto.replace(/</g,'&lt;')}</div>`).join('')}
           <div class="comment-form">
-            <input type="text" placeholder="Escribe un comentario…" data-id="${d.id}">
-            <button data-id="${d.id}">Enviar</button>
+            <input type="text" placeholder="${t('commentPlaceholder')}" data-id="${d.id}">
+            <button data-id="${d.id}">${t('send')}</button>
           </div>
         </div>
       </div>
-    `; }).join('');
+    `).join('');
 
-    // Abrir/cerrar el picker de reacciones
-    el.querySelectorAll('.reaction-add-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        if (!requireSession()) return;
-        document.querySelectorAll('.reaction-picker.open').forEach(p => { if(p.id !== 'picker-'+btn.dataset.id) p.classList.remove('open'); });
-        document.getElementById('picker-' + btn.dataset.id).classList.toggle('open');
-      });
-    });
-    // Elegir emoji del picker
-    el.querySelectorAll('.reaction-picker button').forEach(btn => {
+    el.querySelectorAll('.like-btn').forEach(btn => {
       btn.addEventListener('click', async () => {
         const s = requireSession(); if (!s) return;
-        btn.closest('.reaction-picker').classList.remove('open');
-        await toggleLike(btn.dataset.id, s.name, btn.dataset.emoji);
+        btn.disabled = true;
+        await toggleLike(btn.dataset.id, s.name);
         await refreshData();
       });
     });
-    // Toggle rápido en chips existentes (mismo emoji ya puesto = se quita; otro = cambia)
-    el.querySelectorAll('.reaction-chip').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const s = requireSession(); if (!s) return;
-        await toggleLike(btn.dataset.id, s.name, btn.dataset.emoji);
-        await refreshData();
-      });
-    });
-    el.querySelectorAll('.comment-toggle-link').forEach(btn => {
+    el.querySelectorAll('.comment-toggle').forEach(btn => {
       btn.addEventListener('click', () => {
         document.getElementById('comments-' + btn.dataset.id).classList.toggle('open');
       });
@@ -583,7 +498,7 @@
   function renderLeaderboard(scoreboard){
     const el = document.getElementById('leaderboard');
     if (!scoreboard || !scoreboard.length){
-      el.innerHTML = '<div class="empty-state">Aún no hay puntos — ¡empieza tú!</div>';
+      el.innerHTML = `<div class="empty-state">${t('noPoints')}</div>`;
       return;
     }
     const maxPts = Math.max.apply(null, scoreboard.map(s => s.puntos).concat([1]));
@@ -596,22 +511,16 @@
           <div class="lb-breakdown">📸 ${row.dedicatorias||0} · ❤️ ${row.likes||0} · 💬 ${row.comentarios||0}</div>
           <div class="lb-bar"><div class="lb-bar-fill" style="width:${Math.round((row.puntos/maxPts)*100)}%"></div></div>
         </div>
-        <div class="lb-pts">${row.puntos} pts</div>
+        <div class="lb-pts">${row.puntos} ${t('pts')}</div>
       </div>
     `).join('');
   }
 
-  const CATEGORIES = [
-    { label: "El Más Chismoso", icon: "🗣️" },
-    { label: "El Paparazzi", icon: "📸" },
-    { label: "El Alma de la Fiesta", icon: "🎉" },
-    { label: "El Más Motero", icon: "🏍️" },
-    { label: "El Mejor Brindis", icon: "🥃" },
-    { label: "El Más Fit", icon: "💪" }
-  ];
+  const CATEGORY_ICONS = ["🗣️","📸","🎉","🏍️","🥃","💪"];
   function renderCategories(){
-    document.getElementById('cat-grid').innerHTML = CATEGORIES.map(c => `
-      <div class="cat-chip"><span>${c.icon}</span><span>${c.label}</span></div>
+    const labels = t('categories');
+    document.getElementById('cat-grid').innerHTML = CATEGORY_ICONS.map((icon,i) => `
+      <div class="cat-chip"><span>${icon}</span><span>${labels[i]}</span></div>
     `).join('');
   }
 
@@ -620,7 +529,7 @@
     const dedis = data.dedicatorias || [];
     const fotos = dedis.filter(d => d.previewUrl).length;
     const msgs = dedis.filter(d => d.mensaje).length;
-    const likes = dedis.reduce((sum, d) => sum + (d.totalReacciones || 0), 0);
+    const likes = dedis.reduce((sum, d) => sum + (d.likes || 0), 0);
     const coms = dedis.reduce((sum, d) => sum + (d.comentarios ? d.comentarios.length : 0), 0);
     const asis = (data.asistencias || []).length;
     const totalPts = (data.scoreboard || []).reduce((s, r) => s + r.puntos, 0);
@@ -656,8 +565,10 @@
   }
 
   (async function boot(){
+    applyLanguage(currentLang);
     await initGuestList();
     initProfile();
+    applyLanguage(currentLang);
   })();
 </script>
 </body>
