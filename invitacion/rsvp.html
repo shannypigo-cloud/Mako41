@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Confirmar asistencia · MAKO 41</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#0a0a0a; --ink2:#161513; --gold:#c9a86a; --gold2:#e8caa0;
+    --cream:#f4efe4; --muted:#9a9689; --line:rgba(201,168,106,.2);
+    --shadow:0 18px 40px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--black);font-family:'Manrope',sans-serif;color:var(--cream);min-height:100%}
+  body{min-height:100vh;min-height:100dvh;padding-bottom:60px}
+  .wrap{width:min(480px,calc(100% - 32px));margin:auto}
+
+  .back-link{
+    display:inline-flex;align-items:center;gap:6px;margin:calc(18px + env(safe-area-inset-top)) 0 0;
+    color:var(--muted);font-size:13px;text-decoration:none;font-weight:700;
+    padding:9px 14px;border:1px solid var(--line);border-radius:999px;
+  }
+
+  header{text-align:center;padding:24px 0 10px}
+  .crown{font-size:22px;color:var(--gold)}
+  .eyebrow{font-size:11px;letter-spacing:.24em;color:var(--muted);text-transform:uppercase;margin-top:6px}
+  h1{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(26px,7vw,34px);color:var(--gold2);margin:6px 0 0}
+  .sub{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6}
+
+  .card{background:var(--ink2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-top:22px}
+  label{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  input[type=text], input[type=tel]{
+    width:100%;padding:12px 14px;border-radius:12px;background:var(--black);
+    border:1px solid var(--line);color:var(--cream);font-size:14px;margin-bottom:14px;
+  }
+
+  .guest-row{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+  .guest-row input{margin:0;flex:1}
+  .guest-row .num{width:22px;flex-shrink:0;font-size:12px;color:var(--gold);font-weight:800;text-align:center}
+  .remove-guest{
+    flex-shrink:0;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);
+    background:none;color:var(--muted);font-size:14px;cursor:pointer;
+  }
+  .remove-guest:hover{border-color:#e06a5a;color:#e06a5a}
+
+  .add-guest{
+    width:100%;padding:11px;border-radius:12px;border:1px dashed var(--gold);background:none;
+    color:var(--gold2);font-weight:700;font-size:13px;cursor:pointer;margin:4px 0 18px;
+  }
+
+  .btn{
+    width:100%;padding:14px 24px;border-radius:999px;border:none;cursor:pointer;
+    background:linear-gradient(90deg,var(--gold),var(--gold2));color:var(--black);
+    font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase;box-shadow:var(--shadow);
+  }
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  .status{font-size:13px;color:var(--muted);text-align:center;margin-top:12px;min-height:18px}
+  .status.error{color:#e08b7a}
+  .status.ok{color:var(--gold2)}
+
+  .success-card{display:none;text-align:center;padding:30px 20px}
+  .success-card.show{display:block}
+  .success-card .big{font-size:40px}
+  .success-card h2{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold2);font-size:24px;margin:10px 0 6px}
+  .success-card p{color:var(--muted);font-size:13px;line-height:1.6}
+  .success-card a.btn{display:block;text-decoration:none;margin-top:16px;box-sizing:border-box}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back-link" href="index.html">← Volver</a>
+
+  <header>
+    <div class="crown">♛</div>
+    <div class="eyebrow">Cumpleaños de MAKO · 41 años</div>
+    <h1>Confirmar asistencia</h1>
+    <p class="sub">Escribe los nombres de todas las personas que van a asistir contigo — así quedan registradas y pueden entrar al tablero a dejar fotos y dedicatorias.</p>
+  </header>
+
+  <div class="card" id="form-card">
+    <label for="contacto">Tu nombre</label>
+    <input type="text" id="contacto" placeholder="Ej: Camila Restrepo">
+
+    <label for="correo">Tu correo (para enviarte el link del tablero)</label>
+    <input type="text" id="correo" placeholder="tucorreo@ejemplo.com">
+
+    <label>Invitados que confirmas (inclúyete a ti y a quienes te acompañan)</label>
+    <div id="guest-rows"></div>
+    <button type="button" class="add-guest" id="add-guest-btn">＋ Agregar otro invitado</button>
+
+    <button class="btn" id="submit-btn">Confirmar asistencia</button>
+    <div class="status" id="form-status"></div>
+  </div>
+
+  <div class="card success-card" id="success-card">
+    <div class="big">🎉</div>
+    <h2>¡Asistencia confirmada!</h2>
+    <p id="success-msg">Ya quedaron registrados. Te enviamos el link del tablero a tu correo — también puedes entrar aquí:</p>
+    <a class="btn" href="../tablero/main.html">Entrar al tablero →</a>
+  </div>
+</div>
+
+<script src="site-core.js"></script>
+<script>
+  const rowsEl = document.getElementById('guest-rows');
+  let rowCount = 0;
+
+  function addGuestRow(value){
+    rowCount++;
+    const row = document.createElement('div');
+    row.className = 'guest-row';
+    row.innerHTML = `
+      <div class="num">${rowCount}</div>
+      <input type="text" placeholder="Nombre y apellido" value="${value ? value.replace(/"/g,'&quot;') : ''}">
+      <button type="button" class="remove-guest" title="Quitar">✕</button>
+    `;
+    row.querySelector('.remove-guest').addEventListener('click', () => {
+      row.remove();
+      renumberRows();
+    });
+    rowsEl.appendChild(row);
+  }
+
+  function renumberRows(){
+    rowCount = 0;
+    rowsEl.querySelectorAll('.guest-row').forEach(row => {
+      rowCount++;
+      row.querySelector('.num').textContent = rowCount;
+    });
+  }
+
+  document.getElementById('add-guest-btn').addEventListener('click', () => addGuestRow());
+
+  // Arranca con 2 filas vacías (la persona + un acompañante)
+  addGuestRow();
+  addGuestRow();
+
+  document.getElementById('submit-btn').addEventListener('click', async () => {
+    const statusEl = document.getElementById('form-status');
+    const contacto = document.getElementById('contacto').value.trim();
+    const correo = document.getElementById('correo').value.trim();
+    const nombres = Array.from(rowsEl.querySelectorAll('.guest-row input'))
+      .map(i => i.value.trim())
+      .filter(Boolean);
+
+    if (!nombres.length){
+      statusEl.textContent = 'Agrega al menos un nombre.';
+      statusEl.className = 'status error';
+      return;
+    }
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    statusEl.textContent = 'Enviando…';
+    statusEl.className = 'status';
+
+    try {
+      const res = await registrarGrupo(nombres, contacto, correo);
+      if (res.success){
+        document.getElementById('form-card').style.display = 'none';
+        document.getElementById('success-card').classList.add('show');
+
+        const nombresFinales = res.registrados.map(r => r.final);
+        const conAjuste = res.registrados.filter(r => r.final !== r.original);
+
+        let nota = '';
+        if (conAjuste.length){
+          nota = ' Ojo: ya había alguien con ' +
+            (conAjuste.length === 1 ? 'ese nombre' : 'esos nombres') +
+            ', así que quedó(ron) como: ' + conAjuste.map(r => r.final).join(', ') + '.';
+        }
+
+        const emailNote = correo ? ` Te enviamos el link del tablero a ${correo}.` : ' No dejaste correo, así que guarda este link del tablero.';
+        document.getElementById('success-msg').textContent =
+          `Quedaron confirmadas ${nombresFinales.length} persona(s): ${nombresFinales.join(', ')}.${nota}${emailNote}`;
+      } else {
+        statusEl.textContent = res.error || 'No se pudo confirmar, intenta de nuevo.';
+        statusEl.className = 'status error';
+        btn.disabled = false;
+      }
+    } catch (err) {
+      statusEl.textContent = 'No se pudo conectar. Revisa APPS_SCRIPT_URL en site-core.js.';
+      statusEl.className = 'status error';
+      btn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
