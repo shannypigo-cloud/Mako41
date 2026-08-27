@@ -56,6 +56,9 @@
   .attend-btn{padding:14px 12px;border-radius:16px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:var(--cream-soft);font-size:13px;font-weight:800;cursor:pointer;transition:transform .18s ease, border-color .18s ease, background .18s ease;}
   .attend-btn:hover{transform:translateY(-1px)}
   .attend-btn.active{border-color:rgba(236,210,153,.34);background:linear-gradient(180deg, rgba(196,154,74,.16), rgba(196,154,74,.08));color:var(--cream);box-shadow:inset 0 1px 0 rgba(255,255,255,.04);}
+  .self-guest{display:flex;align-items:center;gap:12px;margin:2px 0 14px;padding:13px 14px;border-radius:18px;border:1px solid rgba(236,210,153,.22);background:linear-gradient(180deg,rgba(196,154,74,.12),rgba(196,154,74,.055));}
+  .self-guest-num{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;flex:0 0 auto;background:linear-gradient(180deg,var(--gold2),var(--gold));color:var(--black);font-size:12px;font-weight:900;}
+  .self-guest-copy{min-width:0;flex:1}.self-guest-copy small{display:block;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2);font-weight:900;margin-bottom:3px}.self-guest-copy b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.self-guest-check{font-size:16px;color:var(--gold2);font-weight:900;}
   .guest-row{display:flex;gap:10px;align-items:center;margin-bottom:12px}
   .guest-row input{margin:0;flex:1}
   .guest-row .num{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;flex-shrink:0;font-size:12px;color:var(--gold2);font-weight:800;text-align:center;background:rgba(236,210,153,.08);border:1px solid rgba(236,210,153,.12);}
@@ -142,8 +145,9 @@
         </div>
 
         <div class="card" id="form-card">
-          <label for="contacto" id="contact-label">Tu nombre</label>
+          <label for="contacto" id="contact-label">Tu nombre y apellido</label>
           <input type="text" id="contacto" placeholder="Ej: Camila Restrepo">
+          <p class="helper-text" id="contact-helper">Este nombre queda incluido automáticamente si confirmas que vas.</p>
 
           <label id="attend-label">¿Vas a poder asistir?</label>
           <div class="attend-toggle">
@@ -155,10 +159,15 @@
             <label for="correo" id="email-label">Tu correo (para enviarte el link del tablero)</label>
             <input type="text" id="correo" placeholder="tucorreo@ejemplo.com">
 
-            <label id="guests-label">¿Con quién vas a llegar?</label>
-            <p class="helper-text" id="guests-helper">Escribe tu nombre y el de cada persona que te acompaña, aunque sea solo tú. Cada nombre podrá entrar por su cuenta al tablero de fotos con ese mismo nombre.</p>
+            <label id="guests-label">¿Vienes con alguien más?</label>
+            <div class="self-guest" id="self-guest">
+              <div class="self-guest-num">1</div>
+              <div class="self-guest-copy"><small id="self-guest-label">✓ Tú ya estás incluido</small><b id="self-guest-name">Escribe tu nombre arriba</b></div>
+              <div class="self-guest-check">✓</div>
+            </div>
+            <p class="helper-text" id="guests-helper">No vuelvas a escribir tu nombre. Si vienes solo, no tienes que agregar nada. Si vienes con alguien, agrega únicamente a tus acompañantes.</p>
             <div id="guest-rows"></div>
-            <button type="button" class="add-guest" id="add-guest-btn">＋ Agregar otro invitado</button>
+            <button type="button" class="add-guest" id="add-guest-btn">＋ Agregar acompañante</button>
           </div>
 
           <div id="attend-no-section" style="display:none">
@@ -205,40 +214,40 @@
   const RSVP_I18N = {
     es:{
       pageTitle:'Confirmar asistencia · MAKO 41', back:'← Volver', eyebrow:'Cumpleaños de MAKO · 41 años', title:'Confirma tu asistencia.',
-      sub:'Escribe los nombres de todas las personas que van a asistir contigo para que queden registradas y también puedan entrar al tablero a dejar fotos, mensajes y recuerdos del cumple.',
+      sub:'Dinos si vas a venir. Tu nombre queda incluido automáticamente y, si vienes acompañado, solo tendrás que agregar a las personas que vienen contigo.',
       metaDate:'📅 Sábado 29 de agosto', metaTime:'🕗 8:00 PM', metaPlace:'📍 Parrish, Florida', metaDress:'🖤 Dress code: all black',
       quoteTitle:'41 years. One night.', quoteCopy:'Una confirmación rápida para dejar a todo el mundo registrado antes del parche.',
-      howLabel:'Cómo funciona', howTitle:'1. Confirmas  2. Te registramos  3. Entras al tablero', howCopy:'Si vas con más personas, agrega cada nombre por separado para que luego puedan entrar individualmente.',
+      howLabel:'Cómo funciona', howTitle:'1. Escribes tu nombre  2. Confirmas  3. Agregas acompañantes si tienes', howCopy:'Tu nombre ya cuenta como la primera persona. Solo agrega a quienes vienen contigo.',
       guestLabel:'Guest list', guestTitle:'Confirma tu lugar.', guestCopy:'Cuéntanos quién viene contigo para dejar todo listo para la noche.',
-      contactLabel:'Tu nombre', contactPh:'Ej: Camila Restrepo', attendLabel:'¿Vas a poder asistir?', yes:'🎉 Sí, voy a asistir', no:'😢 No puedo ir',
-      emailLabel:'Tu correo (para enviarte el link del tablero)', emailPh:'tucorreo@ejemplo.com', guestsLabel:'¿Con quién vas a llegar?',
-      guestsHelper:'Escribe tu nombre y el de cada persona que te acompaña, aunque sea solo tú. Cada nombre podrá entrar por su cuenta al tablero de fotos con ese mismo nombre.', guestPh:'Nombre y apellido', addGuest:'＋ Agregar otro invitado',
+      contactLabel:'Tu nombre y apellido', contactPh:'Ej: Camila Restrepo', contactHelper:'Este nombre queda incluido automáticamente si confirmas que vas.', attendLabel:'¿Vas a poder asistir?', yes:'🎉 Sí, voy a asistir', no:'😢 No puedo ir',
+      emailLabel:'Tu correo (para enviarte el link del tablero)', emailPh:'tucorreo@ejemplo.com', guestsLabel:'¿Vienes con alguien más?',
+      selfGuestLabel:'✓ Tú ya estás incluido', selfGuestEmpty:'Escribe tu nombre arriba', guestsHelper:'No vuelvas a escribir tu nombre. Si vienes solo, no tienes que agregar nada. Si vienes con alguien, agrega únicamente a tus acompañantes.', guestPh:'Nombre y apellido del acompañante', addGuest:'＋ Agregar acompañante',
       reasonLabel:'¿Algo que quieras decirle a MAKO? (opcional)', reasonPh:'Ej: Ese día tengo un compromiso, pero te quiero un montón', submitYes:'Confirmar asistencia', submitNo:'Enviar respuesta',
-      importantLabel:'Importante', importantTitle:'Un nombre por persona.', importantCopy:'Eso evita duplicados y hace más fácil encontrar a cada invitado dentro del tablero.',
+      importantLabel:'Importante', importantTitle:'Tu nombre ya cuenta.', importantCopy:'No lo repitas en acompañantes. Solo agrega personas adicionales que realmente vayan contigo.',
       boardLabel:'Link del tablero', boardTitle:'Se envía al correo si lo dejas.', boardCopy:'Si no, igual podrás entrar manualmente más tarde desde el enlace principal.',
       vibeLabel:'La noche', vibeTitle:'All black. Buena música. Buena gente.', vibeCopy:'Llega listo para celebrar a MAKO y sumar otra historia a los 41.',
       successTitle:'¡Asistencia confirmada!', successDefault:'Ya quedaron registrados. Te enviamos el link del tablero a tu correo — también puedes entrar aquí:', boardLink:'Entrar al tablero →',
       writeName:'Escribe tu nombre.', sending:'Enviando…', thanks:'Gracias por avisar', declineDone:'Quedó registrado que no vas a poder asistir. ¡Ojalá nos veamos pronto!',
-      genericError:'No se pudo enviar, intenta de nuevo.', connectError:'No se pudo conectar. Revisa APPS_SCRIPT_URL en site-core.js.', needGuest:'Agrega al menos un nombre (puede ser solo el tuyo).', confirmError:'No se pudo confirmar, intenta de nuevo.',
+      genericError:'No se pudo enviar, intenta de nuevo.', connectError:'No se pudo conectar. Revisa APPS_SCRIPT_URL en site-core.js.', confirmError:'No se pudo confirmar, intenta de nuevo.',
       duplicateIntro:' Ojo: ya había alguien con ', duplicateOne:'ese nombre', duplicateMany:'esos nombres', duplicateEnd:', así que quedó(ron) como: ', emailSent:' Te enviamos el link del tablero a ', noEmail:' No dejaste correo, así que guarda este link del tablero.', confirmedA:'Quedaron confirmadas ', confirmedB:' persona(s): '
     },
     en:{
       pageTitle:'Confirm Attendance · MAKO 41', back:'← Back', eyebrow:"MAKO's 41st Birthday", title:'Confirm your attendance.',
-      sub:'Add the names of everyone attending with you so they are registered and can also access the board to leave photos, messages and birthday memories.',
+      sub:'Tell us if you are coming. Your name is included automatically, and if you are bringing anyone, you only need to add the people coming with you.',
       metaDate:'📅 Saturday, August 29', metaTime:'🕗 8:00 PM', metaPlace:'📍 Parrish, Florida', metaDress:'🖤 Dress code: all black',
       quoteTitle:'41 years. One night.', quoteCopy:'A quick RSVP so everyone is on the guest list before the celebration.',
-      howLabel:'How it works', howTitle:'1. Confirm  2. We register you  3. Enter the board', howCopy:'If you are coming with others, add each person separately so everyone can enter individually later.',
+      howLabel:'How it works', howTitle:'1. Enter your name  2. Confirm  3. Add companions if needed', howCopy:'Your name already counts as the first guest. Only add the people coming with you.',
       guestLabel:'Guest list', guestTitle:'Save your spot.', guestCopy:"Tell us who's coming with you so everything is ready for the night.",
-      contactLabel:'Your name', contactPh:'Example: Camila Restrepo', attendLabel:'Will you be able to attend?', yes:"🎉 Yes, I'll be there", no:"😢 I can't make it",
-      emailLabel:'Your email (to send you the board link)', emailPh:'you@example.com', guestsLabel:'Who are you coming with?',
-      guestsHelper:'Enter your name and each person coming with you, even if it is only you. Each name will be able to access the photo board individually.', guestPh:'First and last name', addGuest:'＋ Add another guest',
+      contactLabel:'Your first and last name', contactPh:'Example: Camila Restrepo', contactHelper:'This name is included automatically when you confirm you are attending.', attendLabel:'Will you be able to attend?', yes:"🎉 Yes, I'll be there", no:"😢 I can't make it",
+      emailLabel:'Your email (to send you the board link)', emailPh:'you@example.com', guestsLabel:'Are you bringing anyone else?',
+      selfGuestLabel:'✓ You are already included', selfGuestEmpty:'Enter your name above', guestsHelper:'Do not enter your name again. If you are coming alone, you do not need to add anything. If someone is coming with you, add only your companions.', guestPh:'Companion first and last name', addGuest:'＋ Add companion',
       reasonLabel:'Anything you want to tell MAKO? (optional)', reasonPh:"Example: I already have plans that day, but I'm celebrating you from afar", submitYes:'Confirm attendance', submitNo:'Send response',
-      importantLabel:'Important', importantTitle:'One name per person.', importantCopy:'This prevents duplicates and makes each guest easier to find on the board.',
+      importantLabel:'Important', importantTitle:'Your name already counts.', importantCopy:'Do not repeat it under companions. Only add additional people who are actually coming with you.',
       boardLabel:'Board link', boardTitle:'We send it by email if you provide one.', boardCopy:'If not, you can still access it later from the main link.',
       vibeLabel:'The night', vibeTitle:'All black. Great music. Great people.', vibeCopy:'Come ready to celebrate MAKO and add one more story to 41.',
       successTitle:'Attendance confirmed!', successDefault:'Everyone is registered. We sent the board link to your email — you can also enter here:', boardLink:'Enter the board →',
       writeName:'Enter your name.', sending:'Sending…', thanks:'Thanks for letting us know', declineDone:"We've noted that you won't be able to attend. Hope to see you soon!",
-      genericError:'Could not send it. Please try again.', connectError:'Could not connect. Check APPS_SCRIPT_URL in site-core.js.', needGuest:'Add at least one name (it can be just yours).', confirmError:'Could not confirm. Please try again.',
+      genericError:'Could not send it. Please try again.', connectError:'Could not connect. Check APPS_SCRIPT_URL in site-core.js.', confirmError:'Could not confirm. Please try again.',
       duplicateIntro:' Note: someone already had ', duplicateOne:'that name', duplicateMany:'those names', duplicateEnd:', so the final name(s) are: ', emailSent:' We sent the board link to ', noEmail:' You did not add an email, so save this board link.', confirmedA:'Confirmed ', confirmedB:' guest(s): '
     }
   };
@@ -246,9 +255,10 @@
   function setRT(id,key){ const el=document.getElementById(id); if(el) el.textContent=rt(key); }
   function applyRsvpLanguage(lang){
     currentLang=RSVP_I18N[lang]?lang:'es'; localStorage.setItem('mako41_lang',currentLang); document.documentElement.lang=currentLang; document.title=rt('pageTitle');
-    [['back-link','back'],['rsvp-eyebrow','eyebrow'],['rsvp-title','title'],['rsvp-sub','sub'],['meta-date','metaDate'],['meta-time','metaTime'],['meta-place','metaPlace'],['meta-dress','metaDress'],['rsvp-quote-title','quoteTitle'],['rsvp-quote-copy','quoteCopy'],['how-label','howLabel'],['how-title','howTitle'],['how-copy','howCopy'],['guest-list-label','guestLabel'],['guest-list-title','guestTitle'],['guest-list-copy','guestCopy'],['contact-label','contactLabel'],['attend-label','attendLabel'],['attend-yes','yes'],['attend-no','no'],['email-label','emailLabel'],['guests-label','guestsLabel'],['guests-helper','guestsHelper'],['add-guest-btn','addGuest'],['reason-label','reasonLabel'],['important-label','importantLabel'],['important-title','importantTitle'],['important-copy','importantCopy'],['board-label','boardLabel'],['board-title','boardTitle'],['board-copy','boardCopy'],['vibe-label-rsvp','vibeLabel'],['vibe-title-rsvp','vibeTitle'],['vibe-copy-rsvp','vibeCopy'],['success-title','successTitle'],['board-link','boardLink']].forEach(([id,key])=>setRT(id,key));
+    [['back-link','back'],['rsvp-eyebrow','eyebrow'],['rsvp-title','title'],['rsvp-sub','sub'],['meta-date','metaDate'],['meta-time','metaTime'],['meta-place','metaPlace'],['meta-dress','metaDress'],['rsvp-quote-title','quoteTitle'],['rsvp-quote-copy','quoteCopy'],['how-label','howLabel'],['how-title','howTitle'],['how-copy','howCopy'],['guest-list-label','guestLabel'],['guest-list-title','guestTitle'],['guest-list-copy','guestCopy'],['contact-label','contactLabel'],['contact-helper','contactHelper'],['attend-label','attendLabel'],['attend-yes','yes'],['attend-no','no'],['email-label','emailLabel'],['guests-label','guestsLabel'],['self-guest-label','selfGuestLabel'],['guests-helper','guestsHelper'],['add-guest-btn','addGuest'],['reason-label','reasonLabel'],['important-label','importantLabel'],['important-title','importantTitle'],['important-copy','importantCopy'],['board-label','boardLabel'],['board-title','boardTitle'],['board-copy','boardCopy'],['vibe-label-rsvp','vibeLabel'],['vibe-title-rsvp','vibeTitle'],['vibe-copy-rsvp','vibeCopy'],['success-title','successTitle'],['board-link','boardLink']].forEach(([id,key])=>setRT(id,key));
     document.getElementById('contacto').placeholder=rt('contactPh'); document.getElementById('correo').placeholder=rt('emailPh'); document.getElementById('motivo').placeholder=rt('reasonPh');
     document.querySelectorAll('.guest-row input').forEach(i=>i.placeholder=rt('guestPh'));
+    syncSelfGuest();
     submitBtn.textContent=vaAsistir?rt('submitYes'):rt('submitNo');
     document.querySelectorAll('.lang-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.lang===currentLang));
   }
@@ -264,7 +274,7 @@
     const row = document.createElement('div');
     row.className = 'guest-row';
     row.innerHTML = `
-      <div class="num">${rowCount}</div>
+      <div class="num">${rowCount + 1}</div>
       <input type="text" placeholder="${rt('guestPh')}" value="${value ? value.replace(/"/g,'&quot;') : ''}">
       <button type="button" class="remove-guest" title="Quitar">✕</button>
     `;
@@ -279,14 +289,23 @@
     rowCount = 0;
     rowsEl.querySelectorAll('.guest-row').forEach(row => {
       rowCount++;
-      row.querySelector('.num').textContent = rowCount;
+      row.querySelector('.num').textContent = rowCount + 1;
     });
   }
 
-  document.getElementById('add-guest-btn').addEventListener('click', () => addGuestRow());
+  document.getElementById('add-guest-btn').addEventListener('click', () => {
+    addGuestRow();
+    const inputs = rowsEl.querySelectorAll('.guest-row input');
+    if (inputs.length) inputs[inputs.length - 1].focus();
+  });
 
-  addGuestRow();
-  addGuestRow();
+  function syncSelfGuest(){
+    const input = document.getElementById('contacto');
+    const nameEl = document.getElementById('self-guest-name');
+    if (!input || !nameEl) return;
+    nameEl.textContent = input.value.trim() || rt('selfGuestEmpty');
+  }
+  document.getElementById('contacto').addEventListener('input', syncSelfGuest);
 
   let vaAsistir = true;
   const yesBtn = document.getElementById('attend-yes');
@@ -350,16 +369,18 @@
     }
 
     const correo = document.getElementById('correo').value.trim();
-    const nombres = Array.from(rowsEl.querySelectorAll('.guest-row input'))
+    const acompanantes = Array.from(rowsEl.querySelectorAll('.guest-row input'))
       .map(i => i.value.trim())
       .filter(Boolean);
 
-    if (!nombres.length){
-      statusEl.textContent = rt('needGuest');
-      statusEl.className = 'status error';
-      btn.disabled = false;
-      return;
-    }
+    // The person confirming is ALWAYS guest #1. Companion fields are additional people only.
+    const seen = new Set();
+    const nombres = [contacto, ...acompanantes].filter(name => {
+      const key = name.toLocaleLowerCase().replace(/\s+/g, ' ').trim();
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
 
     try {
       const res = await registrarGrupo(nombres, contacto, correo);
