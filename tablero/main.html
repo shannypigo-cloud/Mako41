@@ -114,14 +114,31 @@
   .photo-carousel .carousel-caption{padding:8px 12px 10px;font-size:11px;color:var(--muted)}
   .photo-carousel .carousel-caption b{color:var(--gold2);font-weight:800}
   @media(min-width:640px){.photo-carousel .carousel-card{flex-basis:46%}}
-  .feed-actions{display:flex;gap:14px;margin-top:8px}
-  .feed-actions button{background:none;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:5px 11px;font-size:12px;cursor:pointer}
-  .feed-actions button.active{color:var(--gold2);border-color:var(--gold)}
-  .comments-box{margin-top:10px;display:none}
+
+  /* Reacciones estilo WhatsApp/Instagram */
+  .reaction-summary{display:flex;align-items:center;gap:6px;margin-top:10px;padding:5px 10px;border-radius:999px;background:var(--black);border:1px solid var(--line);width:fit-content;font-size:12px;color:var(--muted)}
+  .reaction-summary.mine{border-color:var(--gold);background:rgba(201,168,106,.1);color:var(--gold2)}
+  .reaction-summary .emojis{font-size:14px;letter-spacing:-2px}
+  .reaction-summary .mine-tag{font-size:10px;color:var(--gold2);font-weight:800;margin-left:2px}
+  .reaction-row{display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap}
+  .reaction-chip{display:flex;align-items:center;gap:4px;padding:4px 9px;border-radius:999px;border:1px solid var(--line);background:var(--black);font-size:12px;cursor:pointer;color:var(--muted)}
+  .reaction-chip.mine{border-color:var(--gold);background:rgba(201,168,106,.12);color:var(--gold2);font-weight:700}
+  .reaction-add-btn{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:var(--black);color:var(--muted);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .reaction-picker{display:none;gap:4px;background:var(--black);border:1px solid var(--gold);border-radius:999px;padding:5px 8px;position:absolute;bottom:calc(100% + 6px);left:0;z-index:5;white-space:nowrap}
+  .reaction-picker.open{display:flex}
+  .reaction-picker button{background:none;border:none;font-size:17px;cursor:pointer;padding:2px;border-radius:50%}
+  .reaction-picker button.picked{background:rgba(201,168,106,.25)}
+  .comment-toggle-link{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;margin-top:8px;padding:0;display:block}
+
+  /* Comentarios estilo hilo de red social */
+  .comments-box{margin-top:10px;display:none;padding-left:6px;border-left:2px solid var(--line)}
   .comments-box.open{display:block}
-  .comment-line{font-size:12px;color:var(--muted);padding:4px 0}
-  .comment-line b{color:var(--cream)}
-  .comment-form{display:flex;gap:6px;margin-top:6px}
+  .comment-bubble{display:flex;gap:8px;padding:8px 0}
+  .comment-avatar{width:22px;height:22px;border-radius:50%;background:var(--ink2);border:1px solid var(--gold);color:var(--gold2);font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+  .comment-content{background:var(--black);border-radius:12px;padding:8px 12px;flex:1}
+  .comment-content .cn{font-size:12px;font-weight:700;color:var(--gold2);display:block;margin-bottom:2px}
+  .comment-content .ct{font-size:13px;color:var(--cream);line-height:1.4}
+  .comment-form{display:flex;gap:6px;margin-top:8px}
   .comment-form input{flex:1;background:var(--black);border:1px solid var(--line);border-radius:999px;color:var(--cream);padding:8px 12px;font-size:12px}
   .comment-form button{background:var(--gold);border:none;color:var(--black);border-radius:999px;padding:8px 12px;font-size:11px;font-weight:800;cursor:pointer}
 
@@ -900,13 +917,37 @@
     setupCarousel();
   }
 
+  const REACTION_EMOJIS = ["❤️","😂","😮","👏","🎉"];
+
   function renderFeed(list){
     const el = document.getElementById('feed-list');
     if (!list || !list.length){
       el.innerHTML = `<div class="empty-state">${t('feedEmpty')}</div>`;
       return;
     }
-    el.innerHTML = list.map(d => `
+    const myName = getSession()?.name;
+
+    el.innerHTML = list.map(d => {
+      const reacciones = d.reacciones || {};
+      const emojiKeys = Object.keys(reacciones).sort((a,b) => reacciones[b].length - reacciones[a].length);
+      const totalReacciones = d.totalReacciones || 0;
+      const miEmoji = emojiKeys.find(e => myName && reacciones[e].includes(myName));
+
+      const summaryHtml = totalReacciones > 0 ? `
+        <div class="reaction-summary ${miEmoji ? 'mine' : ''}">
+          <span class="emojis">${emojiKeys.slice(0,3).join('')}</span>
+          <span>${totalReacciones} reacción${totalReacciones===1?'':'es'}</span>
+          ${miEmoji ? `<span class="mine-tag">· Tú reaccionaste ${miEmoji}</span>` : ''}
+        </div>
+      ` : '';
+
+      const chips = emojiKeys.map(emoji => {
+        const gente = reacciones[emoji];
+        const mine = myName && gente.includes(myName);
+        return `<button class="reaction-chip ${mine ? 'mine' : ''}" data-id="${d.id}" data-emoji="${emoji}">${emoji} ${gente.length}</button>`;
+      }).join('');
+
+      return `
       <div class="feed-item" data-id="${d.id}">
         <div class="feed-head">
           <div class="feed-avatar">${initials(d.invitado)}</div>
@@ -914,29 +955,58 @@
         </div>
         ${d.mensaje ? `<div class="feed-msg">${d.mensaje.replace(/</g,'&lt;')}</div>` : ''}
         ${d.previewUrl ? `<img src="${d.previewUrl}" alt="">` : ''}
-        <div class="feed-actions">
-          <button class="like-btn ${(d.likers||[]).includes(getSession()?.name) ? 'active' : ''}" data-id="${d.id}">❤️ ${d.likes || 0}</button>
-          <button class="comment-toggle" data-id="${d.id}">💬 ${(d.comentarios||[]).length}</button>
+        ${summaryHtml}
+        <div class="reaction-row">
+          ${chips}
+          <div style="position:relative">
+            <button class="reaction-add-btn" data-id="${d.id}">🙂+</button>
+            <div class="reaction-picker" id="picker-${d.id}">
+              ${REACTION_EMOJIS.map(e => `<button data-id="${d.id}" data-emoji="${e}" class="${e === miEmoji ? 'picked' : ''}">${e}</button>`).join('')}
+            </div>
+          </div>
         </div>
+        <button class="comment-toggle-link" data-id="${d.id}">💬 ${(d.comentarios||[]).length} ${t('commentPlaceholder').includes('Write') ? 'comments' : 'comentarios'}</button>
         <div class="comments-box" id="comments-${d.id}">
-          ${(d.comentarios||[]).map(c => `<div class="comment-line"><b>${c.invitado}:</b> ${c.texto.replace(/</g,'&lt;')}</div>`).join('')}
+          ${(d.comentarios||[]).map(c => `
+            <div class="comment-bubble">
+              <div class="comment-avatar">${initials(c.invitado)}</div>
+              <div class="comment-content"><span class="cn">${c.invitado}</span><span class="ct">${c.texto.replace(/</g,'&lt;')}</span></div>
+            </div>
+          `).join('')}
           <div class="comment-form">
             <input type="text" placeholder="${t('commentPlaceholder')}" data-id="${d.id}">
             <button data-id="${d.id}">${t('send')}</button>
           </div>
         </div>
       </div>
-    `).join('');
+    `; }).join('');
 
-    el.querySelectorAll('.like-btn').forEach(btn => {
+    // Abrir/cerrar el picker de reacciones
+    el.querySelectorAll('.reaction-add-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!requireSession()) return;
+        document.querySelectorAll('.reaction-picker.open').forEach(p => { if(p.id !== 'picker-'+btn.dataset.id) p.classList.remove('open'); });
+        document.getElementById('picker-' + btn.dataset.id).classList.toggle('open');
+      });
+    });
+    // Elegir emoji del picker
+    el.querySelectorAll('.reaction-picker button').forEach(btn => {
       btn.addEventListener('click', async () => {
         const s = requireSession(); if (!s) return;
-        btn.disabled = true;
-        await toggleLike(btn.dataset.id, s.name);
+        btn.closest('.reaction-picker').classList.remove('open');
+        await toggleLike(btn.dataset.id, s.name, btn.dataset.emoji);
         await refreshData();
       });
     });
-    el.querySelectorAll('.comment-toggle').forEach(btn => {
+    // Toggle rápido en chips existentes (mismo emoji ya puesto = se quita; otro = cambia)
+    el.querySelectorAll('.reaction-chip').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const s = requireSession(); if (!s) return;
+        await toggleLike(btn.dataset.id, s.name, btn.dataset.emoji);
+        await refreshData();
+      });
+    });
+    el.querySelectorAll('.comment-toggle-link').forEach(btn => {
       btn.addEventListener('click', () => {
         document.getElementById('comments-' + btn.dataset.id).classList.toggle('open');
       });
