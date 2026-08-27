@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050505">
+<title>MAKO41 · Pantalla en vivo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#050505; --ink2:#0e0e0e; --muted:#77736d; --cream:#f4efe5;
+    --gold:#c49a4a; --gold2:#e0be72; --gold3:#9b7432;
+    --line:rgba(224,190,114,.16); --line-soft:rgba(255,255,255,.075);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;overflow:hidden}
+  body{
+    background:
+      radial-gradient(circle at 50% -10%, rgba(224,190,114,.10), transparent 30%),
+      radial-gradient(circle at 100% 24%, rgba(224,190,114,.045), transparent 25%),
+      linear-gradient(180deg,#060606 0%,#030303 100%);
+    color:var(--cream);font-family:'Manrope',sans-serif;
+    display:flex;flex-direction:column;padding:3vh 4vw;
+  }
+
+  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:2vh}
+  .brand{font-weight:800;font-size:clamp(20px,2.4vw,32px);letter-spacing:-.02em}
+  .brand span{color:var(--gold)}
+  .clock{font-size:clamp(16px,1.8vw,24px);color:var(--muted);font-weight:700}
+
+  .grid{flex:1;display:grid;grid-template-columns:1.1fr 1fr;gap:3vw;min-height:0}
+
+  .panel{background:linear-gradient(180deg,#0e0e0e,#090909);border:1px solid var(--line-soft);border-radius:28px;padding:3vh 3vw;box-shadow:0 20px 60px rgba(0,0,0,.4);display:flex;flex-direction:column;min-height:0}
+  .panel-title{font-size:clamp(13px,1.3vw,18px);letter-spacing:.14em;text-transform:uppercase;color:var(--gold2);font-weight:800;margin:0 0 2vh}
+
+  /* Stats grid */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:2vh 1.5vw;flex:1}
+  .stat-tile{background:#101010;border:1px solid var(--line-soft);border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2vh 1vw}
+  .stat-num{font-weight:800;font-size:clamp(30px,4.2vw,58px);color:var(--cream);letter-spacing:-.03em;line-height:1}
+  .stat-lbl{font-size:clamp(10px,1vw,14px);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:1vh;font-weight:800}
+
+  /* Ranking */
+  .rank-list{flex:1;overflow:hidden;display:flex;flex-direction:column;gap:1.4vh}
+  .rank-row{display:flex;align-items:center;gap:1.2vw;padding:1.4vh 1.4vw;border-radius:16px;background:#0d0d0d;border:1px solid var(--line-soft)}
+  .rank-row.top{background:linear-gradient(100deg,#151109,#0c0c0c 70%);border-color:rgba(224,190,114,.42)}
+  .rank-num{width:clamp(24px,2.4vw,34px);text-align:center;font-weight:800;color:var(--gold2);font-size:clamp(14px,1.6vw,22px)}
+  .rank-avatar{width:clamp(30px,3.2vw,46px);height:clamp(30px,3.2vw,46px);border-radius:50%;background:#171717;border:1px solid var(--line);color:var(--cream);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:clamp(13px,1.4vw,18px);flex-shrink:0}
+  .rank-name{flex:1;font-weight:700;font-size:clamp(14px,1.6vw,22px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rank-pts{font-weight:800;color:var(--gold2);font-size:clamp(14px,1.6vw,22px);flex-shrink:0}
+
+  .winner-strip{margin-top:2vh;display:flex;align-items:center;gap:1.4vw;padding:2vh 1.6vw;border-radius:20px;background:rgba(224,190,114,.08);border:1px solid var(--gold)}
+  .winner-strip .medal{font-size:clamp(26px,3vw,42px)}
+  .winner-strip b{color:var(--gold2);font-size:clamp(16px,1.8vw,26px)}
+  .winner-strip small{display:block;color:var(--muted);font-size:clamp(10px,1vw,14px);text-transform:uppercase;letter-spacing:.1em}
+
+  .empty{color:var(--muted);text-align:center;padding:4vh 0;font-size:clamp(13px,1.4vw,18px)}
+
+  @media (max-width: 900px){
+    body{overflow:auto;height:auto}
+    .grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+  <div class="top">
+    <div class="brand">MAKO<span>41</span> · Pantalla en vivo</div>
+    <div class="clock" id="clock">--:--</div>
+  </div>
+
+  <div class="grid">
+    <section class="panel">
+      <p class="panel-title">📊 Todo lo que se ha movido</p>
+      <div class="stats">
+        <div class="stat-tile"><div class="stat-num" id="s-fotos">0</div><div class="stat-lbl">Fotos subidas</div></div>
+        <div class="stat-tile"><div class="stat-num" id="s-dedis">0</div><div class="stat-lbl">Dedicatorias</div></div>
+        <div class="stat-tile"><div class="stat-num" id="s-reacciones">0</div><div class="stat-lbl">Reacciones</div></div>
+        <div class="stat-tile"><div class="stat-num" id="s-comentarios">0</div><div class="stat-lbl">Comentarios</div></div>
+        <div class="stat-tile"><div class="stat-num" id="s-confirmados">0</div><div class="stat-lbl">Confirmados</div></div>
+        <div class="stat-tile"><div class="stat-num" id="s-puntos">0</div><div class="stat-lbl">Puntos totales</div></div>
+      </div>
+      <div class="winner-strip" id="winner-strip" style="display:none">
+        <div class="medal">🏆</div>
+        <div><small>Va ganando el ranking</small><b id="winner-name">—</b></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <p class="panel-title">🏆 Ranking en vivo</p>
+      <div class="rank-list" id="rank-list"><div class="empty">Cargando…</div></div>
+    </section>
+  </div>
+
+<script>
+  // 👉 Misma URL de Apps Script que usa el tablero. Si la cambias allá,
+  // cámbiala también acá.
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxASy-eubd_9w7I-RBNLgGUXExa4UB-GI0g7zAw5ad9NesAeWII8T2dW3BS7KdPynAlQA/exec";
+
+  function initials(name){ return (name || '?').trim().charAt(0).toUpperCase(); }
+
+  function tickClock(){
+    const d = new Date();
+    document.getElementById('clock').textContent =
+      d.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+  }
+  tickClock();
+  setInterval(tickClock, 1000 * 15);
+
+  function renderStats(data){
+    const dedis = data.dedicatorias || [];
+    const fotos = dedis.filter(d => d.previewUrl).length;
+    const mensajes = dedis.filter(d => d.mensaje).length;
+    const reacciones = dedis.reduce((sum, d) => sum + (d.totalReacciones || 0), 0);
+    const comentarios = dedis.reduce((sum, d) => sum + (d.comentarios ? d.comentarios.length : 0), 0);
+    const confirmados = (data.asistencias || []).length;
+    const totalPts = (data.scoreboard || []).reduce((s, r) => s + r.puntos, 0);
+
+    document.getElementById('s-fotos').textContent = fotos;
+    document.getElementById('s-dedis').textContent = mensajes;
+    document.getElementById('s-reacciones').textContent = reacciones;
+    document.getElementById('s-comentarios').textContent = comentarios;
+    document.getElementById('s-confirmados').textContent = confirmados;
+    document.getElementById('s-puntos').textContent = totalPts;
+
+    const top = (data.scoreboard || [])[0];
+    const winnerEl = document.getElementById('winner-strip');
+    if (top && top.puntos > 0){
+      winnerEl.style.display = 'flex';
+      document.getElementById('winner-name').textContent = `${top.invitado} · ${top.puntos} pts`;
+    } else {
+      winnerEl.style.display = 'none';
+    }
+  }
+
+  function renderRanking(scoreboard){
+    const el = document.getElementById('rank-list');
+    if (!scoreboard || !scoreboard.length){
+      el.innerHTML = '<div class="empty">Aún no hay puntos — ¡empieza tú!</div>';
+      return;
+    }
+    const top10 = scoreboard.slice(0, 10);
+    el.innerHTML = top10.map((row, i) => `
+      <div class="rank-row ${i === 0 ? 'top' : ''}">
+        <div class="rank-num">${i === 0 ? '👑' : '#' + (i + 1)}</div>
+        <div class="rank-avatar">${initials(row.invitado)}</div>
+        <div class="rank-name">${row.invitado}</div>
+        <div class="rank-pts">${row.puntos} pts</div>
+      </div>
+    `).join('');
+  }
+
+  async function refresh(){
+    try {
+      const res = await fetch(`${APPS_SCRIPT_URL}?action=getAppData`);
+      const data = await res.json();
+      renderStats(data);
+      renderRanking(data.scoreboard);
+    } catch (err) {
+      // Silencioso — en la próxima vuelta reintenta solo.
+      console.error('No se pudo actualizar la pantalla', err);
+    }
+  }
+
+  refresh();
+  setInterval(refresh, 15000); // se actualiza sola cada 15 segundos
+</script>
+</body>
+</html>
