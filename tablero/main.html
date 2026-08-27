@@ -102,6 +102,18 @@
   .feed-name{font-weight:700;font-size:13px;color:var(--gold2)}
   .feed-msg{font-size:14px;margin:6px 0 0;line-height:1.5}
   .feed-item img{max-width:100%;border-radius:10px;margin-top:8px;display:block}
+
+  /* Carrusel de fotos (arriba del muro) */
+  .carousel-note{display:flex;align-items:center;gap:7px;margin:0 0 10px;color:var(--muted);font-size:11px;font-weight:700}
+  .carousel-note .pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--gold2);box-shadow:0 0 0 0 rgba(224,190,114,.35);animation:carouselPulse 1.8s infinite}
+  @keyframes carouselPulse{0%{box-shadow:0 0 0 0 rgba(224,190,114,.35)}70%{box-shadow:0 0 0 8px rgba(224,190,114,0)}100%{box-shadow:0 0 0 0 rgba(224,190,114,0)}}
+  .photo-carousel{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:4px;margin-bottom:14px;scrollbar-width:none}
+  .photo-carousel::-webkit-scrollbar{display:none}
+  .photo-carousel .carousel-card{flex:0 0 78%;scroll-snap-align:start;border-radius:18px;overflow:hidden;border:1px solid var(--line-soft);background:#0e0e0e;box-shadow:0 12px 30px rgba(0,0,0,.3)}
+  .photo-carousel .carousel-card img{width:100%;height:220px;object-fit:cover;display:block}
+  .photo-carousel .carousel-caption{padding:8px 12px 10px;font-size:11px;color:var(--muted)}
+  .photo-carousel .carousel-caption b{color:var(--gold2);font-weight:800}
+  @media(min-width:640px){.photo-carousel .carousel-card{flex-basis:46%}}
   .feed-actions{display:flex;gap:14px;margin-top:8px}
   .feed-actions button{background:none;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:5px 11px;font-size:12px;cursor:pointer}
   .feed-actions button.active{color:var(--gold2);border-color:var(--gold)}
@@ -366,6 +378,10 @@
           <h2 class="section-title" id="feed-title">Momentos que sí<br>merecen álbum ⭐</h2>
         </div>
       </div>
+      <div class="carousel-note" id="carousel-note" style="display:none">
+        <span class="pulse-dot"></span><span>Las fotos van pasando solitas · deslizá cuando querás</span>
+      </div>
+      <div class="photo-carousel" id="photo-carousel"></div>
       <div class="card" id="feed-list"><div class="empty-state" id="feed-loading">Cargando…</div></div>
     </section>
 
@@ -765,6 +781,85 @@
   });
 
   // ---------- Feed (fotos + dedicatorias unificado) ----------
+  // ---------- Carrusel de fotos (arriba del muro) ----------
+  let carouselTimer = null;
+  let carouselResumeTimer = null;
+  let carouselIndex = 0;
+
+  function getCarouselCards(){
+    const grid = document.getElementById('photo-carousel');
+    return grid ? Array.from(grid.querySelectorAll('.carousel-card')) : [];
+  }
+  function goToCarouselCard(index, instant){
+    const grid = document.getElementById('photo-carousel');
+    const cards = getCarouselCards();
+    if (!grid || cards.length < 2) return;
+    carouselIndex = ((index % cards.length) + cards.length) % cards.length;
+    const firstLeft = cards[0].offsetLeft;
+    const targetLeft = cards[carouselIndex].offsetLeft - firstLeft;
+    grid.scrollTo({ left: targetLeft, behavior: instant ? 'auto' : 'smooth' });
+  }
+  function advanceCarousel(){
+    const cards = getCarouselCards();
+    if (cards.length < 2) return;
+    const next = carouselIndex + 1;
+    if (next >= cards.length){
+      carouselIndex = 0;
+      document.getElementById('photo-carousel').scrollTo({ left: 0, behavior: 'smooth' });
+    } else {
+      goToCarouselCard(next, false);
+    }
+  }
+  function stopCarousel(){
+    if (carouselTimer){ clearInterval(carouselTimer); carouselTimer = null; }
+  }
+  function resumeCarouselSoon(){
+    stopCarousel();
+    if (carouselResumeTimer) clearTimeout(carouselResumeTimer);
+    carouselResumeTimer = setTimeout(startCarousel, 3000);
+  }
+  function startCarousel(){
+    stopCarousel();
+    const grid = document.getElementById('photo-carousel');
+    const cards = getCarouselCards();
+    if (!grid || cards.length < 2) return;
+    if (grid.scrollWidth <= grid.clientWidth + 2) return; // no hay overflow real
+    carouselTimer = setInterval(advanceCarousel, 2200);
+  }
+  function setupCarousel(){
+    stopCarousel();
+    if (carouselResumeTimer) clearTimeout(carouselResumeTimer);
+    carouselIndex = 0;
+    const grid = document.getElementById('photo-carousel');
+    if (!grid) return;
+    grid.scrollLeft = 0;
+    if (!grid.dataset.carouselBound){
+      ['touchstart','pointerdown','wheel'].forEach(evt => grid.addEventListener(evt, resumeCarouselSoon, { passive: true }));
+      grid.dataset.carouselBound = '1';
+    }
+    requestAnimationFrame(() => setTimeout(startCarousel, 300));
+  }
+
+  function renderCarousel(list){
+    const grid = document.getElementById('photo-carousel');
+    const note = document.getElementById('carousel-note');
+    if (!grid) return;
+    const fotos = (list || []).filter(d => d.previewUrl);
+    if (!fotos.length){
+      grid.innerHTML = '';
+      note.style.display = 'none';
+      return;
+    }
+    note.style.display = fotos.length > 1 ? 'flex' : 'none';
+    grid.innerHTML = fotos.map(d => `
+      <div class="carousel-card">
+        <img src="${d.previewUrl}" alt="Foto de ${initials(d.invitado)}">
+        <div class="carousel-caption"><b>${d.invitado}</b></div>
+      </div>
+    `).join('');
+    setupCarousel();
+  }
+
   function renderFeed(list){
     const el = document.getElementById('feed-list');
     if (!list || !list.length){
@@ -878,6 +973,7 @@
   }
 
   function renderAll(data){
+    renderCarousel(data.dedicatorias);
     renderFeed(data.dedicatorias);
     renderLeaderboard(data.scoreboard);
     renderCategories();
