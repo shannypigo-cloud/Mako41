@@ -173,6 +173,52 @@
   .gate-lang button{border:0;background:transparent;color:var(--muted);font-size:9px;font-weight:900;padding:6px 8px;border-radius:999px;cursor:pointer}.gate-lang button.active{background:linear-gradient(90deg,var(--gold),var(--gold2));color:var(--black)}
   @media(max-width:520px){.access-gate{padding:14px}.access-gate-card{padding:26px 16px 22px;border-radius:24px}.gate-countdown{gap:6px}.gate-unit{padding:11px 4px 9px}.gate-unit b{font-size:21px}.gate-lang{top:12px;right:12px}}
 
+
+  /* ---- Learning Center ---- */
+  body.learning-open{overflow:hidden}
+  .learning-trigger{display:inline-flex;align-items:center;gap:6px;color:var(--gold2);border-color:rgba(232,202,160,.28);background:rgba(201,168,106,.055)}
+  .learning-trigger:hover{background:rgba(201,168,106,.10);color:var(--cream)}
+  .learning-center{position:fixed;inset:0;z-index:1200;display:none;align-items:flex-end;justify-content:center;padding:18px;background:rgba(0,0,0,.72);backdrop-filter:blur(14px)}
+  .learning-center.open{display:flex}
+  .learning-sheet{width:min(760px,100%);max-height:min(88vh,900px);overflow:auto;overscroll-behavior:contain;border:1px solid rgba(201,168,106,.24);border-radius:30px;background:linear-gradient(180deg,#181715 0%,#0d0d0c 100%);box-shadow:0 32px 90px rgba(0,0,0,.62);animation:learningUp .28s ease both}
+  @keyframes learningUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+  .learning-hero{position:relative;overflow:hidden;padding:26px 26px 22px;border-bottom:1px solid var(--line);background:radial-gradient(circle at 88% 0%,rgba(201,168,106,.16),transparent 35%)}
+  .learning-hero::after{content:"41";position:absolute;right:-16px;bottom:-52px;font-family:'Cormorant Garamond',serif;font-size:150px;line-height:1;color:rgba(255,255,255,.025);pointer-events:none}
+  .learning-kicker{position:relative;z-index:1;font-size:9px;letter-spacing:.22em;font-weight:900;color:var(--gold);text-transform:uppercase}
+  .learning-title{position:relative;z-index:1;margin:7px 48px 0 0;font-family:'Manrope',sans-serif;font-size:clamp(26px,6vw,38px);line-height:1;letter-spacing:-.045em;color:var(--cream)}
+  .learning-sub{position:relative;z-index:1;margin:10px 48px 0 0;max-width:560px;color:var(--muted);font-size:12px;line-height:1.65}
+  .learning-close{position:absolute;z-index:2;top:18px;right:18px;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:rgba(0,0,0,.22);color:var(--cream);font-size:18px;cursor:pointer}
+  .learning-body{padding:20px 22px 24px}
+  .learning-section-label{margin:0 0 10px;font-size:9px;letter-spacing:.18em;font-weight:900;color:var(--gold);text-transform:uppercase}
+  .learning-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .learning-step{position:relative;min-height:142px;padding:16px;border-radius:20px;border:1px solid rgba(255,255,255,.065);background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.018))}
+  .learning-num{width:30px;height:30px;border-radius:11px;display:grid;place-items:center;background:rgba(201,168,106,.11);border:1px solid rgba(201,168,106,.18);color:var(--gold2);font-size:11px;font-weight:900}
+  .learning-step h3{margin:11px 0 5px;font-size:14px;line-height:1.2;color:var(--cream)}
+  .learning-step p{margin:0;color:var(--muted);font-size:11px;line-height:1.55}
+  .learning-tip{display:flex;gap:11px;align-items:flex-start;margin:18px 0;padding:14px 15px;border-radius:18px;background:linear-gradient(90deg,rgba(201,168,106,.12),rgba(201,168,106,.045));border:1px solid rgba(201,168,106,.17)}
+  .learning-tip-icon{width:32px;height:32px;border-radius:11px;display:grid;place-items:center;background:rgba(0,0,0,.22);flex:none}
+  .learning-tip b{display:block;font-size:12px;color:var(--gold2)}
+  .learning-tip span{display:block;margin-top:3px;color:var(--muted);font-size:11px;line-height:1.5}
+  .points-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin:10px 0 18px}
+  .point-chip{text-align:center;padding:10px 5px;border-radius:15px;border:1px solid rgba(255,255,255,.06);background:#0a0a0a}
+  .point-chip b{display:block;color:var(--gold2);font-size:14px}.point-chip span{display:block;margin-top:3px;color:var(--muted);font-size:8px;line-height:1.25}
+  .learning-faqs{display:grid;gap:8px}
+  .learning-faq{border:1px solid rgba(255,255,255,.06);border-radius:16px;background:rgba(255,255,255,.025);overflow:hidden}
+  .learning-faq summary{list-style:none;cursor:pointer;padding:13px 14px;font-size:11px;font-weight:800;color:var(--cream);display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .learning-faq summary::-webkit-details-marker{display:none}
+  .learning-faq summary::after{content:"＋";color:var(--gold2);font-size:15px}.learning-faq[open] summary::after{content:"−"}
+  .learning-faq p{margin:0;padding:0 14px 14px;color:var(--muted);font-size:11px;line-height:1.6}
+  @media(min-width:721px){.learning-center{align-items:center}.learning-sheet{max-height:86vh}}
+  @media(max-width:600px){
+    .learning-center{padding:0;align-items:flex-end}
+    .learning-sheet{width:100%;max-height:91vh;border-radius:28px 28px 0 0;border-bottom:0}
+    .learning-hero{padding:22px 18px 18px}.learning-title{margin-right:42px}.learning-sub{margin-right:24px}
+    .learning-body{padding:16px 14px calc(22px + env(safe-area-inset-bottom))}
+    .learning-grid{grid-template-columns:1fr}.learning-step{min-height:0}
+    .points-strip{grid-template-columns:repeat(5,minmax(58px,1fr));overflow-x:auto;padding-bottom:4px;scrollbar-width:none}.points-strip::-webkit-scrollbar{display:none}
+    .point-chip{min-width:58px}
+  }
+
 </style>
 </head>
 <body>
@@ -220,6 +266,7 @@
       <a class="top-pill" id="nav-feed" href="#feed">📸 Fotos y mensajes</a>
       <a class="top-pill" id="nav-ranking" href="#ranking">🏆 Ranking</a>
       <a class="top-pill" id="nav-dashboard" href="#dashboard">📊 Dashboard</a>
+      <button class="top-pill learning-trigger" id="learning-center-btn" type="button">✨ Guía</button>
       <a class="top-pill" id="nav-details" href="#details">📍 Coordenadas</a>
     </div>
   </div>
@@ -246,6 +293,48 @@
     <input type="file" id="up-photo" accept="image/*">
     <button class="btn" id="up-send">Enviar</button>
     <div class="status" id="up-status"></div>
+  </div>
+</div>
+
+<!-- ---------- Learning Center ---------- -->
+<div class="learning-center" id="learning-center" role="dialog" aria-modal="true" aria-labelledby="learning-title" aria-hidden="true">
+  <div class="learning-sheet">
+    <div class="learning-hero">
+      <button class="learning-close" id="learning-close" type="button" aria-label="Cerrar">✕</button>
+      <div class="learning-kicker" id="learning-kicker">MAKO41 · GUÍA RÁPIDA</div>
+      <h2 class="learning-title" id="learning-title">¿Primera vez por acá?</h2>
+      <p class="learning-sub" id="learning-sub">En menos de un minuto sabes cómo usar el tablero, sumar puntos y dejar recuerdos para MAKO.</p>
+    </div>
+    <div class="learning-body">
+      <p class="learning-section-label" id="learning-start-label">EMPIEZA AQUÍ</p>
+      <div class="learning-grid">
+        <article class="learning-step"><div class="learning-num">01</div><h3 id="lc-step1-title">Entra con tu nombre</h3><p id="lc-step1-copy">Selecciona tu propio perfil. Todo lo que hagas — fotos, reacciones y comentarios — quedará a tu nombre.</p></article>
+        <article class="learning-step"><div class="learning-num">02</div><h3 id="lc-step2-title">Sube fotos o mensajes</h3><p id="lc-step2-copy">Toca “Subir” para dejar una foto, una dedicatoria o ambas. No necesitas hacer las dos cosas.</p></article>
+        <article class="learning-step"><div class="learning-num">03</div><h3 id="lc-step3-title">Reacciona y comenta</h3><p id="lc-step3-copy">Dale ❤️ a los momentos que te gusten y abre 💬 para comentar. Eso también mueve el ranking.</p></article>
+        <article class="learning-step"><div class="learning-num">04</div><h3 id="lc-step4-title">Mira el ranking</h3><p id="lc-step4-copy">El ranking se actualiza con la actividad del grupo. Mientras más participas, más puntos sumas.</p></article>
+        <article class="learning-step"><div class="learning-num">05</div><h3 id="lc-step5-title">Revisa el resumen</h3><p id="lc-step5-copy">En Dashboard ves fotos, mensajes, reacciones, comentarios, confirmados y quién va ganando.</p></article>
+        <article class="learning-step"><div class="learning-num">06</div><h3 id="lc-step6-title">Disfruta el parche</h3><p id="lc-step6-copy">No hay que “completar” nada. Usa el tablero durante la noche y deja que el álbum se vaya armando solo.</p></article>
+      </div>
+
+      <div class="learning-tip"><div class="learning-tip-icon">👤</div><div><b id="lc-tip-title">Importante: usa siempre tu perfil</b><span id="lc-tip-copy">Si ves otro nombre arriba, toca el perfil y selecciona el tuyo antes de subir, reaccionar o comentar.</span></div></div>
+
+      <p class="learning-section-label" id="learning-points-label">ASÍ SUMAS PUNTOS</p>
+      <div class="points-strip">
+        <div class="point-chip"><b>+1</b><span id="lc-point-photo">📷 Foto</span></div>
+        <div class="point-chip"><b>+1</b><span id="lc-point-message">💌 Mensaje</span></div>
+        <div class="point-chip"><b>+2</b><span id="lc-point-reaction">❤️ Reacción</span></div>
+        <div class="point-chip"><b>+3</b><span id="lc-point-comment">💬 Comentario</span></div>
+        <div class="point-chip"><b>+5</b><span id="lc-point-attendance">🎉 Asistencia</span></div>
+      </div>
+
+      <p class="learning-section-label" id="learning-faq-label">PREGUNTAS RÁPIDAS</p>
+      <div class="learning-faqs">
+        <details class="learning-faq"><summary id="lc-faq1-q">¿Tengo que subir una foto para escribir un mensaje?</summary><p id="lc-faq1-a">No. Puedes subir solo una foto, solo una dedicatoria o las dos juntas.</p></details>
+        <details class="learning-faq"><summary id="lc-faq2-q">¿Qué pasa si escogí el nombre equivocado?</summary><p id="lc-faq2-a">Toca tu perfil en la parte superior y selecciona tu nombre antes de hacer otra acción.</p></details>
+        <details class="learning-faq"><summary id="lc-faq3-q">¿Cuándo abre el tablero?</summary><p id="lc-faq3-a">El sábado 29 de agosto a las 6:00 AM, hora de Florida. Después de esa hora queda abierto automáticamente.</p></details>
+        <details class="learning-faq"><summary id="lc-faq4-q">¿El ranking es en serio?</summary><p id="lc-faq4-a">Es para divertirnos. Los puntos simplemente reconocen quién estuvo más activo dejando recuerdos y participando.</p></details>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -383,6 +472,63 @@
     document.querySelectorAll('[data-gate-lang]').forEach(btn=>btn.addEventListener('click',()=>renderGateLang(btn.dataset.gateLang)));
     renderGateLang(gateLang);
     if(updateGate()) setInterval(updateGate,1000);
+  })();
+</script>
+
+
+<script>
+  // ---------- Learning Center (visual help only) ----------
+  (function(){
+    const LC = {
+      es:{
+        button:'✨ Guía',close:'Cerrar',kicker:'MAKO41 · GUÍA RÁPIDA',title:'¿Primera vez por acá?',sub:'En menos de un minuto sabes cómo usar el tablero, sumar puntos y dejar recuerdos para MAKO.',start:'EMPIEZA AQUÍ',
+        s1t:'Entra con tu nombre',s1c:'Selecciona tu propio perfil. Todo lo que hagas — fotos, reacciones y comentarios — quedará a tu nombre.',
+        s2t:'Sube fotos o mensajes',s2c:'Toca “Subir” para dejar una foto, una dedicatoria o ambas. No necesitas hacer las dos cosas.',
+        s3t:'Reacciona y comenta',s3c:'Dale ❤️ a los momentos que te gusten y abre 💬 para comentar. Eso también mueve el ranking.',
+        s4t:'Mira el ranking',s4c:'El ranking se actualiza con la actividad del grupo. Mientras más participas, más puntos sumas.',
+        s5t:'Revisa el resumen',s5c:'En Dashboard ves fotos, mensajes, reacciones, comentarios, confirmados y quién va ganando.',
+        s6t:'Disfruta el parche',s6c:'No hay que “completar” nada. Usa el tablero durante la noche y deja que el álbum se vaya armando solo.',
+        tipt:'Importante: usa siempre tu perfil',tipc:'Si ves otro nombre arriba, toca el perfil y selecciona el tuyo antes de subir, reaccionar o comentar.',
+        points:'ASÍ SUMAS PUNTOS',photo:'📷 Foto',message:'💌 Mensaje',reaction:'❤️ Reacción',comment:'💬 Comentario',attendance:'🎉 Asistencia',faq:'PREGUNTAS RÁPIDAS',
+        q1:'¿Tengo que subir una foto para escribir un mensaje?',a1:'No. Puedes subir solo una foto, solo una dedicatoria o las dos juntas.',
+        q2:'¿Qué pasa si escogí el nombre equivocado?',a2:'Toca tu perfil en la parte superior y selecciona tu nombre antes de hacer otra acción.',
+        q3:'¿Cuándo abre el tablero?',a3:'El sábado 29 de agosto a las 6:00 AM, hora de Florida. Después de esa hora queda abierto automáticamente.',
+        q4:'¿El ranking es en serio?',a4:'Es para divertirnos. Los puntos simplemente reconocen quién estuvo más activo dejando recuerdos y participando.'
+      },
+      en:{
+        button:'✨ Guide',close:'Close',kicker:'MAKO41 · QUICK GUIDE',title:'First time here?',sub:'In under a minute, learn how to use the board, earn points and leave memories for MAKO.',start:'START HERE',
+        s1t:'Enter with your name',s1c:'Choose your own profile. Everything you do — photos, reactions and comments — will be credited to you.',
+        s2t:'Upload photos or messages',s2c:'Tap “Upload” to leave a photo, a message, or both. You do not need to do both.',
+        s3t:'React and comment',s3c:'Tap ❤️ on moments you like and open 💬 to comment. Those actions also move the ranking.',
+        s4t:'Check the ranking',s4c:'The ranking updates with everyone’s activity. The more you participate, the more points you earn.',
+        s5t:'See the recap',s5c:'Dashboard shows photos, messages, reactions, comments, confirmed guests and who is leading.',
+        s6t:'Enjoy the night',s6c:'There is nothing you have to “complete.” Use the board during the night and let the album build itself.',
+        tipt:'Important: always use your profile',tipc:'If you see someone else’s name at the top, tap the profile and choose yours before uploading, reacting or commenting.',
+        points:'HOW YOU EARN POINTS',photo:'📷 Photo',message:'💌 Message',reaction:'❤️ Reaction',comment:'💬 Comment',attendance:'🎉 Attendance',faq:'QUICK QUESTIONS',
+        q1:'Do I need a photo to leave a message?',a1:'No. You can upload only a photo, only a message, or both together.',
+        q2:'What if I chose the wrong name?',a2:'Tap the profile at the top and select your name before doing anything else.',
+        q3:'When does the board open?',a3:'Saturday, August 29 at 6:00 AM Florida time. After that, access unlocks automatically.',
+        q4:'Is the ranking serious?',a4:'It is just for fun. Points simply recognize who was most active sharing memories and participating.'
+      }
+    };
+    const ids={
+      'learning-center-btn':'button','learning-kicker':'kicker','learning-title':'title','learning-sub':'sub','learning-start-label':'start',
+      'lc-step1-title':'s1t','lc-step1-copy':'s1c','lc-step2-title':'s2t','lc-step2-copy':'s2c','lc-step3-title':'s3t','lc-step3-copy':'s3c','lc-step4-title':'s4t','lc-step4-copy':'s4c','lc-step5-title':'s5t','lc-step5-copy':'s5c','lc-step6-title':'s6t','lc-step6-copy':'s6c',
+      'lc-tip-title':'tipt','lc-tip-copy':'tipc','learning-points-label':'points','lc-point-photo':'photo','lc-point-message':'message','lc-point-reaction':'reaction','lc-point-comment':'comment','lc-point-attendance':'attendance','learning-faq-label':'faq',
+      'lc-faq1-q':'q1','lc-faq1-a':'a1','lc-faq2-q':'q2','lc-faq2-a':'a2','lc-faq3-q':'q3','lc-faq3-a':'a3','lc-faq4-q':'q4','lc-faq4-a':'a4'
+    };
+    const center=document.getElementById('learning-center');
+    const openBtn=document.getElementById('learning-center-btn');
+    const closeBtn=document.getElementById('learning-close');
+    function lang(){return localStorage.getItem('mako41_lang')==='en'?'en':'es'}
+    function render(l){const x=LC[l]||LC.es;Object.entries(ids).forEach(([id,key])=>{const el=document.getElementById(id);if(el)el.textContent=x[key]});closeBtn.setAttribute('aria-label',x.close)}
+    function open(){render(lang());center.classList.add('open');center.setAttribute('aria-hidden','false');document.body.classList.add('learning-open')}
+    function close(){center.classList.remove('open');center.setAttribute('aria-hidden','true');document.body.classList.remove('learning-open')}
+    openBtn.addEventListener('click',open);closeBtn.addEventListener('click',close);
+    center.addEventListener('click',e=>{if(e.target===center)close()});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'&&center.classList.contains('open'))close()});
+    document.querySelectorAll('.lang-btn').forEach(btn=>btn.addEventListener('click',()=>render(btn.dataset.lang)));
+    render(lang());
   })();
 </script>
 
