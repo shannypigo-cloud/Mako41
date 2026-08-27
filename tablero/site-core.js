@@ -66,6 +66,10 @@ function declinarAsistencia(contacto, motivo) {
   return apiPost("declinarAsistencia", { contacto, motivo });
 }
 
+function registrarVoto(categoria, invitado, votoPara) {
+  return apiPost("registrarVoto", { categoria, invitado, votoPara });
+}
+
 // ---------- Utilidad: convertir un <input type=file> a base64 ----------
 // Comprime/redimensiona la imagen antes de mandarla (máx 1000px de ancho,
 // calidad 0.7) para que la URL no se vuelva gigante y falle o se demore.
