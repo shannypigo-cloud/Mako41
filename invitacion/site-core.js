@@ -30,12 +30,17 @@ function apiGet(action) {
 }
 
 function apiPost(action, body) {
-  // Nota: usamos GET (con los datos codificados en la URL) en vez de POST.
-  // Google Apps Script redirige internamente las peticiones, y esa
-  // redirección hace que los navegadores conviertan un POST en GET,
-  // rompiendo doPost. Mandando todo por GET evitamos ese problema.
-  const url = `${CONFIG.APPS_SCRIPT_URL}?action=${encodeURIComponent(action)}&payload=${encodeURIComponent(JSON.stringify(body || {}))}`;
-  return fetch(url).then(r => r.json());
+  // OJO: no le ponemos header Content-Type a propósito. Si lo hacemos,
+  // el navegador puede disparar un preflight o Apps Script puede
+  // redirigir el POST de forma que se convierta en GET (bug conocido).
+  // Dejando el body como string plano, el fetch usa text/plain por
+  // default (sin preflight) y Codigo.gs lo parsea como JSON del lado
+  // del servidor. Así es como funciona el crucero.
+  const url = `${CONFIG.APPS_SCRIPT_URL}?action=${encodeURIComponent(action)}`;
+  return fetch(url, {
+    method: "POST",
+    body: JSON.stringify(body || {})
+  }).then(r => r.json());
 }
 
 function getAppData() {
