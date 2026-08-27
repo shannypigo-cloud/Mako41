@@ -692,7 +692,7 @@
       im.onerror = () => reject(new Error(t('badImage')));
       im.src = dataUrl;
     });
-    const maxDim = 700;
+    const maxDim = 650;
     const scale = Math.min(1, maxDim / Math.max(img.width || 1, img.height || 1));
     const canvas = document.createElement('canvas');
     canvas.width = Math.max(1, Math.round((img.width || 1) * scale));
@@ -700,13 +700,13 @@
     const ctx = canvas.getContext('2d');
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-    // Intenta con calidad .5; si aún queda pesado, comprime más fuerte
+    // Intenta con calidad .45; si aún queda pesado, comprime más fuerte
     let blob = await new Promise((resolve, reject) => {
-      canvas.toBlob(b => b ? resolve(b) : reject(new Error(t('badImage'))), 'image/jpeg', 0.5);
+      canvas.toBlob(b => b ? resolve(b) : reject(new Error(t('badImage'))), 'image/jpeg', 0.45);
     });
-    if (blob.size > 220000) {
+    if (blob.size > 150000) {
       blob = await new Promise((resolve, reject) => {
-        canvas.toBlob(b => b ? resolve(b) : reject(new Error(t('badImage'))), 'image/jpeg', 0.32);
+        canvas.toBlob(b => b ? resolve(b) : reject(new Error(t('badImage'))), 'image/jpeg', 0.28);
       });
     }
     const baseName = (file.name || 'photo').replace(/\.[^.]+$/, '');
