@@ -6,12 +6,12 @@
 <title>Confirmar asistencia · MAKO 41</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --black:#0a0a0a; --ink2:#161513; --gold:#c9a86a; --gold2:#e8caa0;
-    --cream:#f4efe4; --muted:#9a9689; --line:rgba(201,168,106,.2);
-    --shadow:0 18px 40px rgba(0,0,0,.45);
+    --black:#050505; --ink2:#0e0e0e; --gold:#c49a4a; --gold2:#e0be72;
+    --cream:#f4efe5; --muted:#77736d; --line:rgba(224,190,114,.16);
+    --shadow:0 20px 60px rgba(0,0,0,.45);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;background:var(--black);font-family:'Manrope',sans-serif;color:var(--cream);min-height:100%}
@@ -27,15 +27,23 @@
   header{text-align:center;padding:24px 0 10px}
   .crown{font-size:22px;color:var(--gold)}
   .eyebrow{font-size:11px;letter-spacing:.24em;color:var(--muted);text-transform:uppercase;margin-top:6px}
-  h1{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(26px,7vw,34px);color:var(--gold2);margin:6px 0 0}
+  h1{font-family:'Manrope',sans-serif;font-weight:700;letter-spacing:-.02em;font-size:clamp(24px,6.5vw,32px);color:var(--gold2);margin:6px 0 0}
   .sub{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.6}
 
   .card{background:var(--ink2);border:1px solid var(--line);border-radius:20px;padding:20px;margin-top:22px}
   label{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .helper-text{font-size:12px;color:var(--muted);line-height:1.6;margin:-8px 0 14px}
   input[type=text], input[type=tel]{
     width:100%;padding:12px 14px;border-radius:12px;background:var(--black);
     border:1px solid var(--line);color:var(--cream);font-size:14px;margin-bottom:14px;
   }
+
+  .attend-toggle{display:flex;gap:8px;margin-bottom:18px}
+  .attend-btn{
+    flex:1;padding:12px 8px;border-radius:12px;border:1px solid var(--line);background:var(--black);
+    color:var(--muted);font-size:13px;font-weight:700;cursor:pointer;
+  }
+  .attend-btn.active{border-color:var(--gold);background:rgba(201,168,106,.12);color:var(--gold2)}
 
   .guest-row{display:flex;gap:8px;align-items:center;margin-bottom:10px}
   .guest-row input{margin:0;flex:1}
@@ -65,7 +73,7 @@
   .success-card{display:none;text-align:center;padding:30px 20px}
   .success-card.show{display:block}
   .success-card .big{font-size:40px}
-  .success-card h2{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold2);font-size:24px;margin:10px 0 6px}
+  .success-card h2{font-family:'Manrope',sans-serif;font-weight:700;letter-spacing:-.02em;color:var(--gold2);font-size:22px;margin:10px 0 6px}
   .success-card p{color:var(--muted);font-size:13px;line-height:1.6}
   .success-card a.btn{display:block;text-decoration:none;margin-top:16px;box-sizing:border-box}
 </style>
@@ -85,12 +93,26 @@
     <label for="contacto">Tu nombre</label>
     <input type="text" id="contacto" placeholder="Ej: Camila Restrepo">
 
-    <label for="correo">Tu correo (para enviarte el link del tablero)</label>
-    <input type="text" id="correo" placeholder="tucorreo@ejemplo.com">
+    <label>¿Vas a poder asistir?</label>
+    <div class="attend-toggle">
+      <button type="button" class="attend-btn active" id="attend-yes">🎉 Sí, voy a asistir</button>
+      <button type="button" class="attend-btn" id="attend-no">😢 No puedo ir</button>
+    </div>
 
-    <label>Invitados que confirmas (inclúyete a ti y a quienes te acompañan)</label>
-    <div id="guest-rows"></div>
-    <button type="button" class="add-guest" id="add-guest-btn">＋ Agregar otro invitado</button>
+    <div id="attend-yes-section">
+      <label for="correo">Tu correo (para enviarte el link del tablero)</label>
+      <input type="text" id="correo" placeholder="tucorreo@ejemplo.com">
+
+      <label>¿Con quién vas a llegar?</label>
+      <p class="helper-text">Escribe tu nombre y el de cada persona que te acompaña (aunque sea solo tú). Cada nombre que pongas va a poder entrar por su cuenta al tablero de fotos con ese mismo nombre — por eso es importante que estén completos.</p>
+      <div id="guest-rows"></div>
+      <button type="button" class="add-guest" id="add-guest-btn">＋ Agregar otro invitado</button>
+    </div>
+
+    <div id="attend-no-section" style="display:none">
+      <label for="motivo">¿Algo que quieras decirle a MAKO? (opcional)</label>
+      <input type="text" id="motivo" placeholder="Ej: Ese día tengo un compromiso, pero te quiero un montón">
+    </div>
 
     <button class="btn" id="submit-btn">Confirmar asistencia</button>
     <div class="status" id="form-status"></div>
@@ -139,16 +161,33 @@
   addGuestRow();
   addGuestRow();
 
+  // ---------- Toggle Sí / No ----------
+  let vaAsistir = true;
+  const yesBtn = document.getElementById('attend-yes');
+  const noBtn = document.getElementById('attend-no');
+  const yesSection = document.getElementById('attend-yes-section');
+  const noSection = document.getElementById('attend-no-section');
+  const submitBtn = document.getElementById('submit-btn');
+
+  yesBtn.addEventListener('click', () => {
+    vaAsistir = true;
+    yesBtn.classList.add('active'); noBtn.classList.remove('active');
+    yesSection.style.display = 'block'; noSection.style.display = 'none';
+    submitBtn.textContent = 'Confirmar asistencia';
+  });
+  noBtn.addEventListener('click', () => {
+    vaAsistir = false;
+    noBtn.classList.add('active'); yesBtn.classList.remove('active');
+    yesSection.style.display = 'none'; noSection.style.display = 'block';
+    submitBtn.textContent = 'Enviar respuesta';
+  });
+
   document.getElementById('submit-btn').addEventListener('click', async () => {
     const statusEl = document.getElementById('form-status');
     const contacto = document.getElementById('contacto').value.trim();
-    const correo = document.getElementById('correo').value.trim();
-    const nombres = Array.from(rowsEl.querySelectorAll('.guest-row input'))
-      .map(i => i.value.trim())
-      .filter(Boolean);
 
-    if (!nombres.length){
-      statusEl.textContent = 'Agrega al menos un nombre.';
+    if (!contacto){
+      statusEl.textContent = 'Escribe tu nombre.';
       statusEl.className = 'status error';
       return;
     }
@@ -157,6 +196,44 @@
     btn.disabled = true;
     statusEl.textContent = 'Enviando…';
     statusEl.className = 'status';
+
+    // ---------- Ruta: no puede asistir ----------
+    if (!vaAsistir){
+      const motivo = document.getElementById('motivo').value.trim();
+      try {
+        const res = await declinarAsistencia(contacto, motivo);
+        if (res.success){
+          document.getElementById('form-card').style.display = 'none';
+          document.getElementById('success-card').classList.add('show');
+          document.getElementById('success-card').querySelector('.big').textContent = '💛';
+          document.getElementById('success-card').querySelector('h2').textContent = 'Gracias por avisar';
+          document.getElementById('success-msg').textContent = 'Quedó registrado que no vas a poder asistir. ¡Ojalá nos veamos pronto!';
+          document.getElementById('success-card').querySelector('a.btn').style.display = 'none';
+        } else {
+          statusEl.textContent = res.error || 'No se pudo enviar, intenta de nuevo.';
+          statusEl.className = 'status error';
+          btn.disabled = false;
+        }
+      } catch (err) {
+        statusEl.textContent = 'No se pudo conectar. Revisa APPS_SCRIPT_URL en site-core.js.';
+        statusEl.className = 'status error';
+        btn.disabled = false;
+      }
+      return;
+    }
+
+    // ---------- Ruta: sí asiste ----------
+    const correo = document.getElementById('correo').value.trim();
+    const nombres = Array.from(rowsEl.querySelectorAll('.guest-row input'))
+      .map(i => i.value.trim())
+      .filter(Boolean);
+
+    if (!nombres.length){
+      statusEl.textContent = 'Agrega al menos un nombre (puede ser solo el tuyo).';
+      statusEl.className = 'status error';
+      btn.disabled = false;
+      return;
+    }
 
     try {
       const res = await registrarGrupo(nombres, contacto, correo);
