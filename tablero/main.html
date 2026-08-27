@@ -91,20 +91,25 @@
   .feed-msg{font-size:14px;margin:6px 0 0;line-height:1.5}
   .feed-item img{max-width:100%;border-radius:10px;margin-top:8px;display:block}
 
-  /* Reacciones estilo WhatsApp: chips agrupados por emoji */
-  .reaction-row{display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap}
+  /* Reacciones estilo WhatsApp/Instagram */
+  .reaction-summary{display:flex;align-items:center;gap:6px;margin-top:10px;padding:5px 10px;border-radius:999px;background:var(--black);border:1px solid var(--line);width:fit-content;font-size:12px;color:var(--muted)}
+  .reaction-summary.mine{border-color:var(--gold);background:rgba(201,168,106,.1);color:var(--gold2)}
+  .reaction-summary .emojis{font-size:14px;letter-spacing:-2px}
+  .reaction-summary .mine-tag{font-size:10px;color:var(--gold2);font-weight:800;margin-left:2px}
+  .reaction-row{display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap}
   .reaction-chip{
     display:flex;align-items:center;gap:4px;padding:4px 9px;border-radius:999px;
     border:1px solid var(--line);background:var(--black);font-size:12px;cursor:pointer;color:var(--muted);
   }
-  .reaction-chip.mine{border-color:var(--gold);background:rgba(201,168,106,.12);color:var(--gold2)}
+  .reaction-chip.mine{border-color:var(--gold);background:rgba(201,168,106,.12);color:var(--gold2);font-weight:700}
   .reaction-add-btn{
     width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:var(--black);
     color:var(--muted);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;
   }
   .reaction-picker{display:none;gap:4px;background:var(--black);border:1px solid var(--gold);border-radius:999px;padding:5px 8px;position:relative}
   .reaction-picker.open{display:flex}
-  .reaction-picker button{background:none;border:none;font-size:17px;cursor:pointer;padding:2px}
+  .reaction-picker button{background:none;border:none;font-size:17px;cursor:pointer;padding:2px;border-radius:50%}
+  .reaction-picker button.picked{background:rgba(201,168,106,.25)}
   .comment-toggle-link{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;margin-top:8px;padding:0}
 
   /* Comentarios estilo hilo de red social */
@@ -469,7 +474,19 @@
 
     el.innerHTML = list.map(d => {
       const reacciones = d.reacciones || {};
-      const chips = Object.keys(reacciones).map(emoji => {
+      const emojiKeys = Object.keys(reacciones).sort((a,b) => reacciones[b].length - reacciones[a].length);
+      const totalReacciones = d.totalReacciones || 0;
+      const miEmoji = emojiKeys.find(e => myName && reacciones[e].includes(myName));
+
+      const summaryHtml = totalReacciones > 0 ? `
+        <div class="reaction-summary ${miEmoji ? 'mine' : ''}">
+          <span class="emojis">${emojiKeys.slice(0,3).join('')}</span>
+          <span>${totalReacciones} reacción${totalReacciones===1?'':'es'}</span>
+          ${miEmoji ? `<span class="mine-tag">· Tú reaccionaste ${miEmoji}</span>` : ''}
+        </div>
+      ` : '';
+
+      const chips = emojiKeys.map(emoji => {
         const gente = reacciones[emoji];
         const mine = myName && gente.includes(myName);
         return `<button class="reaction-chip ${mine ? 'mine' : ''}" data-id="${d.id}" data-emoji="${emoji}">${emoji} ${gente.length}</button>`;
@@ -483,12 +500,13 @@
         </div>
         ${d.mensaje ? `<div class="feed-msg">${d.mensaje.replace(/</g,'&lt;')}</div>` : ''}
         ${d.previewUrl ? `<img src="${d.previewUrl}" alt="">` : ''}
+        ${summaryHtml}
         <div class="reaction-row">
           ${chips}
           <div style="position:relative">
             <button class="reaction-add-btn" data-id="${d.id}">🙂+</button>
             <div class="reaction-picker" id="picker-${d.id}">
-              ${REACTION_EMOJIS.map(e => `<button data-id="${d.id}" data-emoji="${e}">${e}</button>`).join('')}
+              ${REACTION_EMOJIS.map(e => `<button data-id="${d.id}" data-emoji="${e}" class="${e === miEmoji ? 'picked' : ''}">${e}</button>`).join('')}
             </div>
           </div>
         </div>
