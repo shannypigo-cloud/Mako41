@@ -149,9 +149,56 @@
   .lang-btn{border:0;background:transparent;color:var(--muted);font:inherit;font-size:9px;font-weight:900;letter-spacing:.10em;padding:6px 8px;border-radius:999px;cursor:pointer}
   .lang-btn.active{background:linear-gradient(90deg,var(--gold),var(--gold2));color:var(--black)}
   @media(max-width:520px){.topbar-inner:first-child{gap:7px}.lang-btn{padding:6px 7px}.upload-pill{padding:8px 10px}.topbar-avatar-name{max-width:64px}}
+
+
+  /* ---- Timed access gate ---- */
+  body.access-locked{overflow:hidden}
+  .access-gate{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;background:
+    radial-gradient(circle at 50% 18%,rgba(201,168,106,.17),transparent 34%),
+    linear-gradient(180deg,#090807 0%,#050505 100%);color:var(--cream)}
+  .access-gate.show{display:flex}
+  .access-gate::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.13;background-image:radial-gradient(rgba(255,255,255,.9) .45px,transparent .45px);background-size:4px 4px}
+  .access-gate-card{position:relative;width:min(560px,100%);overflow:hidden;border:1px solid rgba(201,168,106,.24);border-radius:30px;padding:30px 26px;text-align:center;background:linear-gradient(180deg,rgba(24,23,21,.96),rgba(11,11,10,.98));box-shadow:0 30px 90px rgba(0,0,0,.55)}
+  .access-gate-card::after{content:"41";position:absolute;right:-26px;bottom:-58px;font-family:'Cormorant Garamond',serif;font-size:190px;font-weight:600;line-height:1;color:rgba(255,255,255,.025);pointer-events:none}
+  .gate-brand{font-weight:900;font-size:22px;letter-spacing:.02em;position:relative;z-index:1}.gate-brand span{color:var(--gold2)}
+  .gate-kicker{position:relative;z-index:1;margin-top:24px;font-size:10px;font-weight:900;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+  .gate-title{position:relative;z-index:1;margin:9px 0 0;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(32px,8vw,48px);line-height:1;color:var(--gold2)}
+  .gate-copy{position:relative;z-index:1;margin:14px auto 0;max-width:430px;color:var(--muted);font-size:13px;line-height:1.7}
+  .gate-release{position:relative;z-index:1;margin:18px auto 0;display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.025);font-size:11px;font-weight:800;color:var(--cream)}
+  .gate-countdown{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:22px 0 0}
+  .gate-unit{padding:13px 7px 11px;border:1px solid var(--line);border-radius:15px;background:rgba(201,168,106,.045)}
+  .gate-unit b{display:block;color:var(--gold2);font-size:24px;line-height:1}.gate-unit small{display:block;margin-top:6px;color:var(--muted);font-size:8px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+  .gate-note{position:relative;z-index:1;margin-top:18px;color:var(--muted);font-size:10px;letter-spacing:.04em}
+  .gate-lang{position:absolute;top:16px;right:16px;z-index:2;display:inline-flex;padding:3px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.03)}
+  .gate-lang button{border:0;background:transparent;color:var(--muted);font-size:9px;font-weight:900;padding:6px 8px;border-radius:999px;cursor:pointer}.gate-lang button.active{background:linear-gradient(90deg,var(--gold),var(--gold2));color:var(--black)}
+  @media(max-width:520px){.access-gate{padding:14px}.access-gate-card{padding:26px 16px 22px;border-radius:24px}.gate-countdown{gap:6px}.gate-unit{padding:11px 4px 9px}.gate-unit b{font-size:21px}.gate-lang{top:12px;right:12px}}
+
 </style>
 </head>
 <body>
+
+<!-- ---------- Timed access gate: opens Aug 29, 2026 at 6:00 AM Florida time ---------- -->
+<div class="access-gate" id="access-gate" role="dialog" aria-modal="true" aria-labelledby="gate-title">
+  <div class="access-gate-card">
+    <div class="gate-lang" role="group" aria-label="Language">
+      <button type="button" data-gate-lang="es">ES</button>
+      <button type="button" data-gate-lang="en">EN</button>
+    </div>
+    <div class="gate-brand">MAKO<span>41</span></div>
+    <div class="gate-kicker" id="gate-kicker">ACCESO PRIVADO</div>
+    <h1 class="gate-title" id="gate-title">Todavía no, parcero.</h1>
+    <p class="gate-copy" id="gate-copy">El tablero de MAKO41 se abre el día de la celebración. Vuelve a partir de las 6:00 AM y ahí sí empieza el parche.</p>
+    <div class="gate-release" id="gate-release">🔒 Sábado 29 de agosto · 6:00 AM</div>
+    <div class="gate-countdown" aria-label="Countdown to access">
+      <div class="gate-unit"><b id="gate-d">--</b><small id="gate-d-lbl">Días</small></div>
+      <div class="gate-unit"><b id="gate-h">--</b><small id="gate-h-lbl">Horas</small></div>
+      <div class="gate-unit"><b id="gate-m">--</b><small id="gate-m-lbl">Min</small></div>
+      <div class="gate-unit"><b id="gate-s">--</b><small id="gate-s-lbl">Seg</small></div>
+    </div>
+    <div class="gate-note" id="gate-note">El acceso se habilita automáticamente.</div>
+  </div>
+</div>
+
 
 <header class="topbar">
   <div class="topbar-inner">
@@ -295,6 +342,49 @@
   <a class="bn-item" href="#ranking"><span>🏆</span><span id="bn-ranking">Ranking</span></a>
   <a class="bn-item" href="#dashboard"><span>📊</span><span id="bn-dashboard">Stats</span></a>
 </nav>
+
+
+<script>
+  // ---------- MAKO41 timed access ----------
+  (function(){
+    const RELEASE_AT = new Date('2026-08-29T06:00:00-04:00'); // Parrish, Florida (EDT)
+    const ADMIN_KEY = 'mako2026';
+    const params = new URLSearchParams(window.location.search);
+    const isAdminPreview = params.get('admin') === ADMIN_KEY;
+    const gate = document.getElementById('access-gate');
+    const GATE_I18N = {
+      es:{kicker:'ACCESO PRIVADO',title:'Todavía no, parcero.',copy:'El tablero de MAKO41 se abre el día de la celebración. Vuelve a partir de las 6:00 AM y ahí sí empieza el parche.',release:'🔒 Sábado 29 de agosto · 6:00 AM',days:'Días',hours:'Horas',min:'Min',sec:'Seg',note:'El acceso se habilita automáticamente.'},
+      en:{kicker:'PRIVATE ACCESS',title:'Not quite yet.',copy:'The MAKO41 board opens on the day of the celebration. Come back after 6:00 AM and the party starts here.',release:'🔒 Saturday, August 29 · 6:00 AM',days:'Days',hours:'Hours',min:'Min',sec:'Sec',note:'Access unlocks automatically.'}
+    };
+    let gateLang = localStorage.getItem('mako41_lang') === 'en' ? 'en' : 'es';
+    function gateText(id,value){const el=document.getElementById(id);if(el)el.textContent=value;}
+    function renderGateLang(lang){
+      gateLang = lang === 'en' ? 'en' : 'es';
+      localStorage.setItem('mako41_lang',gateLang);
+      const x=GATE_I18N[gateLang];
+      gateText('gate-kicker',x.kicker);gateText('gate-title',x.title);gateText('gate-copy',x.copy);gateText('gate-release',x.release);gateText('gate-d-lbl',x.days);gateText('gate-h-lbl',x.hours);gateText('gate-m-lbl',x.min);gateText('gate-s-lbl',x.sec);gateText('gate-note',x.note);
+      document.querySelectorAll('[data-gate-lang]').forEach(b=>b.classList.toggle('active',b.dataset.gateLang===gateLang));
+    }
+    function unlock(){
+      document.body.classList.remove('access-locked');
+      gate.classList.remove('show');
+      gate.setAttribute('aria-hidden','true');
+    }
+    function updateGate(){
+      const diff = RELEASE_AT.getTime() - Date.now();
+      if(isAdminPreview || diff <= 0){ unlock(); return false; }
+      gate.classList.add('show'); document.body.classList.add('access-locked'); gate.removeAttribute('aria-hidden');
+      gateText('gate-d',Math.floor(diff/86400000));
+      gateText('gate-h',String(Math.floor((diff/3600000)%24)).padStart(2,'0'));
+      gateText('gate-m',String(Math.floor((diff/60000)%60)).padStart(2,'0'));
+      gateText('gate-s',String(Math.floor((diff/1000)%60)).padStart(2,'0'));
+      return true;
+    }
+    document.querySelectorAll('[data-gate-lang]').forEach(btn=>btn.addEventListener('click',()=>renderGateLang(btn.dataset.gateLang)));
+    renderGateLang(gateLang);
+    if(updateGate()) setInterval(updateGate,1000);
+  })();
+</script>
 
 <script src="site-core.js"></script>
 <script>
