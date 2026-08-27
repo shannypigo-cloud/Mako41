@@ -440,6 +440,17 @@
   </div>
 </main>
 
+<!-- ---------- Subida vía formulario oculto (evita bloqueos de fetch entre dominios) ---------- -->
+<iframe name="upload-target" style="display:none" title="upload"></iframe>
+<form id="upload-form" method="POST" target="upload-target" style="display:none">
+  <input type="hidden" name="action" value="addDedicatoria">
+  <input type="hidden" name="invitado" id="uf-invitado">
+  <input type="hidden" name="mensaje" id="uf-mensaje">
+  <input type="hidden" name="fotoBase64" id="uf-foto-base64">
+  <input type="hidden" name="fotoMime" id="uf-foto-mime">
+  <input type="hidden" name="fotoName" id="uf-foto-name">
+</form>
+
 <nav class="bottom-nav">
   <a class="bn-item" href="#top"><span>🏠</span><span id="bn-home">Inicio</span></a>
   <a class="bn-item" href="#feed"><span>📸</span><span id="bn-feed">Fotos</span></a>
@@ -734,6 +745,9 @@
     statusEl.textContent = '';
   });
 
+  const uploadForm = document.getElementById('upload-form');
+  uploadForm.action = CONFIG.APPS_SCRIPT_URL;
+
   document.getElementById('up-send').addEventListener('click', async () => {
     const s = requireSession();
     if (!s) return;
@@ -748,32 +762,58 @@
     btn.disabled = true;
     closeBtn.disabled = true;
     try {
-      let foto = null;
+      const beforeCount = (appData && appData.dedicatorias) ? appData.dedicatorias.length : 0;
+
+      document.getElementById('uf-invitado').value = s.name;
+      document.getElementById('uf-mensaje').value = text;
+      document.getElementById('uf-foto-base64').value = '';
+      document.getElementById('uf-foto-mime').value = '';
+      document.getElementById('uf-foto-name').value = '';
+
       if (file){
         statusEl.textContent = t('preparingPhoto');
         const processedFile = await withTimeout(optimizeImage(file), 15000, t('badImage'));
-        statusEl.textContent = t('sending');
-        foto = await withTimeout(fileToPayload(processedFile), 15000, t('uploadTimeout'));
-      } else {
-        statusEl.textContent = t('sending');
+        const base64 = await withTimeout(loadFileAsDataURL(processedFile), 15000, t('badImage'));
+        document.getElementById('uf-foto-base64').value = base64.split(',')[1];
+        document.getElementById('uf-foto-mime').value = processedFile.type || 'image/jpeg';
+        document.getElementById('uf-foto-name').value = processedFile.name || 'foto.jpg';
       }
-      const res = await withTimeout(addDedicatoria({ invitado: s.name, mensaje: text, foto }), 45000, t('uploadTimeout'));
-      if (res && res.success){
+
+      statusEl.textContent = t('sending');
+      // Este envío va por un formulario oculto que apunta a un iframe invisible,
+      // NO por fetch(). Esto evita los bloqueos que dan "Failed to fetch" cuando
+      // el sitio (GitHub Pages) y el Apps Script están en dominios distintos.
+      uploadForm.submit();
+
+      // No podemos leer la respuesta del iframe (dominio distinto), así que
+      // esperamos un momento y confirmamos consultando los datos de nuevo.
+      await new Promise(r => setTimeout(r, 2500));
+      await refreshData();
+      const afterCount = (appData && appData.dedicatorias) ? appData.dedicatorias.length : 0;
+
+      if (afterCount > beforeCount){
         document.getElementById('up-text').value = '';
         fileInput.value = '';
         statusEl.textContent = t('sent');
-        await refreshData();
         setTimeout(() => { uploadModal.classList.remove('open'); statusEl.textContent = ''; }, 700);
       } else {
-        statusEl.textContent = (res && res.error) || t('sendError');
+        // Puede que aún esté procesando (fotos grandes tardan un poco más) —
+        // probamos una vez más antes de avisar que algo pudo haber fallado.
+        await new Promise(r => setTimeout(r, 2500));
+        await refreshData();
+        const afterCount2 = (appData && appData.dedicatorias) ? appData.dedicatorias.length : 0;
+        if (afterCount2 > beforeCount){
+          document.getElementById('up-text').value = '';
+          fileInput.value = '';
+          statusEl.textContent = t('sent');
+          setTimeout(() => { uploadModal.classList.remove('open'); statusEl.textContent = ''; }, 700);
+        } else {
+          statusEl.textContent = 'No estamos seguros si se guardó. Revisa el muro de fotos o intenta de nuevo.';
+        }
       }
     } catch (err) {
       const msg = (err && err.message) ? err.message : '';
-      if (msg.toLowerCase().includes('failed to fetch') || msg.toLowerCase().includes('networkerror')) {
-        statusEl.textContent = 'No se pudo conectar. Revisa tu internet e intenta de nuevo con una foto más liviana.';
-      } else {
-        statusEl.textContent = msg || t('sendError');
-      }
+      statusEl.textContent = msg || t('sendError');
     } finally {
       btn.disabled = false;
       closeBtn.disabled = false;
