@@ -166,6 +166,8 @@
   .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .cat-chip{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:8px 10px;border-radius:10px;background:var(--black);border:1px solid var(--line);font-size:12px;cursor:pointer;transition:border-color .15s;text-align:left;width:100%}
   .cat-chip:active{border-color:var(--gold)}
+  .cat-chip-auto{cursor:default;opacity:.92}
+  .cat-chip-auto:active{border-color:var(--line)}
   .cat-chip-top{display:flex;align-items:center;gap:6px}
   .cat-leader{font-size:10px;color:var(--gold2);opacity:.85;padding-left:20px}
   .vote-list{display:flex;flex-direction:column;gap:8px;max-height:40vh;overflow-y:auto;margin:12px 0}
@@ -616,7 +618,7 @@
       bnHome:'Inicio', bnRanking:'Ranking', bnFeed:'Fotos', bnUpload:'Subir', bnDashboard:'Stats',
       loadError:'No se pudo cargar. Revisa APPS_SCRIPT_URL en site-core.js.', needMessage:'Escribe un mensaje o adjunta una foto.', sending:'Enviando…', sent:'¡Enviado!', sendError:'No se pudo enviar, intenta de nuevo.', preparingPhoto:'Preparando foto…', uploadTimeout:'La carga tardó demasiado. Intenta de nuevo. Si la foto es pesada, prueba con una más liviana.', badImage:'No pudimos preparar esa foto. Intenta con otra imagen.', uploadHelp:'1 foto por envío · recomendado menos de 8 MB', feedEmpty:'Todavía no hay nada por acá. ¡Sube la primera foto o mensaje!', commentPlaceholder:'Escribe un comentario…', noPoints:'Aún no hay puntos — ¡empieza tú!', pts:'pts',
       categories:['El Más Chismoso','El Paparazzi','El Alma de la Fiesta','El Más Motero','El Mejor Brindis','El Más Fit'],
-      voteSub:'Toca el nombre de la persona que crees que se gana este título.', voteEmpty:'Todavía no hay más invitados para votar.', voteSuccess:'¡Voto registrado! 🎉', voteError:'No se pudo registrar el voto, intenta de nuevo.', voteCancel:'Cancelar', votesWord:'votos'
+      voteSub:'Toca el nombre de la persona que crees que se gana este título.', voteEmpty:'Todavía no hay más invitados para votar.', voteSuccess:'¡Voto registrado! 🎉', voteError:'No se pudo registrar el voto, intenta de nuevo.', voteCancel:'Cancelar', votesWord:'votos', noLeaderYet:'Nadie destaca todavía'
     },
     en: {
       pageTitle:'MAKO · 41 Years', choose:'Choose', uploadPhoto:'＋ Upload photo',
@@ -632,7 +634,7 @@
       bnHome:'Home', bnRanking:'Ranking', bnFeed:'Photos', bnUpload:'Upload', bnDashboard:'Stats',
       loadError:'Could not load. Check APPS_SCRIPT_URL in site-core.js.', needMessage:'Write a message or attach a photo.', sending:'Sending…', sent:'Sent!', sendError:'Could not send. Please try again.', preparingPhoto:'Preparing photo…', uploadTimeout:'The upload took too long. Please try again. If the photo is large, try a lighter one.', badImage:'We could not prepare that photo. Please try another image.', uploadHelp:'1 photo per upload · recommended under 8 MB', feedEmpty:'Nothing here yet. Upload the first photo or message!', commentPlaceholder:'Write a comment…', noPoints:'No points yet — be the first!', pts:'pts',
       categories:['The Biggest Gossip','The Paparazzi','Life of the Party','The Biker','Best Toast','The Fittest'],
-      voteSub:'Tap the person you think earns this title.', voteEmpty:'No other guests to vote for yet.', voteSuccess:'Vote registered! 🎉', voteError:'Could not register your vote, try again.', voteCancel:'Cancel', votesWord:'votes'
+      voteSub:'Tap the person you think earns this title.', voteEmpty:'No other guests to vote for yet.', voteSuccess:'Vote registered! 🎉', voteError:'Could not register your vote, try again.', voteCancel:'Cancel', votesWord:'votes', noLeaderYet:'No one stands out yet'
     }
   };
   let currentLang = localStorage.getItem('mako41_lang') || 'es';
@@ -1069,26 +1071,37 @@
     `).join('');
   }
 
-  const CATEGORY_ICONS = ["🗣️","📸","🎉","🏍️","🥃","💪"];
-  const CATEGORY_IDS = ["chismoso","paparazzi_cat","alma_fiesta","motero","brindis","fit"];
+  // Títulos en inglés por id (el backend solo maneja español).
+  const CATEGORY_LABELS_EN = {
+    chismoso: 'The Biggest Gossip',
+    paparazzi_cat: 'The Paparazzi',
+    alma_fiesta: 'Life of the Party',
+    fit: 'The Fittest'
+  };
+  // Palabra de unidad que se muestra junto al líder de cada categoría.
+  const UNIT_WORD = {
+    es: { chismoso:'comentarios', paparazzi_cat:'fotos', alma_fiesta:'reacciones', fit:'votos' },
+    en: { chismoso:'comments', paparazzi_cat:'photos', alma_fiesta:'reactions', fit:'votes' }
+  };
 
   function renderCategories(data){
-    const labels = t('categories');
-    const votosCat = (data && data.votosCategorias) || [];
-    document.getElementById('cat-grid').innerHTML = CATEGORY_IDS.map((id,i) => {
-      const info = votosCat.find(v => v.id === id);
-      const leaderLine = (info && info.lider)
-        ? `<div class="cat-leader">👑 ${info.lider} · ${info.votos} ${t('votesWord')}</div>`
-        : '';
+    const categorias = (data && data.categorias) || [];
+    document.getElementById('cat-grid').innerHTML = categorias.map(cat => {
+      const label = currentLang === 'en' ? (CATEGORY_LABELS_EN[cat.id] || cat.titulo) : cat.titulo;
+      const unit = (UNIT_WORD[currentLang] || UNIT_WORD.es)[cat.id] || '';
+      const leaderLine = cat.lider
+        ? `<div class="cat-leader">👑 ${cat.lider} · ${cat.votos} ${unit}</div>`
+        : `<div class="cat-leader">${t('noLeaderYet')}</div>`;
+      const isVotable = cat.tipo === 'voto';
       return `
-        <button type="button" class="cat-chip" data-cat-id="${id}" data-cat-title="${labels[i]}">
-          <div class="cat-chip-top"><span>${CATEGORY_ICONS[i]}</span><span>${labels[i]}</span></div>
+        <button type="button" class="cat-chip ${isVotable ? '' : 'cat-chip-auto'}" ${isVotable ? `data-cat-id="${cat.id}" data-cat-title="${label}"` : 'disabled'}>
+          <div class="cat-chip-top"><span>${cat.icono}</span><span>${label}</span></div>
           ${leaderLine}
         </button>
       `;
     }).join('');
 
-    document.querySelectorAll('.cat-chip').forEach(btn => {
+    document.querySelectorAll('.cat-chip[data-cat-id]').forEach(btn => {
       btn.addEventListener('click', () => openVoteModal(btn.dataset.catId, btn.dataset.catTitle));
     });
   }
