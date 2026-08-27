@@ -164,7 +164,14 @@
 
   /* Categories */
   .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .cat-chip{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:10px;background:var(--black);border:1px solid var(--line);font-size:12px}
+  .cat-chip{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:8px 10px;border-radius:10px;background:var(--black);border:1px solid var(--line);font-size:12px;cursor:pointer;transition:border-color .15s;text-align:left;width:100%}
+  .cat-chip:active{border-color:var(--gold)}
+  .cat-chip-top{display:flex;align-items:center;gap:6px}
+  .cat-leader{font-size:10px;color:var(--gold2);opacity:.85;padding-left:20px}
+  .vote-list{display:flex;flex-direction:column;gap:8px;max-height:40vh;overflow-y:auto;margin:12px 0}
+  .vote-option{padding:10px 12px;border-radius:10px;background:var(--black);border:1px solid var(--line);font-size:14px;font-weight:700;cursor:pointer;text-align:left}
+  .vote-option:active{border-color:var(--gold)}
+  .vote-cancel{background:transparent;border:1px solid var(--line);color:var(--muted)}
 
   /* Details */
   .detail-row{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
@@ -325,6 +332,18 @@
     <div class="upload-help" id="upload-help">1 foto por envío · recomendado menos de 8 MB</div>
     <button class="btn" id="up-send">Enviar</button>
     <div class="status" id="up-status"></div>
+  </div>
+</div>
+
+<!-- ---------- Vote modal ---------- -->
+<div class="modal" id="vote-modal">
+  <div class="modal-card" style="position:relative">
+    <button class="modal-close" id="vote-close">✕</button>
+    <h3 id="vote-title">Votar</h3>
+    <p class="status" id="vote-sub" style="margin-top:-8px"></p>
+    <div class="vote-list" id="vote-list"></div>
+    <button class="btn vote-cancel" id="vote-cancel-btn">Cancelar</button>
+    <div class="status" id="vote-status"></div>
   </div>
 </div>
 
@@ -596,7 +615,8 @@
       detailsEyebrow:'Coordenadas', detailsTitle:'Todo lo que<br>necesitas saber.', dateTitle:'Sábado 29 de agosto', dateSub:'8:00 PM en adelante', placeTitle:'En su casa', placeSub:'Parrish, Florida', toastTitle:'Vamos a brindar', toastSub:'Por la vida y por las mejores historias', vibeTitle:'Música · Amigos · Risas · Recuerdos', vibeSub:'Una noche especial que no querrás perderte',
       bnHome:'Inicio', bnRanking:'Ranking', bnFeed:'Fotos', bnUpload:'Subir', bnDashboard:'Stats',
       loadError:'No se pudo cargar. Revisa APPS_SCRIPT_URL en site-core.js.', needMessage:'Escribe un mensaje o adjunta una foto.', sending:'Enviando…', sent:'¡Enviado!', sendError:'No se pudo enviar, intenta de nuevo.', preparingPhoto:'Preparando foto…', uploadTimeout:'La carga tardó demasiado. Intenta de nuevo. Si la foto es pesada, prueba con una más liviana.', badImage:'No pudimos preparar esa foto. Intenta con otra imagen.', uploadHelp:'1 foto por envío · recomendado menos de 8 MB', feedEmpty:'Todavía no hay nada por acá. ¡Sube la primera foto o mensaje!', commentPlaceholder:'Escribe un comentario…', noPoints:'Aún no hay puntos — ¡empieza tú!', pts:'pts',
-      categories:['El Más Chismoso','El Paparazzi','El Alma de la Fiesta','El Más Motero','El Mejor Brindis','El Más Fit']
+      categories:['El Más Chismoso','El Paparazzi','El Alma de la Fiesta','El Más Motero','El Mejor Brindis','El Más Fit'],
+      voteSub:'Toca el nombre de la persona que crees que se gana este título.', voteEmpty:'Todavía no hay más invitados para votar.', voteSuccess:'¡Voto registrado! 🎉', voteError:'No se pudo registrar el voto, intenta de nuevo.', voteCancel:'Cancelar', votesWord:'votos'
     },
     en: {
       pageTitle:'MAKO · 41 Years', choose:'Choose', uploadPhoto:'＋ Upload photo',
@@ -611,7 +631,8 @@
       detailsEyebrow:'Details', detailsTitle:'Everything you<br>need to know.', dateTitle:'Saturday, August 29', dateSub:'8:00 PM and on', placeTitle:'At his house', placeSub:'Parrish, Florida', toastTitle:'Let’s raise a glass', toastSub:'To life and the best stories', vibeTitle:'Music · Friends · Laughs · Memories', vibeSub:'A special night you won’t want to miss',
       bnHome:'Home', bnRanking:'Ranking', bnFeed:'Photos', bnUpload:'Upload', bnDashboard:'Stats',
       loadError:'Could not load. Check APPS_SCRIPT_URL in site-core.js.', needMessage:'Write a message or attach a photo.', sending:'Sending…', sent:'Sent!', sendError:'Could not send. Please try again.', preparingPhoto:'Preparing photo…', uploadTimeout:'The upload took too long. Please try again. If the photo is large, try a lighter one.', badImage:'We could not prepare that photo. Please try another image.', uploadHelp:'1 photo per upload · recommended under 8 MB', feedEmpty:'Nothing here yet. Upload the first photo or message!', commentPlaceholder:'Write a comment…', noPoints:'No points yet — be the first!', pts:'pts',
-      categories:['The Biggest Gossip','The Paparazzi','Life of the Party','The Biker','Best Toast','The Fittest']
+      categories:['The Biggest Gossip','The Paparazzi','Life of the Party','The Biker','Best Toast','The Fittest'],
+      voteSub:'Tap the person you think earns this title.', voteEmpty:'No other guests to vote for yet.', voteSuccess:'Vote registered! 🎉', voteError:'Could not register your vote, try again.', voteCancel:'Cancel', votesWord:'votes'
     }
   };
   let currentLang = localStorage.getItem('mako41_lang') || 'es';
@@ -636,6 +657,7 @@
     setText('dashboard-eyebrow','dashboardEyebrow'); setHTML('dashboard-title','dashboardTitle'); setText('dash-fotos-label','photosUploaded'); setText('dash-msgs-label','dedications'); setText('dash-likes-label','reactions'); setText('dash-coms-label','comments'); setText('dash-asis-label','confirmed'); setText('dash-total-label','totalPoints'); setText('dash-winner-label','rankingLeader');
     setText('details-eyebrow','detailsEyebrow'); setHTML('details-title','detailsTitle'); setText('detail-date-title','dateTitle'); setText('detail-date-sub','dateSub'); setText('detail-place-title','placeTitle'); setText('detail-place-sub','placeSub'); setText('detail-toast-title','toastTitle'); setText('detail-toast-sub','toastSub'); setText('detail-vibe-title','vibeTitle'); setText('detail-vibe-sub','vibeSub');
     setText('bn-home','bnHome'); setText('bn-feed','bnFeed'); setText('bn-upload','bnUpload'); setText('bn-ranking','bnRanking'); setText('bn-dashboard','bnDashboard');
+    setText('vote-cancel-btn','voteCancel');
     const fab=document.getElementById('fab-upload'); if(fab) fab.setAttribute('aria-label',t('bnUpload'));
     if(selectEl && selectEl.options.length){ selectEl.options[0].textContent = selectEl.options.length > 1 ? t('selectName') : t('loadingGuests'); }
     if(appData) renderAll(appData);
@@ -1048,12 +1070,70 @@
   }
 
   const CATEGORY_ICONS = ["🗣️","📸","🎉","🏍️","🥃","💪"];
-  function renderCategories(){
+  const CATEGORY_IDS = ["chismoso","paparazzi_cat","alma_fiesta","motero","brindis","fit"];
+
+  function renderCategories(data){
     const labels = t('categories');
-    document.getElementById('cat-grid').innerHTML = CATEGORY_ICONS.map((icon,i) => `
-      <div class="cat-chip"><span>${icon}</span><span>${labels[i]}</span></div>
-    `).join('');
+    const votosCat = (data && data.votosCategorias) || [];
+    document.getElementById('cat-grid').innerHTML = CATEGORY_IDS.map((id,i) => {
+      const info = votosCat.find(v => v.id === id);
+      const leaderLine = (info && info.lider)
+        ? `<div class="cat-leader">👑 ${info.lider} · ${info.votos} ${t('votesWord')}</div>`
+        : '';
+      return `
+        <button type="button" class="cat-chip" data-cat-id="${id}" data-cat-title="${labels[i]}">
+          <div class="cat-chip-top"><span>${CATEGORY_ICONS[i]}</span><span>${labels[i]}</span></div>
+          ${leaderLine}
+        </button>
+      `;
+    }).join('');
+
+    document.querySelectorAll('.cat-chip').forEach(btn => {
+      btn.addEventListener('click', () => openVoteModal(btn.dataset.catId, btn.dataset.catTitle));
+    });
   }
+
+  // ---------- Vote modal ----------
+  const voteModal = document.getElementById('vote-modal');
+  const voteList = document.getElementById('vote-list');
+  const voteStatus = document.getElementById('vote-status');
+
+  function openVoteModal(categoryId, categoryTitle){
+    const s = requireSession(); if (!s) return;
+    document.getElementById('vote-title').textContent = categoryTitle;
+    document.getElementById('vote-sub').textContent = t('voteSub');
+    voteStatus.textContent = '';
+
+    const others = (appData && appData.invitados || []).filter(n => n !== s.name);
+    if (!others.length){
+      voteList.innerHTML = `<div class="empty-state">${t('voteEmpty')}</div>`;
+    } else {
+      voteList.innerHTML = others.map(name => `<button type="button" class="vote-option" data-name="${name}">${name}</button>`).join('');
+      voteList.querySelectorAll('.vote-option').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          voteList.querySelectorAll('.vote-option').forEach(b => b.disabled = true);
+          voteStatus.textContent = t('sending');
+          try{
+            const res = await registrarVoto(categoryId, s.name, btn.dataset.name);
+            if (res && res.success){
+              voteStatus.textContent = t('voteSuccess');
+              await refreshData();
+              setTimeout(() => voteModal.classList.remove('open'), 700);
+            } else {
+              voteStatus.textContent = (res && res.error) || t('voteError');
+              voteList.querySelectorAll('.vote-option').forEach(b => b.disabled = false);
+            }
+          } catch(err){
+            voteStatus.textContent = t('voteError');
+            voteList.querySelectorAll('.vote-option').forEach(b => b.disabled = false);
+          }
+        });
+      });
+    }
+    voteModal.classList.add('open');
+  }
+  document.getElementById('vote-close').addEventListener('click', () => voteModal.classList.remove('open'));
+  document.getElementById('vote-cancel-btn').addEventListener('click', () => voteModal.classList.remove('open'));
 
   // ---------- Dashboard ----------
   function renderDashboard(data){
@@ -1086,7 +1166,7 @@
     renderCarousel(data.dedicatorias);
     renderFeed(data.dedicatorias);
     renderLeaderboard(data.scoreboard);
-    renderCategories();
+    renderCategories(data);
     renderDashboard(data);
   }
 
