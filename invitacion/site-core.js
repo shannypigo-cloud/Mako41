@@ -30,17 +30,12 @@ function apiGet(action) {
 }
 
 function apiPost(action, body) {
-  // OJO: no le ponemos header Content-Type a propósito. Si lo hacemos,
-  // el navegador puede disparar un preflight o Apps Script puede
-  // redirigir el POST de forma que se convierta en GET (bug conocido).
-  // Dejando el body como string plano, el fetch usa text/plain por
-  // default (sin preflight) y Codigo.gs lo parsea como JSON del lado
-  // del servidor. Así es como funciona el crucero.
-  const url = `${CONFIG.APPS_SCRIPT_URL}?action=${encodeURIComponent(action)}`;
-  return fetch(url, {
-    method: "POST",
-    body: JSON.stringify(body || {})
-  }).then(r => r.json());
+  // Usamos GET (con los datos codificados en la URL) porque tu sitio
+  // (GitHub Pages) y tu Apps Script viven en dominios distintos, y el
+  // POST cruzado entre dominios falla o se rompe en varios navegadores
+  // (redirect + CORS). GET sí funciona de forma confiable acá.
+  const url = `${CONFIG.APPS_SCRIPT_URL}?action=${encodeURIComponent(action)}&payload=${encodeURIComponent(JSON.stringify(body || {}))}`;
+  return fetch(url).then(r => r.json());
 }
 
 function getAppData() {
