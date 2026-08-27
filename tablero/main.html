@@ -65,8 +65,10 @@
   .modal-card h3{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold2);margin:0 0 14px;font-size:22px}
   .modal-card select{width:100%;padding:12px 14px;border-radius:12px;background:var(--black);border:1px solid var(--line);color:var(--cream);font-size:14px;margin-bottom:12px}
   .modal-card textarea{width:100%;min-height:70px;background:var(--black);border:1px solid var(--line);border-radius:10px;color:var(--cream);padding:10px 12px;font-size:14px;resize:vertical;margin-bottom:10px;text-align:left}
-  .modal-card input[type=file]{width:100%;font-size:12px;color:var(--muted);margin-bottom:12px}
+  .modal-card input[type=file]{width:100%;font-size:12px;color:var(--muted);margin-bottom:8px}
+  .upload-help{font-size:11px;color:var(--muted);text-align:left;line-height:1.45;margin:0 0 12px}
   .modal-card .btn{width:100%}
+  .btn[disabled]{opacity:.68;cursor:not-allowed;filter:saturate(.86)}
   .modal-close{position:absolute;top:14px;right:18px;color:var(--muted);font-size:20px;cursor:pointer;background:none;border:none}
 
   .btn{padding:13px 24px;border-radius:999px;border:none;cursor:pointer;background:linear-gradient(90deg,var(--gold),var(--gold2));color:var(--black);font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;box-shadow:var(--shadow)}
@@ -291,6 +293,7 @@
     <h3 id="upload-title">Deja algo para MAKO</h3>
     <textarea id="up-text" placeholder="Un mensaje, un recuerdo… (opcional si subes foto)"></textarea>
     <input type="file" id="up-photo" accept="image/*">
+    <div class="upload-help" id="upload-help">1 foto por envío · recomendado menos de 8 MB</div>
     <button class="btn" id="up-send">Enviar</button>
     <div class="status" id="up-status"></div>
   </div>
@@ -548,7 +551,7 @@
       dashboardEyebrow:'Resumen', dashboardTitle:'Todo lo que se<br>movió por acá.', photosUploaded:'Fotos subidas', dedications:'Dedicatorias', reactions:'Reacciones', comments:'Comentarios', confirmed:'Confirmados', totalPoints:'Puntos totales', rankingLeader:'Va ganando el ranking',
       detailsEyebrow:'Coordenadas', detailsTitle:'Todo lo que<br>necesitas saber.', dateTitle:'Sábado 29 de agosto', dateSub:'8:00 PM en adelante', placeTitle:'En su casa', placeSub:'Parrish, Florida', toastTitle:'Vamos a brindar', toastSub:'Por la vida y por las mejores historias', vibeTitle:'Música · Amigos · Risas · Recuerdos', vibeSub:'Una noche especial que no querrás perderte',
       bnHome:'Inicio', bnRanking:'Ranking', bnFeed:'Fotos', bnUpload:'Subir', bnDashboard:'Stats',
-      loadError:'No se pudo cargar. Revisa APPS_SCRIPT_URL en site-core.js.', needMessage:'Escribe un mensaje o adjunta una foto.', sending:'Enviando…', sent:'¡Enviado!', sendError:'No se pudo enviar, intenta de nuevo.', feedEmpty:'Todavía no hay nada por acá. ¡Sube la primera foto o mensaje!', commentPlaceholder:'Escribe un comentario…', noPoints:'Aún no hay puntos — ¡empieza tú!', pts:'pts',
+      loadError:'No se pudo cargar. Revisa APPS_SCRIPT_URL en site-core.js.', needMessage:'Escribe un mensaje o adjunta una foto.', sending:'Enviando…', sent:'¡Enviado!', sendError:'No se pudo enviar, intenta de nuevo.', preparingPhoto:'Preparando foto…', uploadTimeout:'La carga tardó demasiado. Intenta de nuevo. Si la foto es pesada, prueba con una más liviana.', badImage:'No pudimos preparar esa foto. Intenta con otra imagen.', uploadHelp:'1 foto por envío · recomendado menos de 8 MB', feedEmpty:'Todavía no hay nada por acá. ¡Sube la primera foto o mensaje!', commentPlaceholder:'Escribe un comentario…', noPoints:'Aún no hay puntos — ¡empieza tú!', pts:'pts',
       categories:['El Más Chismoso','El Paparazzi','El Alma de la Fiesta','El Más Motero','El Mejor Brindis','El Más Fit']
     },
     en: {
@@ -563,7 +566,7 @@
       dashboardEyebrow:'Recap', dashboardTitle:'Everything that’s<br>happening here.', photosUploaded:'Photos uploaded', dedications:'Messages', reactions:'Reactions', comments:'Comments', confirmed:'Confirmed', totalPoints:'Total points', rankingLeader:'Leading the ranking',
       detailsEyebrow:'Details', detailsTitle:'Everything you<br>need to know.', dateTitle:'Saturday, August 29', dateSub:'8:00 PM and on', placeTitle:'At his house', placeSub:'Parrish, Florida', toastTitle:'Let’s raise a glass', toastSub:'To life and the best stories', vibeTitle:'Music · Friends · Laughs · Memories', vibeSub:'A special night you won’t want to miss',
       bnHome:'Home', bnRanking:'Ranking', bnFeed:'Photos', bnUpload:'Upload', bnDashboard:'Stats',
-      loadError:'Could not load. Check APPS_SCRIPT_URL in site-core.js.', needMessage:'Write a message or attach a photo.', sending:'Sending…', sent:'Sent!', sendError:'Could not send. Please try again.', feedEmpty:'Nothing here yet. Upload the first photo or message!', commentPlaceholder:'Write a comment…', noPoints:'No points yet — be the first!', pts:'pts',
+      loadError:'Could not load. Check APPS_SCRIPT_URL in site-core.js.', needMessage:'Write a message or attach a photo.', sending:'Sending…', sent:'Sent!', sendError:'Could not send. Please try again.', preparingPhoto:'Preparing photo…', uploadTimeout:'The upload took too long. Please try again. If the photo is large, try a lighter one.', badImage:'We could not prepare that photo. Please try another image.', uploadHelp:'1 photo per upload · recommended under 8 MB', feedEmpty:'Nothing here yet. Upload the first photo or message!', commentPlaceholder:'Write a comment…', noPoints:'No points yet — be the first!', pts:'pts',
       categories:['The Biggest Gossip','The Paparazzi','Life of the Party','The Biker','Best Toast','The Fittest']
     }
   };
@@ -582,7 +585,7 @@
     setText('upload-pill-btn','uploadPhoto');
     setText('nav-home','navHome'); setText('nav-feed','navFeed'); setText('nav-ranking','navRanking'); setText('nav-dashboard','navDashboard'); setText('nav-details','navDetails');
     setText('profile-title','profileTitle'); setText('enter-btn','confirm');
-    setText('upload-title','uploadTitle'); document.getElementById('up-text').placeholder=t('uploadPlaceholder'); setText('up-send','send');
+    setText('upload-title','uploadTitle'); document.getElementById('up-text').placeholder=t('uploadPlaceholder'); setText('up-send','send'); setText('upload-help','uploadHelp');
     setText('hero-eyebrow','heroEyebrow'); setText('hero-age','heroAge'); setText('cd-d-lbl','days'); setText('cd-h-lbl','hours'); setText('cd-m-lbl','min'); setText('cd-s-lbl','sec'); setHTML('hero-details','heroDetails');
     setText('feed-eyebrow','feedEyebrow'); setHTML('feed-title','feedTitle'); setText('feed-loading','loading');
     setText('ranking-eyebrow','rankingEyebrow'); setHTML('ranking-title','rankingTitle'); setText('ranking-rules','rankingRules'); setText('ranking-loading','loading');
@@ -665,26 +668,87 @@
   document.getElementById('fab-upload').addEventListener('click', openUpload);
   document.getElementById('upload-close').addEventListener('click', () => uploadModal.classList.remove('open'));
 
+  function withTimeout(promise, ms, message){
+    let timer;
+    return Promise.race([
+      promise,
+      new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(message)), ms); })
+    ]).finally(() => clearTimeout(timer));
+  }
+  function loadFileAsDataURL(file){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error(t('badImage')));
+      reader.readAsDataURL(file);
+    });
+  }
+  async function optimizeImage(file){
+    if (!file || !file.type || !file.type.startsWith('image/')) return file;
+    const dataUrl = await loadFileAsDataURL(file);
+    const img = await new Promise((resolve, reject) => {
+      const im = new Image();
+      im.onload = () => resolve(im);
+      im.onerror = () => reject(new Error(t('badImage')));
+      im.src = dataUrl;
+    });
+    const maxDim = 1000;
+    const scale = Math.min(1, maxDim / Math.max(img.width || 1, img.height || 1));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round((img.width || 1) * scale));
+    canvas.height = Math.max(1, Math.round((img.height || 1) * scale));
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise((resolve, reject) => {
+      canvas.toBlob(b => b ? resolve(b) : reject(new Error(t('badImage'))), 'image/jpeg', 0.65);
+    });
+    const baseName = (file.name || 'photo').replace(/\.[^.]+$/, '');
+    return new File([blob], baseName + '.jpg', { type:'image/jpeg' });
+  }
+
+  document.getElementById('up-photo').addEventListener('change', () => {
+    const statusEl = document.getElementById('up-status');
+    statusEl.textContent = '';
+  });
+
   document.getElementById('up-send').addEventListener('click', async () => {
     const s = requireSession();
     if (!s) return;
+    const btn = document.getElementById('up-send');
+    const closeBtn = document.getElementById('upload-close');
     const statusEl = document.getElementById('up-status');
     const text = document.getElementById('up-text').value.trim();
     const fileInput = document.getElementById('up-photo');
     const file = fileInput.files[0];
     if (!text && !file){ statusEl.textContent = t('needMessage'); return; }
-    statusEl.textContent = t('sending');
-    let foto = null;
-    if (file) foto = await fileToPayload(file);
-    const res = await addDedicatoria({ invitado: s.name, mensaje: text, foto });
-    if (res.success){
-      document.getElementById('up-text').value = '';
-      fileInput.value = '';
-      statusEl.textContent = t('sent');
-      await refreshData();
-      setTimeout(() => { uploadModal.classList.remove('open'); statusEl.textContent = ''; }, 700);
-    } else {
-      statusEl.textContent = res.error || t('sendError');
+    if (btn.disabled) return;
+    btn.disabled = true;
+    closeBtn.disabled = true;
+    try {
+      let foto = null;
+      if (file){
+        statusEl.textContent = t('preparingPhoto');
+        const processedFile = await withTimeout(optimizeImage(file), 15000, t('badImage'));
+        statusEl.textContent = t('sending');
+        foto = await withTimeout(fileToPayload(processedFile), 15000, t('uploadTimeout'));
+      } else {
+        statusEl.textContent = t('sending');
+      }
+      const res = await withTimeout(addDedicatoria({ invitado: s.name, mensaje: text, foto }), 45000, t('uploadTimeout'));
+      if (res && res.success){
+        document.getElementById('up-text').value = '';
+        fileInput.value = '';
+        statusEl.textContent = t('sent');
+        await refreshData();
+        setTimeout(() => { uploadModal.classList.remove('open'); statusEl.textContent = ''; }, 700);
+      } else {
+        statusEl.textContent = (res && res.error) || t('sendError');
+      }
+    } catch (err) {
+      statusEl.textContent = (err && err.message) ? err.message : t('sendError');
+    } finally {
+      btn.disabled = false;
+      closeBtn.disabled = false;
     }
   });
 
