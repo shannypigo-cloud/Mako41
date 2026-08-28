@@ -956,6 +956,11 @@
 
   function renderFeed(list){
     const el = document.getElementById('feed-list');
+    // Antes de redibujar, recordamos qué cajas de comentarios estaban
+    // abiertas — así un auto-refresh de fondo no te las cierra de golpe.
+    const cajasAbiertas = new Set(
+      Array.from(el.querySelectorAll('.comments-box.open')).map(box => box.id)
+    );
     if (!list || !list.length){
       el.innerHTML = `<div class="empty-state">${t('feedEmpty')}</div>`;
       return;
@@ -1038,6 +1043,12 @@
     `; }).join('');
 
     // Abrir/cerrar el picker de reacciones
+    // Reabrimos las cajas de comentarios que ya estaban abiertas antes de redibujar
+    cajasAbiertas.forEach(id => {
+      const box = document.getElementById(id);
+      if (box) box.classList.add('open');
+    });
+
     el.querySelectorAll('.reaction-add-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         if (!requireSession()) return;
@@ -1288,6 +1299,29 @@
     appData = data;
     renderAll(data);
   }
+
+  // ---------- Auto-refresh cada 8 segundos ----------
+  // Antes, el tablero solo se actualizaba cuando TÚ hacías algo (reaccionar,
+  // comentar, etc.). Eso significa que si alguien más reacciona o comenta,
+  // no lo veías hasta que tú mismo tocaras algo o recargaras la página a
+  // mano. Con el evento en vivo, necesitamos que se sienta en tiempo real.
+  //
+  // Si en ese momento la persona está escribiendo un comentario (tiene el
+  // cursor en un input con texto), nos saltamos esa vuelta para no
+  // borrarle lo que estaba escribiendo — lo intentamos de nuevo 8s después.
+  async function autoRefreshTick(){
+    const activo = document.activeElement;
+    const escribiendoComentario = activo &&
+      activo.tagName === 'INPUT' &&
+      activo.closest('.comment-form') &&
+      activo.value.trim() !== '';
+    const pickerAbierto = document.querySelector('.reaction-picker.open, .comment-reaction-picker.open');
+    if (escribiendoComentario || pickerAbierto) return;
+
+    try { await refreshData(); }
+    catch (err) { /* silencioso — se reintenta solo en la próxima vuelta */ }
+  }
+  setInterval(autoRefreshTick, 6000);
 
   (async function boot(){
     applyLanguage(currentLang);
