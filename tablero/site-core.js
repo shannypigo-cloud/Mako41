@@ -50,6 +50,10 @@ function toggleLike(dedicatoriaId, invitado, emoji) {
   return apiPost("toggleLike", { dedicatoriaId, invitado, emoji });
 }
 
+function toggleComentarioLike(comentarioId, invitado, emoji) {
+  return apiPost("toggleComentarioLike", { comentarioId, invitado, emoji });
+}
+
 function addComment(dedicatoriaId, invitado, comentario) {
   return apiPost("addComment", { dedicatoriaId, invitado, comentario });
 }
