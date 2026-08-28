@@ -140,6 +140,15 @@
   .comment-content{background:var(--black);border-radius:12px;padding:8px 12px;flex:1}
   .comment-content .cn{font-size:12px;font-weight:700;color:var(--gold2);display:block;margin-bottom:2px}
   .comment-content .ct{font-size:13px;color:var(--cream);line-height:1.4}
+  .comment-reactions{display:flex;align-items:center;gap:4px;margin-top:5px;flex-wrap:wrap}
+  .comment-reaction-chip{background:var(--ink2);border:1px solid var(--line);border-radius:999px;padding:2px 7px;font-size:11px;color:var(--cream);cursor:pointer}
+  .comment-reaction-chip.mine{border-color:var(--gold);color:var(--gold2)}
+  .comment-add-reaction{position:relative}
+  .comment-add-btn{background:none;border:none;font-size:13px;cursor:pointer;color:var(--muted);padding:2px 4px}
+  .comment-reaction-picker{display:none;gap:3px;background:var(--black);border:1px solid var(--gold);border-radius:999px;padding:4px 6px;position:absolute;bottom:calc(100% + 4px);left:0;z-index:6;white-space:nowrap}
+  .comment-reaction-picker.open{display:flex}
+  .comment-reaction-picker button{background:none;border:none;font-size:14px;cursor:pointer;padding:1px;border-radius:50%}
+  .comment-reaction-picker button.picked{background:rgba(201,168,106,.25)}
   .comment-form{display:flex;gap:6px;margin-top:8px}
   .comment-form input{flex:1;background:var(--black);border:1px solid var(--line);border-radius:999px;color:var(--cream);padding:8px 12px;font-size:12px}
   .comment-form button{background:var(--gold);border:none;color:var(--black);border-radius:999px;padding:8px 12px;font-size:11px;font-weight:800;cursor:pointer}
@@ -993,12 +1002,33 @@
         </div>
         <button class="comment-toggle-link" data-id="${d.id}">💬 ${(d.comentarios||[]).length} ${t('commentPlaceholder').includes('Write') ? 'comments' : 'comentarios'}</button>
         <div class="comments-box" id="comments-${d.id}">
-          ${(d.comentarios||[]).map(c => `
+          ${(d.comentarios||[]).map(c => {
+            const cReacciones = c.reacciones || {};
+            const cEmojiKeys = Object.keys(cReacciones).sort((a,b) => cReacciones[b].length - cReacciones[a].length);
+            const cMiEmoji = cEmojiKeys.find(e => myName && cReacciones[e].includes(myName));
+            const cChips = cEmojiKeys.map(emoji => {
+              const gente = cReacciones[emoji];
+              const mine = myName && gente.includes(myName);
+              return `<button class="comment-reaction-chip ${mine ? 'mine' : ''}" data-comment-id="${c.id}" data-emoji="${emoji}">${emoji} ${gente.length}</button>`;
+            }).join('');
+            return `
             <div class="comment-bubble">
               <div class="comment-avatar">${initials(c.invitado)}</div>
-              <div class="comment-content"><span class="cn">${c.invitado}</span><span class="ct">${c.texto.replace(/</g,'&lt;')}</span></div>
+              <div class="comment-content">
+                <span class="cn">${c.invitado}</span>
+                <span class="ct">${c.texto.replace(/</g,'&lt;')}</span>
+                <div class="comment-reactions">
+                  ${cChips}
+                  <div class="comment-add-reaction">
+                    <button class="comment-add-btn" data-comment-id="${c.id}">🤍+</button>
+                    <div class="comment-reaction-picker" id="cpicker-${c.id}">
+                      ${REACTION_EMOJIS.map(e => `<button data-comment-id="${c.id}" data-emoji="${e}" class="${e === cMiEmoji ? 'picked' : ''}">${e}</button>`).join('')}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          `).join('')}
+          `; }).join('')}
           <div class="comment-form">
             <input type="text" placeholder="${t('commentPlaceholder')}" data-id="${d.id}">
             <button data-id="${d.id}">${t('send')}</button>
@@ -1036,6 +1066,40 @@
         showBusy(t('savingReaction'));
         try {
           await toggleLike(btn.dataset.id, s.name, btn.dataset.emoji);
+          await refreshData();
+        } finally {
+          hideBusy();
+        }
+      });
+    });
+
+    // ---------- Reacciones en COMENTARIOS individuales ----------
+    el.querySelectorAll('.comment-add-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!requireSession()) return;
+        document.querySelectorAll('.comment-reaction-picker.open').forEach(p => { if (p.id !== 'cpicker-' + btn.dataset.commentId) p.classList.remove('open'); });
+        document.getElementById('cpicker-' + btn.dataset.commentId).classList.toggle('open');
+      });
+    });
+    el.querySelectorAll('.comment-reaction-picker button').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const s = requireSession(); if (!s) return;
+        btn.closest('.comment-reaction-picker').classList.remove('open');
+        showBusy(t('savingReaction'));
+        try {
+          await toggleComentarioLike(btn.dataset.commentId, s.name, btn.dataset.emoji);
+          await refreshData();
+        } finally {
+          hideBusy();
+        }
+      });
+    });
+    el.querySelectorAll('.comment-reaction-chip').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const s = requireSession(); if (!s) return;
+        showBusy(t('savingReaction'));
+        try {
+          await toggleComentarioLike(btn.dataset.commentId, s.name, btn.dataset.emoji);
           await refreshData();
         } finally {
           hideBusy();
