@@ -22,70 +22,79 @@
       radial-gradient(circle at 100% 24%, rgba(224,190,114,.045), transparent 25%),
       linear-gradient(180deg,#060606 0%,#030303 100%);
     color:var(--cream);font-family:'Manrope',sans-serif;
-    display:flex;flex-direction:column;padding:2.4vh 4vw 1.6vh;
+    display:flex;flex-direction:column;gap:1.6vh;
+    padding:2vh 3vw;height:100vh;
   }
 
-  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:2vh}
-  .brand{font-weight:800;font-size:clamp(20px,2.4vw,32px);letter-spacing:-.02em}
+  .top{display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+  .brand{font-weight:800;font-size:clamp(20px,3.2vw,30px);letter-spacing:-.02em}
   .brand span{color:var(--gold)}
-  .clock{font-size:clamp(16px,1.8vw,24px);color:var(--muted);font-weight:700}
+  .clock{font-size:clamp(15px,2.2vw,22px);color:var(--muted);font-weight:700}
 
-  .grid{flex:1;display:grid;grid-template-columns:0.85fr 0.85fr 1.15fr;gap:2.2vw;min-height:0}
+  .panel{background:linear-gradient(180deg,#0e0e0e,#090909);border:1px solid var(--line-soft);border-radius:24px;padding:2.2vh 3.2vw;box-shadow:0 20px 60px rgba(0,0,0,.4);display:flex;flex-direction:column;min-height:0}
+  .panel-title{font-size:clamp(12px,2vw,16px);letter-spacing:.12em;text-transform:uppercase;color:var(--gold2);font-weight:800;margin:0 0 1.4vh;flex-shrink:0}
 
-  .panel{background:linear-gradient(180deg,#0e0e0e,#090909);border:1px solid var(--line-soft);border-radius:28px;padding:3vh 3vw;box-shadow:0 20px 60px rgba(0,0,0,.4);display:flex;flex-direction:column;min-height:0}
-  .panel-title{font-size:clamp(13px,1.3vw,18px);letter-spacing:.14em;text-transform:uppercase;color:var(--gold2);font-weight:800;margin:0 0 2vh}
+  /* Chrome fijo: no crece, toma solo lo que necesita */
+  .stats-panel{flex-shrink:0}
+  .cat-panel{flex-shrink:0}
 
-  /* Stats grid */
-  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:2vh 1.5vw;flex:1}
-  .stat-tile{background:#101010;border:1px solid var(--line-soft);border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2vh 1vw}
-  .stat-num{font-weight:800;font-size:clamp(30px,4.2vw,58px);color:var(--cream);letter-spacing:-.03em;line-height:1}
-  .stat-lbl{font-size:clamp(10px,1vw,14px);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:1vh;font-weight:800}
+  /* Zonas "hero": absorben el espacio vertical que sobra */
+  .hero-panel{flex:1.5;min-height:0}
+  .ranking-panel{flex:1.3;min-height:0}
+
+  /* Stats grid — fila compacta de 3x2 */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4vh 2.5vw}
+  .stat-tile{background:#101010;border:1px solid var(--line-soft);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:1.6vh 1vw}
+  .stat-num{font-weight:800;font-size:clamp(24px,5.6vw,40px);color:var(--cream);letter-spacing:-.03em;line-height:1}
+  .stat-lbl{font-size:clamp(9px,1.8vw,12px);color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:.8vh;font-weight:800}
+
+  .winner-strip{margin-top:1.6vh;display:flex;align-items:center;gap:2.5vw;padding:1.6vh 3vw;border-radius:16px;background:rgba(224,190,114,.08);border:1px solid var(--gold);flex-shrink:0}
+  .winner-strip .medal{font-size:clamp(22px,5vw,32px)}
+  .winner-strip b{color:var(--gold2);font-size:clamp(15px,3.4vw,20px)}
+  .winner-strip small{display:block;color:var(--muted);font-size:clamp(9px,1.8vw,12px);text-transform:uppercase;letter-spacing:.1em}
 
   /* Ranking */
-  .rank-list{flex:1;overflow-y:hidden;display:flex;flex-direction:column;gap:1.4vh;scroll-behavior:smooth}
-  .rank-row{display:flex;align-items:center;gap:1.2vw;padding:1.4vh 1.4vw;border-radius:16px;background:#0d0d0d;border:1px solid var(--line-soft);flex-shrink:0}
+  .rank-list{flex:1;overflow-y:hidden;display:flex;flex-direction:column;gap:1.2vh;scroll-behavior:smooth}
+  .rank-row{display:flex;align-items:center;gap:3vw;padding:1.4vh 3vw;border-radius:16px;background:#0d0d0d;border:1px solid var(--line-soft);flex-shrink:0}
   .rank-row.top{background:linear-gradient(100deg,#151109,#0c0c0c 70%);border-color:rgba(224,190,114,.42)}
-  .rank-num{width:clamp(24px,2.4vw,34px);text-align:center;font-weight:800;color:var(--gold2);font-size:clamp(14px,1.6vw,22px)}
-  .rank-avatar{width:clamp(30px,3.2vw,46px);height:clamp(30px,3.2vw,46px);border-radius:50%;background:#171717;border:1px solid var(--line);color:var(--cream);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:clamp(13px,1.4vw,18px);flex-shrink:0}
-  .rank-name{flex:1;font-weight:700;font-size:clamp(14px,1.6vw,22px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .rank-pts{font-weight:800;color:var(--gold2);font-size:clamp(14px,1.6vw,22px);flex-shrink:0}
+  .rank-num{width:clamp(22px,4.5vw,30px);text-align:center;font-weight:800;color:var(--gold2);font-size:clamp(14px,3vw,20px)}
+  .rank-avatar{width:clamp(30px,6vw,42px);height:clamp(30px,6vw,42px);border-radius:50%;background:#171717;border:1px solid var(--line);color:var(--cream);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:clamp(13px,2.6vw,17px);flex-shrink:0}
+  .rank-name{flex:1;font-weight:700;font-size:clamp(14px,3vw,19px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rank-pts{font-weight:800;color:var(--gold2);font-size:clamp(14px,3vw,19px);flex-shrink:0}
 
-  .winner-strip{margin-top:2vh;display:flex;align-items:center;gap:1.4vw;padding:2vh 1.6vw;border-radius:20px;background:rgba(224,190,114,.08);border:1px solid var(--gold)}
-  .winner-strip .medal{font-size:clamp(26px,3vw,42px)}
-  .winner-strip b{color:var(--gold2);font-size:clamp(16px,1.8vw,26px)}
-  .winner-strip small{display:block;color:var(--muted);font-size:clamp(10px,1vw,14px);text-transform:uppercase;letter-spacing:.1em}
-
-  .empty{color:var(--muted);text-align:center;padding:4vh 0;font-size:clamp(13px,1.4vw,18px)}
+  .empty{color:var(--muted);text-align:center;padding:3vh 0;font-size:clamp(13px,2.8vw,16px)}
 
   /* Foto favorita del parche */
-  .fav-banner{display:flex;align-items:center;gap:1vw;padding:1.2vh 1vw;border-radius:16px;background:rgba(224,190,114,.08);border:1px solid var(--gold);margin-bottom:1.6vh;flex-shrink:0}
-  .fav-banner img{width:clamp(48px,6vw,84px);height:clamp(48px,6vw,84px);border-radius:12px;object-fit:cover;flex-shrink:0}
+  .fav-banner{display:flex;align-items:center;gap:3vw;padding:1.4vh 3vw;border-radius:16px;background:rgba(224,190,114,.08);border:1px solid var(--gold);margin-bottom:1.6vh;flex-shrink:0}
+  .fav-banner img{width:clamp(52px,11vw,74px);height:clamp(52px,11vw,74px);border-radius:12px;object-fit:cover;flex-shrink:0}
   .fav-info{display:flex;flex-direction:column;gap:.3vh;min-width:0}
-  .fav-info small{color:var(--gold2);text-transform:uppercase;letter-spacing:.08em;font-size:clamp(9px,.9vw,12px);font-weight:800}
-  .fav-info b{font-size:clamp(14px,1.6vw,20px);color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .fav-info span{font-size:clamp(10px,1vw,13px);color:var(--muted)}
+  .fav-info small{color:var(--gold2);text-transform:uppercase;letter-spacing:.08em;font-size:clamp(9px,1.9vw,12px);font-weight:800}
+  .fav-info b{font-size:clamp(15px,3.4vw,19px);color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .fav-info span{font-size:clamp(10px,2.2vw,13px);color:var(--muted)}
 
   /* Carrusel de últimas fotos */
   .photo-carousel{position:relative;flex:1;border-radius:18px;overflow:hidden;background:#0a0a0a;min-height:0}
   .carousel-slide{position:absolute;inset:0;opacity:0;transition:opacity .8s ease}
   .carousel-slide.active{opacity:1}
   .carousel-slide img{width:100%;height:100%;object-fit:cover;display:block}
-  .carousel-caption{position:absolute;left:0;right:0;bottom:0;padding:1.4vh 1vw;background:linear-gradient(0deg,rgba(0,0,0,.78),transparent);font-weight:800;font-size:clamp(12px,1.3vw,17px);color:var(--cream)}
-  .carousel-dots{position:absolute;top:1.2vh;right:1vw;display:flex;gap:5px;z-index:2}
+  .carousel-caption{position:absolute;left:0;right:0;bottom:0;padding:1.6vh 3vw;background:linear-gradient(0deg,rgba(0,0,0,.78),transparent);font-weight:800;font-size:clamp(13px,3vw,17px);color:var(--cream)}
+  .carousel-dots{position:absolute;top:1.4vh;right:3vw;display:flex;gap:5px;z-index:2}
   .dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35)}
   .dot.active{background:var(--gold)}
 
-  /* Categorías */
-  .cat-panel{margin-top:2vh}
-  .cat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1vw}
-  .cat-chip{background:#101010;border:1px solid var(--line-soft);border-radius:16px;padding:1.4vh 1vw;display:flex;flex-direction:column;gap:.6vh}
-  .cat-chip-top{display:flex;align-items:center;gap:.5vw;font-size:clamp(11px,1.1vw,15px);font-weight:800;color:var(--cream)}
-  .cat-chip-leader{font-size:clamp(10px,1vw,13px);color:var(--gold2);font-weight:700}
-  .cat-chip-empty{font-size:clamp(10px,1vw,13px);color:var(--muted)}
+  /* Categorías — 2x2 en vertical, más legible que 4 en fila */
+  .cat-row{display:grid;grid-template-columns:1fr 1fr;gap:1.4vh 2.5vw}
+  .cat-chip{background:#101010;border:1px solid var(--line-soft);border-radius:14px;padding:1.4vh 3vw;display:flex;flex-direction:column;gap:.6vh}
+  .cat-chip-top{display:flex;align-items:center;gap:1.5vw;font-size:clamp(12px,2.6vw,15px);font-weight:800;color:var(--cream)}
+  .cat-chip-leader{font-size:clamp(10px,2.2vw,13px);color:var(--gold2);font-weight:700}
+  .cat-chip-empty{font-size:clamp(10px,2.2vw,13px);color:var(--muted)}
 
-  @media (max-width: 900px){
-    body{overflow:auto;height:auto}
-    .grid{grid-template-columns:1fr}
+  /* Si por alguna razón se abre en un monitor horizontal normal, que se
+     vea razonable igual: apilamos menos alto, más ancho de sobra. */
+  @media (min-aspect-ratio: 4/3){
+    body{padding:2.4vh 4vw}
+    .stats{grid-template-columns:repeat(6,1fr)}
+    .cat-row{grid-template-columns:repeat(4,1fr)}
   }
 </style>
 </head>
@@ -96,41 +105,39 @@
     <div class="clock" id="clock">--:--</div>
   </div>
 
-  <div class="grid">
-    <section class="panel">
-      <p class="panel-title">📊 Todo lo que se ha movido</p>
-      <div class="stats">
-        <div class="stat-tile"><div class="stat-num" id="s-fotos">0</div><div class="stat-lbl">Fotos subidas</div></div>
-        <div class="stat-tile"><div class="stat-num" id="s-dedis">0</div><div class="stat-lbl">Dedicatorias</div></div>
-        <div class="stat-tile"><div class="stat-num" id="s-reacciones">0</div><div class="stat-lbl">Reacciones</div></div>
-        <div class="stat-tile"><div class="stat-num" id="s-comentarios">0</div><div class="stat-lbl">Comentarios</div></div>
-        <div class="stat-tile"><div class="stat-num" id="s-confirmados">0</div><div class="stat-lbl">Confirmados</div></div>
-        <div class="stat-tile"><div class="stat-num" id="s-puntos">0</div><div class="stat-lbl">Puntos totales</div></div>
+  <section class="panel hero-panel">
+    <p class="panel-title">📸 Momentos del parche</p>
+    <div class="fav-banner" id="fav-banner" style="display:none">
+      <img id="fav-img" src="" alt="Foto favorita">
+      <div class="fav-info">
+        <small>🏆 La favorita del parche</small>
+        <b id="fav-name">—</b>
+        <span id="fav-count"></span>
       </div>
-      <div class="winner-strip" id="winner-strip" style="display:none">
-        <div class="medal">🏆</div>
-        <div><small>Va ganando el ranking</small><b id="winner-name">—</b></div>
-      </div>
-    </section>
+    </div>
+    <div class="photo-carousel" id="photo-carousel"><div class="empty">Todavía no hay fotos</div></div>
+  </section>
 
-    <section class="panel">
-      <p class="panel-title">🏆 Ranking en vivo</p>
-      <div class="rank-list" id="rank-list"><div class="empty">Cargando…</div></div>
-    </section>
+  <section class="panel stats-panel">
+    <p class="panel-title">📊 Todo lo que se ha movido</p>
+    <div class="stats">
+      <div class="stat-tile"><div class="stat-num" id="s-fotos">0</div><div class="stat-lbl">Fotos subidas</div></div>
+      <div class="stat-tile"><div class="stat-num" id="s-dedis">0</div><div class="stat-lbl">Dedicatorias</div></div>
+      <div class="stat-tile"><div class="stat-num" id="s-reacciones">0</div><div class="stat-lbl">Reacciones</div></div>
+      <div class="stat-tile"><div class="stat-num" id="s-comentarios">0</div><div class="stat-lbl">Comentarios</div></div>
+      <div class="stat-tile"><div class="stat-num" id="s-confirmados">0</div><div class="stat-lbl">Confirmados</div></div>
+      <div class="stat-tile"><div class="stat-num" id="s-puntos">0</div><div class="stat-lbl">Puntos totales</div></div>
+    </div>
+    <div class="winner-strip" id="winner-strip" style="display:none">
+      <div class="medal">🏆</div>
+      <div><small>Va ganando el ranking</small><b id="winner-name">—</b></div>
+    </div>
+  </section>
 
-    <section class="panel">
-      <p class="panel-title">📸 Momentos del parche</p>
-      <div class="fav-banner" id="fav-banner" style="display:none">
-        <img id="fav-img" src="" alt="Foto favorita">
-        <div class="fav-info">
-          <small>🏆 La favorita del parche</small>
-          <b id="fav-name">—</b>
-          <span id="fav-count"></span>
-        </div>
-      </div>
-      <div class="photo-carousel" id="photo-carousel"><div class="empty">Todavía no hay fotos</div></div>
-    </section>
-  </div>
+  <section class="panel ranking-panel">
+    <p class="panel-title">🏆 Ranking en vivo</p>
+    <div class="rank-list" id="rank-list"><div class="empty">Cargando…</div></div>
+  </section>
 
   <section class="panel cat-panel">
     <p class="panel-title">🏅 Categorías del cumple</p>
@@ -321,5 +328,7 @@
   refresh();
   setInterval(refresh, 15000); // se actualiza sola cada 15 segundos
 </script>
+</body>
+</html>
 </body>
 </html>
