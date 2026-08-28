@@ -30,7 +30,7 @@
   .brand span{color:var(--gold)}
   .clock{font-size:clamp(16px,1.8vw,24px);color:var(--muted);font-weight:700}
 
-  .grid{flex:1;display:grid;grid-template-columns:1.1fr 1fr;gap:3vw;min-height:0}
+  .grid{flex:1;display:grid;grid-template-columns:0.85fr 0.85fr 1.15fr;gap:2.2vw;min-height:0}
 
   .panel{background:linear-gradient(180deg,#0e0e0e,#090909);border:1px solid var(--line-soft);border-radius:28px;padding:3vh 3vw;box-shadow:0 20px 60px rgba(0,0,0,.4);display:flex;flex-direction:column;min-height:0}
   .panel-title{font-size:clamp(13px,1.3vw,18px);letter-spacing:.14em;text-transform:uppercase;color:var(--gold2);font-weight:800;margin:0 0 2vh}
@@ -56,6 +56,24 @@
   .winner-strip small{display:block;color:var(--muted);font-size:clamp(10px,1vw,14px);text-transform:uppercase;letter-spacing:.1em}
 
   .empty{color:var(--muted);text-align:center;padding:4vh 0;font-size:clamp(13px,1.4vw,18px)}
+
+  /* Foto favorita del parche */
+  .fav-banner{display:flex;align-items:center;gap:1vw;padding:1.2vh 1vw;border-radius:16px;background:rgba(224,190,114,.08);border:1px solid var(--gold);margin-bottom:1.6vh;flex-shrink:0}
+  .fav-banner img{width:clamp(48px,6vw,84px);height:clamp(48px,6vw,84px);border-radius:12px;object-fit:cover;flex-shrink:0}
+  .fav-info{display:flex;flex-direction:column;gap:.3vh;min-width:0}
+  .fav-info small{color:var(--gold2);text-transform:uppercase;letter-spacing:.08em;font-size:clamp(9px,.9vw,12px);font-weight:800}
+  .fav-info b{font-size:clamp(14px,1.6vw,20px);color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .fav-info span{font-size:clamp(10px,1vw,13px);color:var(--muted)}
+
+  /* Carrusel de últimas fotos */
+  .photo-carousel{position:relative;flex:1;border-radius:18px;overflow:hidden;background:#0a0a0a;min-height:0}
+  .carousel-slide{position:absolute;inset:0;opacity:0;transition:opacity .8s ease}
+  .carousel-slide.active{opacity:1}
+  .carousel-slide img{width:100%;height:100%;object-fit:cover;display:block}
+  .carousel-caption{position:absolute;left:0;right:0;bottom:0;padding:1.4vh 1vw;background:linear-gradient(0deg,rgba(0,0,0,.78),transparent);font-weight:800;font-size:clamp(12px,1.3vw,17px);color:var(--cream)}
+  .carousel-dots{position:absolute;top:1.2vh;right:1vw;display:flex;gap:5px;z-index:2}
+  .dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35)}
+  .dot.active{background:var(--gold)}
 
   /* Categorías */
   .cat-panel{margin-top:2vh}
@@ -98,6 +116,19 @@
     <section class="panel">
       <p class="panel-title">🏆 Ranking en vivo</p>
       <div class="rank-list" id="rank-list"><div class="empty">Cargando…</div></div>
+    </section>
+
+    <section class="panel">
+      <p class="panel-title">📸 Momentos del parche</p>
+      <div class="fav-banner" id="fav-banner" style="display:none">
+        <img id="fav-img" src="" alt="Foto favorita">
+        <div class="fav-info">
+          <small>🏆 La favorita del parche</small>
+          <b id="fav-name">—</b>
+          <span id="fav-count"></span>
+        </div>
+      </div>
+      <div class="photo-carousel" id="photo-carousel"><div class="empty">Todavía no hay fotos</div></div>
     </section>
   </div>
 
@@ -179,6 +210,71 @@
     `).join('');
   }
 
+  // ---------- Foto favorita del parche (la más comentada) ----------
+  function renderFavorita(dedicatorias){
+    const el = document.getElementById('fav-banner');
+    const conFoto = (dedicatorias || []).filter(d => d.previewUrl);
+    if (!conFoto.length){ el.style.display = 'none'; return; }
+
+    const favorita = [...conFoto].sort((a, b) => {
+      const ca = (a.comentarios || []).length, cb = (b.comentarios || []).length;
+      if (cb !== ca) return cb - ca;
+      return (b.totalReacciones || 0) - (a.totalReacciones || 0);
+    })[0];
+
+    const numComentarios = (favorita.comentarios || []).length;
+    if (numComentarios === 0){ el.style.display = 'none'; return; } // solo la mostramos si de verdad destaca por algo
+
+    document.getElementById('fav-img').src = favorita.previewUrl;
+    document.getElementById('fav-name').textContent = favorita.invitado;
+    document.getElementById('fav-count').textContent =
+      `${numComentarios} comentario${numComentarios === 1 ? '' : 's'}`;
+    el.style.display = 'flex';
+  }
+
+  // ---------- Carrusel de últimas 5 fotos subidas ----------
+  let carouselPhotos = [];
+  let carouselIndex = 0;
+
+  function renderPhotoCarousel(dedicatorias){
+    const nuevas = (dedicatorias || []).filter(d => d.previewUrl).slice(0, 5);
+    const el = document.getElementById('photo-carousel');
+
+    // Si el set de fotos no cambió, dejamos el carrusel seguir su ciclo
+    // tal cual — así no lo cortamos a mitad de una transición.
+    const idsNuevos = nuevas.map(d => d.id).join(',');
+    const idsActuales = carouselPhotos.map(d => d.id).join(',');
+    if (idsNuevos === idsActuales) return;
+
+    carouselPhotos = nuevas;
+    carouselIndex = 0;
+
+    if (!carouselPhotos.length){
+      el.innerHTML = '<div class="empty">Todavía no hay fotos</div>';
+      return;
+    }
+
+    el.innerHTML = carouselPhotos.map((d, i) => `
+      <div class="carousel-slide ${i === 0 ? 'active' : ''}">
+        <img src="${d.previewUrl}" alt="">
+        <div class="carousel-caption">📸 ${d.invitado}</div>
+      </div>
+    `).join('') + `<div class="carousel-dots">${carouselPhotos.map((_, i) => `<span class="dot ${i === 0 ? 'active' : ''}"></span>`).join('')}</div>`;
+  }
+
+  function advanceCarousel(){
+    if (carouselPhotos.length < 2) return;
+    const slides = document.querySelectorAll('.carousel-slide');
+    const dots = document.querySelectorAll('.carousel-dots .dot');
+    if (!slides.length) return;
+    slides[carouselIndex]?.classList.remove('active');
+    dots[carouselIndex]?.classList.remove('active');
+    carouselIndex = (carouselIndex + 1) % carouselPhotos.length;
+    slides[carouselIndex]?.classList.add('active');
+    dots[carouselIndex]?.classList.add('active');
+  }
+  setInterval(advanceCarousel, 4500);
+
   // ---------- Auto-scroll del ranking ----------
   // En vez de cortar la lista a "Top 10", dejamos entrar a todos y la
   // hacemos bajar solita, pausa arriba y abajo, y vuelve a empezar.
@@ -214,6 +310,8 @@
       renderStats(data);
       renderRanking(data.scoreboard);
       renderCategorias(data.categorias);
+      renderFavorita(data.dedicatorias);
+      renderPhotoCarousel(data.dedicatorias);
     } catch (err) {
       // Silencioso — en la próxima vuelta reintenta solo.
       console.error('No se pudo actualizar la pantalla', err);
