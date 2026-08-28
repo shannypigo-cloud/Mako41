@@ -128,6 +128,8 @@
   .reaction-picker.open{display:flex}
   .reaction-picker button{background:none;border:none;font-size:17px;cursor:pointer;padding:2px;border-radius:50%}
   .reaction-picker button.picked{background:rgba(201,168,106,.25)}
+  .busy-toast{position:fixed;top:66px;left:50%;transform:translateX(-50%) translateY(-10px);opacity:0;pointer-events:none;background:var(--gold);color:var(--black);font-weight:800;font-size:12.5px;padding:8px 16px;border-radius:999px;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.4);transition:opacity .15s,transform .15s;white-space:nowrap}
+  .busy-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   .comment-toggle-link{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;margin-top:8px;padding:0;display:block}
 
   /* Comentarios estilo hilo de red social */
@@ -618,7 +620,7 @@
       bnHome:'Inicio', bnRanking:'Ranking', bnFeed:'Fotos', bnUpload:'Subir', bnDashboard:'Stats',
       loadError:'No se pudo cargar. Revisa APPS_SCRIPT_URL en site-core.js.', needMessage:'Escribe un mensaje o adjunta una foto.', sending:'Enviando…', sent:'¡Enviado!', sendError:'No se pudo enviar, intenta de nuevo.', preparingPhoto:'Preparando foto…', uploadTimeout:'La carga tardó demasiado. Intenta de nuevo. Si la foto es pesada, prueba con una más liviana.', badImage:'No pudimos preparar esa foto. Intenta con otra imagen.', uploadHelp:'1 foto por envío · recomendado menos de 8 MB', feedEmpty:'Todavía no hay nada por acá. ¡Sube la primera foto o mensaje!', commentPlaceholder:'Escribe un comentario…', noPoints:'Aún no hay puntos — ¡empieza tú!', pts:'pts',
       categories:['El Más Chismoso','El Paparazzi','El Alma de la Fiesta','El Más Motero','El Mejor Brindis','El Más Fit'],
-      voteSub:'Toca el nombre de la persona que crees que se gana este título.', voteEmpty:'Todavía no hay más invitados para votar.', voteSuccess:'¡Voto registrado! 🎉', voteError:'No se pudo registrar el voto, intenta de nuevo.', voteCancel:'Cancelar', votesWord:'votos', noLeaderYet:'Nadie destaca todavía'
+      voteSub:'Toca el nombre de la persona que crees que se gana este título.', voteEmpty:'Todavía no hay más invitados para votar.', voteSuccess:'¡Voto registrado! 🎉', voteError:'No se pudo registrar el voto, intenta de nuevo.', voteCancel:'Cancelar', votesWord:'votos', noLeaderYet:'Nadie destaca todavía', savingReaction:'Guardando tu reacción…', savingComment:'Guardando tu comentario…'
     },
     en: {
       pageTitle:'MAKO · 41 Years', choose:'Choose', uploadPhoto:'＋ Upload photo',
@@ -634,7 +636,7 @@
       bnHome:'Home', bnRanking:'Ranking', bnFeed:'Photos', bnUpload:'Upload', bnDashboard:'Stats',
       loadError:'Could not load. Check APPS_SCRIPT_URL in site-core.js.', needMessage:'Write a message or attach a photo.', sending:'Sending…', sent:'Sent!', sendError:'Could not send. Please try again.', preparingPhoto:'Preparing photo…', uploadTimeout:'The upload took too long. Please try again. If the photo is large, try a lighter one.', badImage:'We could not prepare that photo. Please try another image.', uploadHelp:'1 photo per upload · recommended under 8 MB', feedEmpty:'Nothing here yet. Upload the first photo or message!', commentPlaceholder:'Write a comment…', noPoints:'No points yet — be the first!', pts:'pts',
       categories:['The Biggest Gossip','The Paparazzi','Life of the Party','The Biker','Best Toast','The Fittest'],
-      voteSub:'Tap the person you think earns this title.', voteEmpty:'No other guests to vote for yet.', voteSuccess:'Vote registered! 🎉', voteError:'Could not register your vote, try again.', voteCancel:'Cancel', votesWord:'votes', noLeaderYet:'No one stands out yet'
+      voteSub:'Tap the person you think earns this title.', voteEmpty:'No other guests to vote for yet.', voteSuccess:'Vote registered! 🎉', voteError:'Could not register your vote, try again.', voteCancel:'Cancel', votesWord:'votes', noLeaderYet:'No one stands out yet', savingReaction:'Saving your reaction…', savingComment:'Saving your comment…'
     }
   };
   let currentLang = localStorage.getItem('mako41_lang') || 'es';
@@ -1018,16 +1020,26 @@
       btn.addEventListener('click', async () => {
         const s = requireSession(); if (!s) return;
         btn.closest('.reaction-picker').classList.remove('open');
-        await toggleLike(btn.dataset.id, s.name, btn.dataset.emoji);
-        await refreshData();
+        showBusy(t('savingReaction'));
+        try {
+          await toggleLike(btn.dataset.id, s.name, btn.dataset.emoji);
+          await refreshData();
+        } finally {
+          hideBusy();
+        }
       });
     });
     // Toggle rápido en chips existentes (mismo emoji ya puesto = se quita; otro = cambia)
     el.querySelectorAll('.reaction-chip').forEach(btn => {
       btn.addEventListener('click', async () => {
         const s = requireSession(); if (!s) return;
-        await toggleLike(btn.dataset.id, s.name, btn.dataset.emoji);
-        await refreshData();
+        showBusy(t('savingReaction'));
+        try {
+          await toggleLike(btn.dataset.id, s.name, btn.dataset.emoji);
+          await refreshData();
+        } finally {
+          hideBusy();
+        }
       });
     });
     el.querySelectorAll('.comment-toggle-link').forEach(btn => {
@@ -1042,9 +1054,15 @@
         const texto = input.value.trim();
         if (!texto) return;
         btn.disabled = true;
-        await addComment(btn.dataset.id, s.name, texto);
-        input.value = '';
-        await refreshData();
+        showBusy(t('savingComment'));
+        try {
+          await addComment(btn.dataset.id, s.name, texto);
+          input.value = '';
+          await refreshData();
+        } finally {
+          btn.disabled = false;
+          hideBusy();
+        }
       });
     });
   }
@@ -1181,6 +1199,24 @@
     renderLeaderboard(data.scoreboard);
     renderCategories(data);
     renderDashboard(data);
+  }
+
+  // ---------- Mensaje flotante "Guardando..." ----------
+  // Solo feedback visual — no toca nada de la lógica de guardado.
+  function showBusy(text){
+    let el = document.getElementById('busy-toast');
+    if (!el){
+      el = document.createElement('div');
+      el.id = 'busy-toast';
+      el.className = 'busy-toast';
+      document.body.appendChild(el);
+    }
+    el.textContent = text;
+    el.classList.add('show');
+  }
+  function hideBusy(){
+    const el = document.getElementById('busy-toast');
+    if (el) el.classList.remove('show');
   }
 
   async function refreshData(){
