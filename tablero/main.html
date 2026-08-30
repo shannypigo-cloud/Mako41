@@ -690,7 +690,8 @@
   tickCountdown();
   setInterval(tickCountdown, 1000);
 
-  function initials(name){ return (name || '?').trim().charAt(0).toUpperCase(); }
+  // String(...) porque un nombre que llegue como número no tiene .trim()
+  function initials(name){ return String(name || '?').trim().charAt(0).toUpperCase(); }
 
   // ---------- Profile ----------
   const selectEl = document.getElementById('guest-select');
@@ -971,6 +972,16 @@
 
   const REACTION_EMOJIS = ["❤️","😂","😮","👏","🎉"];
 
+  // Google Sheets devuelve NÚMERO (no texto) cuando alguien escribe un
+  // mensaje puramente numérico: "41", "2026", "100". Sobre un número,
+  // .replace() no existe y truena con TypeError, lo que tumbaba todo el
+  // feed y lo dejaba en "Cargando…" para siempre. Esto normaliza
+  // cualquier valor a texto antes de pintarlo.
+  function esc(v){
+    if (v === null || v === undefined) return '';
+    return String(v).replace(/</g,'&lt;');
+  }
+
   function renderFeed(list){
     const el = document.getElementById('feed-list');
     // Antes de redibujar, recordamos qué cajas de comentarios estaban
@@ -1008,9 +1019,9 @@
       <div class="feed-item" data-id="${d.id}">
         <div class="feed-head">
           <div class="feed-avatar">${initials(d.invitado)}</div>
-          <div class="feed-name">${d.invitado}</div>
+          <div class="feed-name">${esc(d.invitado)}</div>
         </div>
-        ${d.mensaje ? `<div class="feed-msg">${d.mensaje.replace(/</g,'&lt;')}</div>` : ''}
+        ${d.mensaje ? `<div class="feed-msg">${esc(d.mensaje)}</div>` : ''}
         ${d.previewUrl ? `<img src="${d.previewUrl}" alt="">` : ''}
         ${summaryHtml}
         <div class="reaction-row">
@@ -1037,8 +1048,8 @@
             <div class="comment-bubble">
               <div class="comment-avatar">${initials(c.invitado)}</div>
               <div class="comment-content">
-                <span class="cn">${c.invitado}</span>
-                <span class="ct">${c.texto.replace(/</g,'&lt;')}</span>
+                <span class="cn">${esc(c.invitado)}</span>
+                <span class="ct">${esc(c.texto)}</span>
                 <div class="comment-reactions">
                   ${cChips}
                   <div class="comment-add-reaction">
@@ -1292,15 +1303,21 @@
   // de quedarse todos vacíos.
   function safeRender(fn, arg){
     try { fn(arg); }
-    catch (err){ console.error('Falló un bloque del tablero:', err); }
+    catch (err){ console.error('Falló un bloque del tablero:', err); throw err; }
   }
 
   function renderAll(data){
-    safeRender(renderCarousel, data.dedicatorias);
-    safeRender(renderFeed, data.dedicatorias);
-    safeRender(renderLeaderboard, data.scoreboard);
-    safeRender(renderCategories, data);
-    safeRender(renderDashboard, data);
+    try { safeRender(renderCarousel, data.dedicatorias); } catch(e){}
+    try { safeRender(renderFeed, data.dedicatorias); }
+    catch(e){
+      // Si el feed truena, avisamos en pantalla en vez de dejar
+      // "Cargando…" colgado sin que nadie sepa qué pasó.
+      const el = document.getElementById('feed-list');
+      if (el) el.innerHTML = '<div class="empty-state">No pudimos dibujar el muro. Recarga la página.</div>';
+    }
+    try { safeRender(renderLeaderboard, data.scoreboard); } catch(e){}
+    try { safeRender(renderCategories, data); } catch(e){}
+    try { safeRender(renderDashboard, data); } catch(e){}
   }
 
   // ---------- Mensaje flotante "Guardando..." ----------
