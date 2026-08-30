@@ -6,6 +6,12 @@
 <meta name="theme-color" content="#0a0a0a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<!-- Evita que el teléfono siga sirviendo una copia vieja del tablero.
+     Durante el evento subimos arreglos en caliente y varios invitados
+     se quedaron con la versión anterior guardada en caché. -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>MAKO · 41 Años</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -341,7 +347,7 @@
     <button class="modal-close" id="upload-close">✕</button>
     <h3 id="upload-title">Deja algo para MAKO</h3>
     <textarea id="up-text" placeholder="Un mensaje, un recuerdo… (opcional si subes foto)"></textarea>
-    <input type="file" id="up-photo" accept="image/*">
+    <input type="file" id="up-photo" accept="image/*,.heic,.heif,.jpg,.jpeg,.png,.gif,.webp">
     <div class="upload-help" id="upload-help">1 foto por envío · recomendado menos de 8 MB</div>
     <button class="btn" id="up-send">Enviar</button>
     <div class="status" id="up-status"></div>
@@ -611,7 +617,7 @@
   })();
 </script>
 
-<script src="site-core.js"></script>
+<script src="site-core.js?v=20260829d"></script>
 <script>
   // ---------- Language ----------
   const I18N = {
@@ -778,21 +784,49 @@
       reader.readAsDataURL(file);
     });
   }
+  // Formatos: el <input> acepta image/*, pero acá todo pasaba por un
+  // canvas que exporta JPEG. Eso traía tres problemas:
+  //  · PNG con transparencia -> el fondo transparente salía NEGRO
+  //  · GIF animado            -> el canvas solo copia el primer cuadro
+  //  · HEIC de iPhone         -> muchos navegadores no lo saben decodificar
+  //                              y salía un "no pudimos preparar esa foto"
+  //                              sin explicar nada.
+  const GIF_PASO_DIRECTO_MAX = 3 * 1024 * 1024; // 3 MB
+
   async function optimizeImage(file){
     if (!file || !file.type || !file.type.startsWith('image/')) return file;
+
+    // GIF: lo mandamos tal cual para no matarle la animación.
+    if (file.type === 'image/gif' && file.size <= GIF_PASO_DIRECTO_MAX){
+      return file;
+    }
+
     const dataUrl = await loadFileAsDataURL(file);
     const img = await new Promise((resolve, reject) => {
       const im = new Image();
       im.onload = () => resolve(im);
-      im.onerror = () => reject(new Error(t('badImage')));
+      im.onerror = () => {
+        const nombre = (file.name || '').toLowerCase();
+        if (file.type === 'image/heic' || file.type === 'image/heif' ||
+            nombre.endsWith('.heic') || nombre.endsWith('.heif')){
+          reject(new Error('Tu teléfono guardó la foto en formato HEIC y este navegador no lo abre. En Ajustes > Cámara > Formatos, elige "Más compatible", o toma una captura de pantalla de la foto y sube esa.'));
+        } else {
+          reject(new Error(t('badImage')));
+        }
+      };
       im.src = dataUrl;
     });
+
     const maxDim = 650;
     const scale = Math.min(1, maxDim / Math.max(img.width || 1, img.height || 1));
     const canvas = document.createElement('canvas');
     canvas.width = Math.max(1, Math.round((img.width || 1) * scale));
     canvas.height = Math.max(1, Math.round((img.height || 1) * scale));
     const ctx = canvas.getContext('2d');
+    // Fondo blanco ANTES de dibujar: el JPEG no soporta transparencia y,
+    // sin esto, un PNG o WEBP transparente quedaba con el fondo negro.
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
     // Intenta con calidad .45; si aún queda pesado, comprime más fuerte
@@ -1485,6 +1519,13 @@
     catch (err) { /* silencioso — se reintenta solo en la próxima vuelta */ }
   }
   setInterval(autoRefreshTick, 6000);
+
+  // Para saber, desde cualquier teléfono, qué versión está corriendo:
+  // abre la consola y busca esta línea. Si no dice 20260829d, ese
+  // dispositivo sigue con una copia vieja en caché.
+  const VERSION_TABLERO = '20260829d';
+  console.log('%cMAKO41 tablero · versión ' + VERSION_TABLERO, 'color:#c9a86a;font-weight:bold');
+  window.MAKO41_VERSION = VERSION_TABLERO;
 
   (async function boot(){
     applyLanguage(currentLang);
