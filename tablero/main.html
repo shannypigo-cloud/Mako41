@@ -101,6 +101,9 @@
   .empty-state{color:var(--muted);font-size:13px;text-align:center;padding:16px 0}
 
   /* Feed (fotos + dedicatorias) */
+  .feed-filter{display:flex;gap:8px;margin:0 0 10px}
+  .feed-filter-btn{flex:1;font-size:12px;font-weight:700;padding:9px 12px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer;transition:.18s ease}
+  .feed-filter-btn.is-active{background:linear-gradient(90deg,var(--gold),var(--gold2));color:var(--black);border-color:transparent;font-weight:800}
   .feed-item{border-bottom:1px solid var(--line);padding:14px 0}
   .feed-item:last-child{border-bottom:none}
   .feed-head{display:flex;align-items:center;gap:8px}
@@ -437,6 +440,10 @@
         <span class="pulse-dot"></span><span>Las fotos van pasando solitas · deslizá cuando querás</span>
       </div>
       <div class="photo-carousel" id="photo-carousel"></div>
+      <div class="feed-filter">
+        <button class="feed-filter-btn is-active" data-filtro="todos" id="filtro-todos">🌎 Todo el parche</button>
+        <button class="feed-filter-btn" data-filtro="mios" id="filtro-mios">🙋 Lo mío</button>
+      </div>
       <div class="card" id="feed-list"><div class="empty-state" id="feed-loading">Cargando…</div></div>
     </section>
 
@@ -1080,18 +1087,34 @@
     }
   }
 
-  function renderFeed(list){
+  // 'todos' | 'mios'. El filtro se aplica DENTRO de renderFeed a propósito:
+  // así el auto-refresh de 6s y las reacciones instantáneas lo respetan
+  // solos, sin tener que acordarse de filtrar en cada punto de llamada.
+  let filtroFeed = 'todos';
+
+  function renderFeed(listaCompleta){
     const el = document.getElementById('feed-list');
+    const myName = getSession()?.name;
+
+    // Se filtra para mostrar, pero appData sigue intacto: el carrusel, el
+    // ranking y las reacciones siguen viendo todo.
+    const list = (filtroFeed === 'mios' && myName)
+      ? (listaCompleta || []).filter(d => d.invitado === myName)
+      : listaCompleta;
+
     // Antes de redibujar, recordamos qué cajas de comentarios estaban
     // abiertas — así un auto-refresh de fondo no te las cierra de golpe.
     const cajasAbiertas = new Set(
       Array.from(el.querySelectorAll('.comments-box.open')).map(box => box.id)
     );
     if (!list || !list.length){
-      el.innerHTML = `<div class="empty-state">${t('feedEmpty')}</div>`;
+      el.innerHTML = `<div class="empty-state">${
+        filtroFeed === 'mios'
+          ? 'Todavía no has subido nada. ¡Toca ＋ y deja tu primera foto o mensaje!'
+          : t('feedEmpty')
+      }</div>`;
       return;
     }
-    const myName = getSession()?.name;
 
     el.innerHTML = list.map(d => {
       const reacciones = d.reacciones || {};
@@ -1526,6 +1549,18 @@
   const VERSION_TABLERO = '20260829d';
   console.log('%cMAKO41 tablero · versión ' + VERSION_TABLERO, 'color:#c9a86a;font-weight:bold');
   window.MAKO41_VERSION = VERSION_TABLERO;
+
+  // Filtro del muro. Los botones viven FUERA de #feed-list, así que
+  // sus listeners no se pierden cuando el feed se vuelve a dibujar.
+  document.querySelectorAll('.feed-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.filtro === 'mios' && !requireSession()) return;
+      filtroFeed = btn.dataset.filtro;
+      document.querySelectorAll('.feed-filter-btn').forEach(b =>
+        b.classList.toggle('is-active', b.dataset.filtro === filtroFeed));
+      if (appData && appData.dedicatorias) renderFeed(appData.dedicatorias);
+    });
+  });
 
   (async function boot(){
     applyLanguage(currentLang);
