@@ -15,15 +15,26 @@
     --line:rgba(224,190,114,.16); --line-soft:rgba(255,255,255,.075);
   }
   *{box-sizing:border-box}
-  html,body{margin:0;height:100%;overflow:hidden}
+  html{margin:0;height:100%}
   body{
+    margin:0;min-height:100%;
     background:
       radial-gradient(circle at 50% -10%, rgba(224,190,114,.10), transparent 30%),
       radial-gradient(circle at 100% 24%, rgba(224,190,114,.045), transparent 25%),
       linear-gradient(180deg,#060606 0%,#030303 100%);
+    background-attachment:fixed;
     color:var(--cream);font-family:'Manrope',sans-serif;
+    overflow-x:hidden;overflow-y:auto;
+  }
+  /* El tablero ya no se fuerza a 100vh. Toma el alto que necesite y
+     después lo escalamos por JS para que quepa exacto en la pantalla,
+     sea el TV vertical o un monitor horizontal. Antes, al fijar 100vh
+     con overflow:hidden, lo que no cabía simplemente se recortaba y no
+     había manera de verlo. */
+  #board{
     display:flex;flex-direction:column;gap:1.6vh;
-    padding:2vh 3vw;height:100vh;
+    padding:2vh 3vw;width:100%;
+    transform-origin:top left;
   }
 
   .top{display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
@@ -38,12 +49,11 @@
   .stats-panel{flex-shrink:0}
   .cat-panel{flex-shrink:0}
 
-  /* Zonas "hero": absorben el espacio vertical que sobra.
-     El min-height es un seguro: si algún día se agrega otro bloque fijo,
-     que se recorte ese y no que estas dos se vayan a cero (que fue justo
-     lo que pasó al meter la franja de puntos como panel completo). */
-  .hero-panel{flex:1.5;min-height:20vh}
-  .ranking-panel{flex:1.3;min-height:13vh}
+  /* Ya no absorben "lo que sobre" (no sobra nada cuando el alto es
+     natural): ahora piden un alto concreto y el escalado global se
+     encarga de que todo el conjunto quepa. */
+  .hero-panel{flex:0 0 auto}
+  .ranking-panel{flex:0 0 auto}
 
   /* Stats grid — fila compacta de 3x2 */
   .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4vh 2.5vw}
@@ -57,7 +67,7 @@
   .winner-strip small{display:block;color:var(--muted);font-size:clamp(9px,1.8vw,12px);text-transform:uppercase;letter-spacing:.1em}
 
   /* Ranking */
-  .rank-list{flex:1;overflow-y:hidden;display:flex;flex-direction:column;gap:1.2vh;scroll-behavior:smooth}
+  .rank-list{height:30vh;overflow-y:hidden;display:flex;flex-direction:column;gap:1.2vh;scroll-behavior:smooth}
   .rank-row{display:flex;align-items:center;gap:3vw;padding:1.4vh 3vw;border-radius:16px;background:#0d0d0d;border:1px solid var(--line-soft);flex-shrink:0}
   .rank-row.top{background:linear-gradient(100deg,#151109,#0c0c0c 70%);border-color:rgba(224,190,114,.42)}
   .rank-num{width:clamp(22px,4.5vw,30px);text-align:center;font-weight:800;color:var(--gold2);font-size:clamp(14px,3vw,20px)}
@@ -76,7 +86,7 @@
   .fav-info span{font-size:clamp(10px,2.2vw,13px);color:var(--muted)}
 
   /* Carrusel de últimas fotos */
-  .photo-carousel{position:relative;flex:1;border-radius:18px;overflow:hidden;background:#0a0a0a;min-height:0}
+  .photo-carousel{position:relative;height:40vh;border-radius:18px;overflow:hidden;background:#0a0a0a}
   .carousel-slide{position:absolute;inset:0;opacity:0;transition:opacity .8s ease}
   .carousel-slide.active{opacity:1}
   .carousel-slide img{width:100%;height:100%;object-fit:cover;display:block}
@@ -110,6 +120,7 @@
 </style>
 </head>
 <body>
+<div id="board">
 
   <div class="top">
     <div class="brand">MAKO<span>41</span> · Pantalla en vivo</div>
@@ -163,6 +174,8 @@
     <span>💬 Comentario <b>+3</b></span>
     <span>🎉 Asistencia <b>+5</b></span>
   </div>
+
+</div><!-- /#board -->
 
 <script>
   // 👉 Misma URL de Apps Script que usa el tablero. Si la cambias allá,
@@ -342,6 +355,53 @@
   }
   setInterval(autoScrollTick, 40);
 
+  // ---------- Ajuste automático al alto de la pantalla ----------
+  // El tablero se dibuja con su alto natural y acá lo encogemos lo justo
+  // para que entre completo, sea el TV vertical de 40" o un monitor
+  // horizontal. Si tuviera que encogerlo tanto que no se lea (menos del
+  // 55%), preferimos dejar scroll antes que volverlo ilegible.
+  const ESCALA_MINIMA = 0.55;
+
+  function ajustarEscala(){
+    const board = document.getElementById('board');
+    if (!board) return;
+
+    const altoPantalla = window.innerHeight;
+
+    // Medimos siempre desde cero, si no el cálculo se va acumulando.
+    board.style.transform = 'none';
+    board.style.width = '100%';
+
+    let k = 1;
+    // Al compensar el ancho, el contenido se re-acomoda y cambia de alto,
+    // así que una sola medición se queda corta. Con 3 pasadas converge.
+    for (let i = 0; i < 3; i++){
+      const alto = board.offsetHeight;
+      if (!alto) return;
+      const necesaria = altoPantalla / alto;
+      if (necesaria >= 1){ k = 1; break; }
+      k = Math.max(necesaria, ESCALA_MINIMA);
+      board.style.width = (100 / k) + '%';
+    }
+
+    if (k >= 1){
+      board.style.transform = 'none';
+      board.style.width = '100%';
+      document.body.style.overflowY = 'hidden';
+      return;
+    }
+
+    board.style.transform = 'scale(' + k + ')';
+    // Comprobación final: si aun con la escala mínima no alcanzó,
+    // habilitamos scroll para que nada quede inalcanzable.
+    const altoFinal = board.offsetHeight * k;
+    document.body.style.overflowY = (altoFinal > altoPantalla + 2) ? 'auto' : 'hidden';
+  }
+
+  // Reajustamos cuando cambie el tamaño y cuando terminen de cargar las fotos
+  window.addEventListener('resize', ajustarEscala);
+  window.addEventListener('load', ajustarEscala);
+
   async function refresh(){
     try {
       const res = await fetch(`${APPS_SCRIPT_URL}?action=getAppData`);
@@ -351,6 +411,10 @@
       renderCategorias(data.categorias);
       renderFavorita(data.dedicatorias);
       renderPhotoCarousel(data.dedicatorias);
+      // El contenido pudo cambiar de alto (más invitados en el ranking,
+      // una categoría que ya tiene líder), así que recalculamos.
+      ajustarEscala();
+      setTimeout(ajustarEscala, 600); // otra vez cuando carguen las fotos
     } catch (err) {
       // Silencioso — en la próxima vuelta reintenta solo.
       console.error('No se pudo actualizar la pantalla', err);
