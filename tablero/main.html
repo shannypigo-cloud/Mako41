@@ -101,9 +101,11 @@
   .empty-state{color:var(--muted);font-size:13px;text-align:center;padding:16px 0}
 
   /* Feed (fotos + dedicatorias) */
-  .feed-filter{display:flex;gap:8px;margin:0 0 10px}
+  .feed-filter{display:flex;gap:8px;margin:0 0 8px}
   .feed-filter-btn{flex:1;font-size:12px;font-weight:700;padding:9px 12px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer;transition:.18s ease}
   .feed-filter-btn.is-active{background:linear-gradient(90deg,var(--gold),var(--gold2));color:var(--black);border-color:transparent;font-weight:800}
+  .feed-person-select{width:100%;margin:0 0 10px;padding:10px 14px;border-radius:999px;background:var(--ink2);border:1px solid var(--line);color:var(--muted);font-size:12px;font-weight:700}
+  .feed-person-select.is-active{border-color:var(--gold);color:var(--gold2)}
   .feed-item{border-bottom:1px solid var(--line);padding:14px 0}
   .feed-item:last-child{border-bottom:none}
   .feed-head{display:flex;align-items:center;gap:8px}
@@ -441,9 +443,12 @@
       </div>
       <div class="photo-carousel" id="photo-carousel"></div>
       <div class="feed-filter">
-        <button class="feed-filter-btn is-active" data-filtro="todos" id="filtro-todos">🌎 Todo el parche</button>
-        <button class="feed-filter-btn" data-filtro="mios" id="filtro-mios">🙋 Lo mío</button>
+        <button class="feed-filter-btn is-active" data-filtro="todos">🌎 Todo el parche</button>
+        <button class="feed-filter-btn" data-filtro="mios">🙋 Lo mío</button>
       </div>
+      <select class="feed-person-select" id="feed-person">
+        <option value="">👥 Ver las fotos de alguien…</option>
+      </select>
       <div class="card" id="feed-list"><div class="empty-state" id="feed-loading">Cargando…</div></div>
     </section>
 
@@ -1087,20 +1092,55 @@
     }
   }
 
-  // 'todos' | 'mios'. El filtro se aplica DENTRO de renderFeed a propósito:
-  // así el auto-refresh de 6s y las reacciones instantáneas lo respetan
-  // solos, sin tener que acordarse de filtrar en cada punto de llamada.
+  // 'todos' | 'mios' | 'persona'. El filtro se aplica DENTRO de renderFeed a
+  // propósito: así el auto-refresh de 6s y las reacciones instantáneas lo
+  // respetan solos, sin tener que acordarse de filtrar en cada llamada.
   let filtroFeed = 'todos';
+  let filtroPersona = null;
+
+  // Rellena el selector con quienes SÍ han publicado, ordenados por
+  // cantidad. Solo se reconstruye cuando cambia la lista de personas:
+  // si lo rehiciéramos en cada refresco de 6s, le cerraríamos la lista
+  // en la cara a quien la tenga abierta.
+  let firmaPersonas = '';
+  function actualizarSelectorPersonas(lista){
+    const sel = document.getElementById('feed-person');
+    if (!sel) return;
+    if (document.activeElement === sel) return; // la está usando ahora mismo
+
+    const conteo = {};
+    (lista || []).forEach(d => {
+      if (d.invitado) conteo[d.invitado] = (conteo[d.invitado] || 0) + 1;
+    });
+    const personas = Object.keys(conteo).sort((a, b) => conteo[b] - conteo[a] || a.localeCompare(b));
+
+    const firma = personas.map(n => n + ':' + conteo[n]).join('|');
+    if (firma === firmaPersonas) return; // nada cambió, no tocamos el select
+    firmaPersonas = firma;
+
+    const seleccionActual = sel.value;
+    sel.innerHTML = '<option value="">👥 Ver las fotos de alguien…</option>' +
+      personas.map(n => `<option value="${esc(n)}">${esc(n)} · ${conteo[n]}</option>`).join('');
+    // Si la persona elegida sigue existiendo, mantenemos la selección
+    if (seleccionActual && personas.indexOf(seleccionActual) !== -1){
+      sel.value = seleccionActual;
+    }
+  }
 
   function renderFeed(listaCompleta){
     const el = document.getElementById('feed-list');
     const myName = getSession()?.name;
 
+    actualizarSelectorPersonas(listaCompleta);
+
     // Se filtra para mostrar, pero appData sigue intacto: el carrusel, el
     // ranking y las reacciones siguen viendo todo.
-    const list = (filtroFeed === 'mios' && myName)
-      ? (listaCompleta || []).filter(d => d.invitado === myName)
-      : listaCompleta;
+    let list = listaCompleta;
+    if (filtroFeed === 'mios' && myName){
+      list = (listaCompleta || []).filter(d => d.invitado === myName);
+    } else if (filtroFeed === 'persona' && filtroPersona){
+      list = (listaCompleta || []).filter(d => d.invitado === filtroPersona);
+    }
 
     // Antes de redibujar, recordamos qué cajas de comentarios estaban
     // abiertas — así un auto-refresh de fondo no te las cierra de golpe.
@@ -1108,11 +1148,13 @@
       Array.from(el.querySelectorAll('.comments-box.open')).map(box => box.id)
     );
     if (!list || !list.length){
-      el.innerHTML = `<div class="empty-state">${
-        filtroFeed === 'mios'
-          ? 'Todavía no has subido nada. ¡Toca ＋ y deja tu primera foto o mensaje!'
-          : t('feedEmpty')
-      }</div>`;
+      let vacio = t('feedEmpty');
+      if (filtroFeed === 'mios'){
+        vacio = 'Todavía no has subido nada. ¡Toca ＋ y deja tu primera foto o mensaje!';
+      } else if (filtroFeed === 'persona' && filtroPersona){
+        vacio = `${esc(filtroPersona)} todavía no ha subido nada.`;
+      }
+      el.innerHTML = `<div class="empty-state">${vacio}</div>`;
       return;
     }
 
@@ -1550,16 +1592,38 @@
   console.log('%cMAKO41 tablero · versión ' + VERSION_TABLERO, 'color:#c9a86a;font-weight:bold');
   window.MAKO41_VERSION = VERSION_TABLERO;
 
-  // Filtro del muro. Los botones viven FUERA de #feed-list, así que
-  // sus listeners no se pierden cuando el feed se vuelve a dibujar.
+  // Filtro del muro. Los controles viven FUERA de #feed-list, así que sus
+  // listeners no se pierden cuando el feed se vuelve a dibujar.
+  function pintarEstadoFiltro(){
+    document.querySelectorAll('.feed-filter-btn').forEach(b =>
+      b.classList.toggle('is-active', filtroFeed !== 'persona' && b.dataset.filtro === filtroFeed));
+    const sel = document.getElementById('feed-person');
+    if (sel) sel.classList.toggle('is-active', filtroFeed === 'persona');
+  }
+
   document.querySelectorAll('.feed-filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       if (btn.dataset.filtro === 'mios' && !requireSession()) return;
       filtroFeed = btn.dataset.filtro;
-      document.querySelectorAll('.feed-filter-btn').forEach(b =>
-        b.classList.toggle('is-active', b.dataset.filtro === filtroFeed));
+      filtroPersona = null;
+      const sel = document.getElementById('feed-person');
+      if (sel) sel.value = '';   // al volver a "todos"/"mío", se limpia la persona
+      pintarEstadoFiltro();
       if (appData && appData.dedicatorias) renderFeed(appData.dedicatorias);
     });
+  });
+
+  document.getElementById('feed-person').addEventListener('change', (e) => {
+    const nombre = e.target.value;
+    if (!nombre){
+      filtroFeed = 'todos';
+      filtroPersona = null;
+    } else {
+      filtroFeed = 'persona';
+      filtroPersona = nombre;
+    }
+    pintarEstadoFiltro();
+    if (appData && appData.dedicatorias) renderFeed(appData.dedicatorias);
   });
 
   (async function boot(){
