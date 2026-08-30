@@ -38,9 +38,12 @@
   .stats-panel{flex-shrink:0}
   .cat-panel{flex-shrink:0}
 
-  /* Zonas "hero": absorben el espacio vertical que sobra */
-  .hero-panel{flex:1.5;min-height:0}
-  .ranking-panel{flex:1.3;min-height:0}
+  /* Zonas "hero": absorben el espacio vertical que sobra.
+     El min-height es un seguro: si algún día se agrega otro bloque fijo,
+     que se recorte ese y no que estas dos se vayan a cero (que fue justo
+     lo que pasó al meter la franja de puntos como panel completo). */
+  .hero-panel{flex:1.5;min-height:20vh}
+  .ranking-panel{flex:1.3;min-height:13vh}
 
   /* Stats grid — fila compacta de 3x2 */
   .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4vh 2.5vw}
@@ -83,18 +86,19 @@
   .dot.active{background:var(--gold)}
 
   /* Categorías — 2x2 en vertical, más legible que 4 en fila */
-  .cat-row{display:grid;grid-template-columns:1fr 1fr;gap:1.4vh 2.5vw}
-  .cat-chip{background:#101010;border:1px solid var(--line-soft);border-radius:14px;padding:1.4vh 3vw;display:flex;flex-direction:column;gap:.6vh}
+  .cat-row{display:grid;grid-template-columns:1fr 1fr;gap:1.2vh 2.5vw}
+  .cat-chip{background:#101010;border:1px solid var(--line-soft);border-radius:14px;padding:1.2vh 3vw;display:flex;flex-direction:column;gap:.4vh}
   .cat-chip-top{display:flex;align-items:center;gap:1.5vw;font-size:clamp(12px,2.6vw,15px);font-weight:800;color:var(--cream)}
+  /* Explica CÓMO se gana esa categoría — antes solo salía el título */
+  .cat-chip-how{font-size:clamp(9px,1.7vw,11.5px);color:var(--muted);letter-spacing:.02em;line-height:1.25}
   .cat-chip-leader{font-size:clamp(10px,2.2vw,13px);color:var(--gold2);font-weight:700}
   .cat-chip-empty{font-size:clamp(10px,2.2vw,13px);color:var(--muted)}
 
-  /* Fórmula de puntos */
-  .points-formula-panel{flex-shrink:0}
-  .points-formula{display:grid;grid-template-columns:repeat(5,1fr);gap:1.4vh 2.5vw}
-  .formula-chip{background:linear-gradient(135deg,rgba(224,190,114,.12),rgba(224,190,114,.04));border:1px solid rgba(224,190,114,.28);border-radius:14px;padding:1.4vh 2vw;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:.8vh}
-  .formula-pts{font-weight:800;font-size:clamp(20px,4.2vw,28px);color:var(--gold2)}
-  .formula-txt{font-size:clamp(11px,2.2vw,14px);color:var(--cream);font-weight:700}
+  /* Franja de puntos: una sola línea delgada. Antes era un panel completo
+     y, al ser un layout de 100vh, le robaba el alto al carrusel y al
+     ranking hasta dejarlos en cero. */
+  .points-ticker{flex-shrink:0;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.6vh 2.2vw;padding:1vh 3vw;border-radius:14px;border:1px solid var(--line);background:rgba(224,190,114,.06);font-size:clamp(10px,2vw,13px);color:var(--muted);font-weight:700}
+  .points-ticker b{color:var(--gold2)}
 
   /* Si por alguna razón se abre en un monitor horizontal normal, que se
      vea razonable igual: apilamos menos alto, más ancho de sobra. */
@@ -151,16 +155,14 @@
     <div class="cat-row" id="cat-row"></div>
   </section>
 
-  <section class="panel points-formula-panel">
-    <p class="panel-title">💰 Así se ganan puntos</p>
-    <div class="points-formula">
-      <div class="formula-chip"><span class="formula-pts">+15</span><span class="formula-txt">📷 Foto</span></div>
-      <div class="formula-chip"><span class="formula-pts">+10</span><span class="formula-txt">💌 Mensaje</span></div>
-      <div class="formula-chip"><span class="formula-pts">+2</span><span class="formula-txt">❤️ Reacción</span></div>
-      <div class="formula-chip"><span class="formula-pts">+3</span><span class="formula-txt">💬 Comentario</span></div>
-      <div class="formula-chip"><span class="formula-pts">+5</span><span class="formula-txt">🎉 Asistencia</span></div>
-    </div>
-  </section>
+  <div class="points-ticker">
+    <b>💰 Cómo sumar:</b>
+    <span>📷 Foto <b>+15</b></span>
+    <span>💌 Mensaje <b>+10</b></span>
+    <span>❤️ Reacción <b>+2</b></span>
+    <span>💬 Comentario <b>+3</b></span>
+    <span>🎉 Asistencia <b>+5</b></span>
+  </div>
 
 <script>
   // 👉 Misma URL de Apps Script que usa el tablero. Si la cambias allá,
@@ -222,17 +224,29 @@
     `).join('');
   }
 
+  // Cómo se gana cada categoría. Sale de la lógica real de
+  // getCategoriasAutomaticas() y getVotosCategorias() en el Apps Script.
+  const CAT_INFO = {
+    paparazzi_cat: { como: 'Quien sube más fotos',              unidad: 'fotos' },
+    chismoso:      { como: 'Quien deja más comentarios',        unidad: 'comentarios' },
+    alma_fiesta:   { como: 'Quien recibe más reacciones',       unidad: 'reacciones' },
+    fit:           { como: 'Se decide por votación del parche', unidad: 'votos' }
+  };
+
   function renderCategorias(categorias){
     const el = document.getElementById('cat-row');
     if (!categorias || !categorias.length){ el.innerHTML = ''; return; }
-    el.innerHTML = categorias.map(cat => `
+    el.innerHTML = categorias.map(cat => {
+      const info = CAT_INFO[cat.id] || { como: '', unidad: '' };
+      return `
       <div class="cat-chip">
         <div class="cat-chip-top"><span>${cat.icono}</span><span>${cat.titulo}</span></div>
+        <div class="cat-chip-how">${info.como}</div>
         ${cat.lider
-          ? `<div class="cat-chip-leader">👑 ${cat.lider} · ${cat.votos}</div>`
+          ? `<div class="cat-chip-leader">👑 ${cat.lider} · ${cat.votos} ${info.unidad}</div>`
           : `<div class="cat-chip-empty">Nadie destaca todavía</div>`}
       </div>
-    `).join('');
+    `; }).join('');
   }
 
   // ---------- Foto favorita del parche (la más comentada) ----------
@@ -346,7 +360,5 @@
   refresh();
   setInterval(refresh, 15000); // se actualiza sola cada 15 segundos
 </script>
-</body>
-</html>
 </body>
 </html>
