@@ -700,19 +700,34 @@
   const uploadModal = document.getElementById('upload-modal');
   let appData = null;
 
-  async function initGuestList(){
+  // La primera carga es la más frágil: si el Apps Script está frío puede
+  // tardar o devolver un error. Antes eso dejaba el tablero en 0 y nadie
+  // reintentaba de forma visible. Ahora reintenta solo, con espera creciente.
+  async function initGuestList(intento){
+    intento = intento || 1;
     try{
       const data = await getAppData();
+      if (!isValidAppData(data)){
+        throw new Error((data && data.error) ? data.error : 'Respuesta incompleta del servidor');
+      }
       appData = data;
       selectEl.innerHTML = `<option value="" disabled selected>${t('selectName')}</option>`;
-      (data.invitados || []).forEach(name => {
+      data.invitados.forEach(name => {
         const opt = document.createElement('option');
         opt.value = name; opt.textContent = name;
         selectEl.appendChild(opt);
       });
       renderAll(data);
+      hideBusy();
     }catch(err){
       loginStatus.textContent = t('loadError');
+      if (intento < 5){
+        showBusy('Cargando el tablero…');
+        await new Promise(r => setTimeout(r, 1500 * intento));
+        return initGuestList(intento + 1);
+      }
+      showBusy('No cargó. Desliza para recargar la página.');
+      setTimeout(hideBusy, 6000);
     }
   }
 
@@ -1248,7 +1263,9 @@
     const dedis = data.dedicatorias || [];
     const fotos = dedis.filter(d => d.previewUrl).length;
     const msgs = dedis.filter(d => d.mensaje).length;
-    const likes = dedis.reduce((sum, d) => sum + (d.likes || 0), 0);
+    // El backend manda "totalReacciones" (no "likes") en cada dedicatoria.
+    // Antes leíamos d.likes, que no existe, así que REACCIONES siempre daba 0.
+    const likes = dedis.reduce((sum, d) => sum + (d.totalReacciones || 0), 0);
     const coms = dedis.reduce((sum, d) => sum + (d.comentarios ? d.comentarios.length : 0), 0);
     const asis = (data.asistencias || []).length;
     const totalPts = (data.scoreboard || []).reduce((s, r) => s + r.puntos, 0);
@@ -1270,12 +1287,20 @@
     }
   }
 
+  // Cada bloque se pinta aislado: si uno truena (una foto rara, un
+  // comentario con algo inesperado), los demás igual se dibujan en vez
+  // de quedarse todos vacíos.
+  function safeRender(fn, arg){
+    try { fn(arg); }
+    catch (err){ console.error('Falló un bloque del tablero:', err); }
+  }
+
   function renderAll(data){
-    renderCarousel(data.dedicatorias);
-    renderFeed(data.dedicatorias);
-    renderLeaderboard(data.scoreboard);
-    renderCategories(data);
-    renderDashboard(data);
+    safeRender(renderCarousel, data.dedicatorias);
+    safeRender(renderFeed, data.dedicatorias);
+    safeRender(renderLeaderboard, data.scoreboard);
+    safeRender(renderCategories, data);
+    safeRender(renderDashboard, data);
   }
 
   // ---------- Mensaje flotante "Guardando..." ----------
@@ -1296,8 +1321,23 @@
     if (el) el.classList.remove('show');
   }
 
+  // Una respuesta buena de getAppData SIEMPRE trae estos tres arreglos.
+  // Si el Apps Script devuelve {success:false, error:...} (cold start,
+  // límite de cuota, lock ocupado), NO es data válida: si la pintábamos,
+  // el tablero se iba a 0 en todo y se quedaba así.
+  function isValidAppData(d){
+    return !!(d && typeof d === 'object' &&
+      Array.isArray(d.invitados) &&
+      Array.isArray(d.dedicatorias) &&
+      Array.isArray(d.scoreboard));
+  }
+
   async function refreshData(){
     const data = await getAppData();
+    if (!isValidAppData(data)){
+      // Dejamos en pantalla lo último bueno que ya teníamos.
+      throw new Error((data && data.error) ? data.error : 'Respuesta incompleta del servidor');
+    }
     appData = data;
     renderAll(data);
   }
