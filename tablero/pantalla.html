@@ -89,6 +89,13 @@
   .cat-chip-leader{font-size:clamp(10px,2.2vw,13px);color:var(--gold2);font-weight:700}
   .cat-chip-empty{font-size:clamp(10px,2.2vw,13px);color:var(--muted)}
 
+  /* Fórmula de puntos */
+  .points-formula-panel{flex-shrink:0}
+  .points-formula{display:grid;grid-template-columns:repeat(5,1fr);gap:1.4vh 2.5vw}
+  .formula-chip{background:linear-gradient(135deg,rgba(224,190,114,.12),rgba(224,190,114,.04));border:1px solid rgba(224,190,114,.28);border-radius:14px;padding:1.4vh 2vw;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:.8vh}
+  .formula-pts{font-weight:800;font-size:clamp(20px,4.2vw,28px);color:var(--gold2)}
+  .formula-txt{font-size:clamp(11px,2.2vw,14px);color:var(--cream);font-weight:700}
+
   /* Si por alguna razón se abre en un monitor horizontal normal, que se
      vea razonable igual: apilamos menos alto, más ancho de sobra. */
   @media (min-aspect-ratio: 4/3){
@@ -142,6 +149,17 @@
   <section class="panel cat-panel">
     <p class="panel-title">🏅 Categorías del cumple</p>
     <div class="cat-row" id="cat-row"></div>
+  </section>
+
+  <section class="panel points-formula-panel">
+    <p class="panel-title">💰 Así se ganan puntos</p>
+    <div class="points-formula">
+      <div class="formula-chip"><span class="formula-pts">+15</span><span class="formula-txt">📷 Foto</span></div>
+      <div class="formula-chip"><span class="formula-pts">+10</span><span class="formula-txt">💌 Mensaje</span></div>
+      <div class="formula-chip"><span class="formula-pts">+2</span><span class="formula-txt">❤️ Reacción</span></div>
+      <div class="formula-chip"><span class="formula-pts">+3</span><span class="formula-txt">💬 Comentario</span></div>
+      <div class="formula-chip"><span class="formula-pts">+5</span><span class="formula-txt">🎉 Asistencia</span></div>
+    </div>
   </section>
 
 <script>
