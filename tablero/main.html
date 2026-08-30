@@ -853,34 +853,27 @@
       // el sitio (GitHub Pages) y el Apps Script están en dominios distintos.
       uploadForm.submit();
 
-      // No podemos leer la respuesta del iframe (dominio distinto), así que
-      // esperamos un momento y confirmamos consultando los datos de nuevo.
-      await new Promise(r => setTimeout(r, 2500));
-      await refreshData();
-      const afterCount = (appData && appData.dedicatorias) ? appData.dedicatorias.length : 0;
+      // Cerramos el modal DE UNA. Antes esperábamos hasta 5 segundos con el
+      // modal abierto y luego, si el conteo no había subido, decíamos "no
+      // estamos seguros" — y la gente volvía a darle Enviar. Así se crearon
+      // las fotos repetidas. El envío ya salió; confirmarlo es cosa nuestra,
+      // no de la persona.
+      document.getElementById('up-text').value = '';
+      fileInput.value = '';
+      statusEl.textContent = '';
+      uploadModal.classList.remove('open');
+      showBusy('Subiendo tu foto…');
 
-      if (afterCount > beforeCount){
-        document.getElementById('up-text').value = '';
-        fileInput.value = '';
-        statusEl.textContent = t('sent');
-        // Cierra el modal automáticamente después de enviar exitosamente
-        setTimeout(() => { uploadModal.classList.remove('open'); statusEl.textContent = ''; }, 700);
-      } else {
-        // Puede que aún esté procesando (fotos grandes tardan un poco más) —
-        // probamos una vez más antes de avisar que algo pudo haber fallado.
+      // Confirmamos por detrás, sin bloquear a nadie.
+      let apareció = false;
+      for (let intento = 0; intento < 6 && !apareció; intento++){
         await new Promise(r => setTimeout(r, 2500));
-        await refreshData();
-        const afterCount2 = (appData && appData.dedicatorias) ? appData.dedicatorias.length : 0;
-        if (afterCount2 > beforeCount){
-          document.getElementById('up-text').value = '';
-          fileInput.value = '';
-          statusEl.textContent = t('sent');
-          // Cierra el modal automáticamente después de enviar exitosamente
-          setTimeout(() => { uploadModal.classList.remove('open'); statusEl.textContent = ''; }, 700);
-        } else {
-          statusEl.textContent = 'No estamos seguros si se guardó. Revisa el muro de fotos o intenta de nuevo.';
-        }
+        try { await refreshData(); } catch (e){ /* reintentamos */ }
+        const ahora = (appData && appData.dedicatorias) ? appData.dedicatorias.length : 0;
+        if (ahora > beforeCount) apareció = true;
       }
+      if (apareció) avisar('¡Listo! Ya está en el muro.');
+      else avisar('Sigue procesando. Va a aparecer sola — no la subas de nuevo.', 5000);
     } catch (err) {
       const msg = (err && err.message) ? err.message : '';
       statusEl.textContent = msg || t('sendError');
@@ -980,6 +973,77 @@
   function esc(v){
     if (v === null || v === undefined) return '';
     return String(v).replace(/</g,'&lt;');
+  }
+
+  // ============================================================
+  // UI OPTIMISTA
+  // ------------------------------------------------------------
+  // Antes, cada reacción/comentario hacía DOS viajes seguidos al
+  // Apps Script: el write (que además hace cola en LockService con
+  // todos los invitados) y después un getAppData() completo que
+  // relee todas las pestañas. Con la fiesta llena eso son decenas
+  // de segundos sin que pase nada en pantalla, y la gente vuelve a
+  // tocar el botón — de ahí las fotos y reacciones repetidas.
+  //
+  // Ahora pintamos el cambio de una vez sobre los datos locales y
+  // mandamos la red por detrás. Si el servidor rechaza, revertimos.
+  // ============================================================
+
+  let operacionesPendientes = 0;
+
+  function avisar(msg, ms){
+    showBusy(msg);
+    setTimeout(hideBusy, ms || 2600);
+  }
+
+  function buscarDedicatoria(id){
+    return ((appData && appData.dedicatorias) || []).find(d => d.id === id) || null;
+  }
+  function buscarComentario(comentarioId){
+    for (const d of ((appData && appData.dedicatorias) || [])){
+      const c = (d.comentarios || []).find(x => x.id === comentarioId);
+      if (c) return c;
+    }
+    return null;
+  }
+
+  // Replica exacta de toggleReaction() del Apps Script: si ya reaccionaste
+  // con ese emoji se quita; si era otro, se reemplaza.
+  function toggleReaccionLocal(contenedor, invitado, emoji){
+    const r = contenedor.reacciones || (contenedor.reacciones = {});
+    let anterior = null;
+    Object.keys(r).forEach(e => { if (r[e].indexOf(invitado) !== -1) anterior = e; });
+    if (anterior){
+      r[anterior] = r[anterior].filter(n => n !== invitado);
+      if (!r[anterior].length) delete r[anterior];
+    }
+    if (anterior !== emoji){
+      if (!r[emoji]) r[emoji] = [];
+      r[emoji].push(invitado);
+    }
+    contenedor.totalReacciones = Object.keys(r).reduce((s, e) => s + r[e].length, 0);
+    return anterior;
+  }
+
+  // Corre una acción: pinta ya, manda la red por detrás, revierte si falla.
+  async function accionOptimista({ mutar, revertir, enviar, errorMsg }){
+    mutar();
+    renderFeed(appData.dedicatorias);
+    operacionesPendientes++;
+    try {
+      const res = await enviar();
+      if (res && res.success === false){
+        revertir();
+        renderFeed(appData.dedicatorias);
+        avisar(res.error || errorMsg);
+      }
+    } catch (err){
+      revertir();
+      renderFeed(appData.dedicatorias);
+      avisar(errorMsg);
+    } finally {
+      operacionesPendientes--;
+    }
   }
 
   function renderFeed(list){
@@ -1084,31 +1148,19 @@
         document.getElementById('picker-' + btn.dataset.id).classList.toggle('open');
       });
     });
-    // Elegir emoji del picker
+    // Elegir emoji del picker — instantáneo
     el.querySelectorAll('.reaction-picker button').forEach(btn => {
-      btn.addEventListener('click', async () => {
+      btn.addEventListener('click', () => {
         const s = requireSession(); if (!s) return;
         btn.closest('.reaction-picker').classList.remove('open');
-        showBusy(t('savingReaction'));
-        try {
-          await toggleLike(btn.dataset.id, s.name, btn.dataset.emoji);
-          await refreshData();
-        } finally {
-          hideBusy();
-        }
+        reaccionarDedicatoria(btn.dataset.id, s.name, btn.dataset.emoji);
       });
     });
     // Toggle rápido en chips existentes (mismo emoji ya puesto = se quita; otro = cambia)
     el.querySelectorAll('.reaction-chip').forEach(btn => {
-      btn.addEventListener('click', async () => {
+      btn.addEventListener('click', () => {
         const s = requireSession(); if (!s) return;
-        showBusy(t('savingReaction'));
-        try {
-          await toggleLike(btn.dataset.id, s.name, btn.dataset.emoji);
-          await refreshData();
-        } finally {
-          hideBusy();
-        }
+        reaccionarDedicatoria(btn.dataset.id, s.name, btn.dataset.emoji);
       });
     });
 
@@ -1121,28 +1173,16 @@
       });
     });
     el.querySelectorAll('.comment-reaction-picker button').forEach(btn => {
-      btn.addEventListener('click', async () => {
+      btn.addEventListener('click', () => {
         const s = requireSession(); if (!s) return;
         btn.closest('.comment-reaction-picker').classList.remove('open');
-        showBusy(t('savingReaction'));
-        try {
-          await toggleComentarioLike(btn.dataset.commentId, s.name, btn.dataset.emoji);
-          await refreshData();
-        } finally {
-          hideBusy();
-        }
+        reaccionarComentario(btn.dataset.commentId, s.name, btn.dataset.emoji);
       });
     });
     el.querySelectorAll('.comment-reaction-chip').forEach(btn => {
-      btn.addEventListener('click', async () => {
+      btn.addEventListener('click', () => {
         const s = requireSession(); if (!s) return;
-        showBusy(t('savingReaction'));
-        try {
-          await toggleComentarioLike(btn.dataset.commentId, s.name, btn.dataset.emoji);
-          await refreshData();
-        } finally {
-          hideBusy();
-        }
+        reaccionarComentario(btn.dataset.commentId, s.name, btn.dataset.emoji);
       });
     });
     el.querySelectorAll('.comment-toggle-link').forEach(btn => {
@@ -1151,22 +1191,82 @@
       });
     });
     el.querySelectorAll('.comment-form button').forEach(btn => {
-      btn.addEventListener('click', async () => {
+      btn.addEventListener('click', () => {
         const s = requireSession(); if (!s) return;
         const input = el.querySelector(`input[data-id="${btn.dataset.id}"]`);
         const texto = input.value.trim();
         if (!texto) return;
-        btn.disabled = true;
-        showBusy(t('savingComment'));
-        try {
-          await addComment(btn.dataset.id, s.name, texto);
-          input.value = '';
-          await refreshData();
-        } finally {
-          btn.disabled = false;
-          hideBusy();
-        }
+        input.value = '';
+        enviarComentario(btn.dataset.id, s.name, texto);
       });
+    });
+  }
+
+  // ---------- Acciones instantáneas (pintan ya, guardan por detrás) ----------
+  function reaccionarDedicatoria(dedicatoriaId, invitado, emoji){
+    const d = buscarDedicatoria(dedicatoriaId);
+    if (!d) return;
+    // El servidor rechaza reaccionar a lo tuyo, así que lo avisamos acá
+    // en vez de pintarlo y quitarlo un segundo después.
+    if (d.invitado === invitado){ avisar('No puedes reaccionar a tu propia publicación.'); return; }
+
+    let anterior = null;
+    accionOptimista({
+      mutar: () => { anterior = toggleReaccionLocal(d, invitado, emoji); },
+      revertir: () => {
+        toggleReaccionLocal(d, invitado, emoji);            // deshace lo aplicado
+        if (anterior) toggleReaccionLocal(d, invitado, anterior); // restaura el previo
+      },
+      enviar: () => toggleLike(dedicatoriaId, invitado, emoji),
+      errorMsg: 'No se pudo guardar tu reacción.'
+    });
+  }
+
+  function reaccionarComentario(comentarioId, invitado, emoji){
+    const c = buscarComentario(comentarioId);
+    if (!c) return;
+    if (c.invitado === invitado){ avisar('No puedes reaccionar a tu propio comentario.'); return; }
+    if (String(comentarioId).indexOf('tmp-') === 0){ avisar('Espera un segundo, ese comentario aún se está guardando.'); return; }
+
+    let anterior = null;
+    accionOptimista({
+      mutar: () => { anterior = toggleReaccionLocal(c, invitado, emoji); },
+      revertir: () => {
+        toggleReaccionLocal(c, invitado, emoji);
+        if (anterior) toggleReaccionLocal(c, invitado, anterior);
+      },
+      enviar: () => toggleComentarioLike(comentarioId, invitado, emoji),
+      errorMsg: 'No se pudo guardar tu reacción.'
+    });
+  }
+
+  function enviarComentario(dedicatoriaId, invitado, texto){
+    const d = buscarDedicatoria(dedicatoriaId);
+    if (!d) return;
+    const tmpId = 'tmp-' + Date.now();
+    const nuevo = { id: tmpId, invitado, texto, fecha: new Date().toISOString(), reacciones: {}, totalReacciones: 0 };
+
+    accionOptimista({
+      mutar: () => {
+        d.comentarios = d.comentarios || [];
+        d.comentarios.push(nuevo);
+        // Dejamos el hilo abierto para que la persona vea su comentario entrar
+        setTimeout(() => {
+          const box = document.getElementById('comments-' + dedicatoriaId);
+          if (box) box.classList.add('open');
+        }, 0);
+      },
+      revertir: () => { d.comentarios = (d.comentarios || []).filter(c => c.id !== tmpId); },
+      enviar: async () => {
+        const res = await addComment(dedicatoriaId, invitado, texto);
+        // Cambiamos el id temporal por el real para que se le pueda reaccionar
+        if (res && res.success && res.comentario && res.comentario.id){
+          const c = (d.comentarios || []).find(x => x.id === tmpId);
+          if (c) c.id = res.comentario.id;
+        }
+        return res;
+      },
+      errorMsg: 'No se pudo guardar tu comentario.'
     });
   }
 
@@ -1376,7 +1476,10 @@
       activo.value.trim() !== '';
     const uploadAbierto = document.getElementById('upload-modal').classList.contains('open');
     const pickerAbierto = document.querySelector('.reaction-picker.open, .comment-reaction-picker.open');
-    if (escribiendoComentario || pickerAbierto || uploadAbierto) return;
+    // Si hay una reacción/comentario todavía viajando al servidor, no
+    // refrescamos: la respuesta de getAppData aún no la incluye y le
+    // borraríamos a la persona lo que acaba de ver aparecer.
+    if (escribiendoComentario || pickerAbierto || uploadAbierto || operacionesPendientes > 0) return;
 
     try { await refreshData(); }
     catch (err) { /* silencioso — se reintenta solo en la próxima vuelta */ }
