@@ -67,7 +67,10 @@
   .winner-strip small{display:block;color:var(--muted);font-size:clamp(9px,1.8vw,12px);text-transform:uppercase;letter-spacing:.1em}
 
   /* Ranking */
-  .rank-list{height:30vh;overflow-y:hidden;display:flex;flex-direction:column;gap:1.2vh;scroll-behavior:smooth}
+  /* Sin scroll-behavior:smooth a propósito: el auto-scroll lo movemos por
+     JS cuadro a cuadro, y el "smooth" del navegador reinicia su propia
+     animación en cada asignación, dejando la lista casi congelada. */
+  .rank-list{height:30vh;overflow-y:hidden;display:flex;flex-direction:column;gap:1.2vh}
   .rank-row{display:flex;align-items:center;gap:3vw;padding:1.4vh 3vw;border-radius:16px;background:#0d0d0d;border:1px solid var(--line-soft);flex-shrink:0}
   .rank-row.top{background:linear-gradient(100deg,#151109,#0c0c0c 70%);border-color:rgba(224,190,114,.42)}
   .rank-num{width:clamp(22px,4.5vw,30px);text-align:center;font-weight:800;color:var(--gold2);font-size:clamp(14px,3vw,20px)}
@@ -343,29 +346,54 @@
   // En vez de cortar la lista a "Top 10", dejamos entrar a todos y la
   // hacemos bajar solita, pausa arriba y abajo, y vuelve a empezar.
   // Así, con 5 o con 50 invitados, todos se alcanzan a ver con el tiempo.
-  let scrollDir = 1;
-  let pauseUntil = 0;
-  function autoScrollTick(){
+  //
+  // Se mueve con requestAnimationFrame y velocidad en píxeles por segundo,
+  // no por cuadro: así va igual de fluido en cualquier pantalla. La
+  // posición se lleva en una variable propia porque leer scrollTop de
+  // vuelta da valores redondeados y el avance se perdía.
+  const VELOCIDAD_SCROLL = 28;   // px por segundo
+  const PAUSA_EXTREMOS = 2800;   // ms de pausa arriba y abajo
+
+  let posScroll = 0;
+  let dirScroll = 1;
+  let pausaHasta = 0;
+  let ultimoFrame = 0;
+
+  function autoScrollRanking(ts){
+    requestAnimationFrame(autoScrollRanking);
+
     const el = document.getElementById('rank-list');
-    const now = Date.now();
-    if (now < pauseUntil) return;
+    if (!el) return;
+
+    // Si la pestaña estuvo en segundo plano, dt sería enorme y pegaría un
+    // salto feo: lo limitamos a 100ms.
+    const dt = ultimoFrame ? Math.min((ts - ultimoFrame) / 1000, 0.1) : 0;
+    ultimoFrame = ts;
+    if (document.hidden) return;
 
     const maxScroll = el.scrollHeight - el.clientHeight;
-    if (maxScroll <= 4){ return; } // todos caben, no hace falta scroll
-
-    el.scrollTop += scrollDir * 1.1;
-
-    if (el.scrollTop >= maxScroll - 1){
-      el.scrollTop = maxScroll;
-      scrollDir = -1;
-      pauseUntil = now + 3000; // pausa 3s abajo antes de subir
-    } else if (el.scrollTop <= 1){
-      el.scrollTop = 0;
-      scrollDir = 1;
-      pauseUntil = now + 3000; // pausa 3s arriba antes de bajar
+    if (maxScroll <= 4){
+      // Caben todos: nada que desplazar.
+      posScroll = 0; dirScroll = 1; el.scrollTop = 0;
+      return;
     }
+    if (ts < pausaHasta) return;
+
+    posScroll += dirScroll * VELOCIDAD_SCROLL * dt;
+
+    if (posScroll >= maxScroll){
+      posScroll = maxScroll;
+      dirScroll = -1;
+      pausaHasta = ts + PAUSA_EXTREMOS;
+    } else if (posScroll <= 0){
+      posScroll = 0;
+      dirScroll = 1;
+      pausaHasta = ts + PAUSA_EXTREMOS;
+    }
+
+    el.scrollTop = posScroll;
   }
-  setInterval(autoScrollTick, 40);
+  requestAnimationFrame(autoScrollRanking);
 
   // ---------- Ajuste automático al alto de la pantalla ----------
   // El tablero se dibuja con su alto natural y acá lo encogemos lo justo
