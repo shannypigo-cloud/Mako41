@@ -847,6 +847,7 @@
         document.getElementById('up-text').value = '';
         fileInput.value = '';
         statusEl.textContent = t('sent');
+        // Cierra el modal automáticamente después de enviar exitosamente
         setTimeout(() => { uploadModal.classList.remove('open'); statusEl.textContent = ''; }, 700);
       } else {
         // Puede que aún esté procesando (fotos grandes tardan un poco más) —
@@ -858,6 +859,7 @@
           document.getElementById('up-text').value = '';
           fileInput.value = '';
           statusEl.textContent = t('sent');
+          // Cierra el modal automáticamente después de enviar exitosamente
           setTimeout(() => { uploadModal.classList.remove('open'); statusEl.textContent = ''; }, 700);
         } else {
           statusEl.textContent = 'No estamos seguros si se guardó. Revisa el muro de fotos o intenta de nuevo.';
@@ -1315,8 +1317,9 @@
       activo.tagName === 'INPUT' &&
       activo.closest('.comment-form') &&
       activo.value.trim() !== '';
+    const uploadAbierto = document.getElementById('upload-modal').classList.contains('open');
     const pickerAbierto = document.querySelector('.reaction-picker.open, .comment-reaction-picker.open');
-    if (escribiendoComentario || pickerAbierto) return;
+    if (escribiendoComentario || pickerAbierto || uploadAbierto) return;
 
     try { await refreshData(); }
     catch (err) { /* silencioso — se reintenta solo en la próxima vuelta */ }
